@@ -1,0 +1,15 @@
+{
+  "originHash" : "3f397b70d7f16d2250c41eab74b4c013dd21dafb66a882cd066b11a2493bd36d",
+  "pins" : [
+    {
+      "identity" : "thomkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/thom1606/ThomKit",
+      "state" : {
+        "branch" : "main",
+        "revision" : "f9cd3e1794434e51ede2b44e2d5fc1e64d7c9e31"
+      }
+    }
+  ],
+  "version" : 3
+}

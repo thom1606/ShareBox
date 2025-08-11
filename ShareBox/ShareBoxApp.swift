@@ -7,15 +7,21 @@
 
 import SwiftUI
 import ServiceManagement
+import ThomKit
 
 @main
 struct ShareBoxApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .onAppear {
-                    try? Utilities.launchHelperApp()
-                }
+            FrostedWindow {
+                ContentView()
+            }
+            .frame(width: 425, height: 600)
+            .onAppear {
+                try? Utilities.launchHelperApp()
+            }
         }
+        .defaultSize(width: 425, height: 600)
+        .windowResizability(.contentSize)
     }
 }

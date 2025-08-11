@@ -6,5 +6,9 @@
 	<array>
 		<string>group.com.thom1606.ShareBox</string>
 	</array>
+	<key>keychain-access-groups</key>
+	<array>
+		<string>$(AppIdentifierPrefix)group.com.thom1606.ShareBox</string>
+	</array>
 </dict>
 </plist>

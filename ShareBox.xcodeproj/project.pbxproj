@@ -15,6 +15,7 @@
 		8494E4382E49FE6B003065BD /* Release.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 8494E4372E49FE6B003065BD /* Release.xcconfig */; };
 		8494E4392E49FE6B003065BD /* Release.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 8494E4372E49FE6B003065BD /* Release.xcconfig */; };
 		8494E43A2E49FE6B003065BD /* Release.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 8494E4372E49FE6B003065BD /* Release.xcconfig */; };
+		8494E45D2E4A322D003065BD /* ThomKit in Frameworks */ = {isa = PBXBuildFile; productRef = 8494E45C2E4A322D003065BD /* ThomKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -66,6 +67,7 @@
 				Sources/.Shared/Constants.swift,
 				Sources/.Shared/Types.swift,
 				Sources/.Shared/Utilities/Errors.swift,
+				Sources/.Shared/Utilities/Keychain.swift,
 				Sources/.Shared/Utilities/Logs.swift,
 			);
 			target = 8426D95B2E49DD87008F6EB1 /* ShareBox.Helper */;
@@ -129,6 +131,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8494E45D2E4A322D003065BD /* ThomKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -202,6 +205,7 @@
 			);
 			name = ShareBox;
 			packageProductDependencies = (
+				8494E45C2E4A322D003065BD /* ThomKit */,
 			);
 			productName = ShareBox;
 			productReference = 8426D9462E49DD65008F6EB1 /* ShareBox.app */;
@@ -281,6 +285,9 @@
 			);
 			mainGroup = 8426D93D2E49DD65008F6EB1;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				8494E45B2E4A2E1C003065BD /* XCRemoteSwiftPackageReference "ThomKit" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 8426D9472E49DD65008F6EB1 /* Products */;
 			projectDirPath = "";
@@ -698,6 +705,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		8494E45B2E4A2E1C003065BD /* XCRemoteSwiftPackageReference "ThomKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/thom1606/ThomKit";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		8494E45C2E4A322D003065BD /* ThomKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8494E45B2E4A2E1C003065BD /* XCRemoteSwiftPackageReference "ThomKit" */;
+			productName = ThomKit;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 8426D93E2E49DD65008F6EB1 /* Project object */;
 }
