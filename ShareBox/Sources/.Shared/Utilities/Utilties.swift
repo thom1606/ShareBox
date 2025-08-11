@@ -21,8 +21,6 @@ class Utilities {
         center.add(request) { (error) in
             if let error = error {
                 NSLog("Error adding notification: \(error.localizedDescription)")
-            } else {
-                NSLog("added notification to center")
             }
         }
     }
@@ -32,14 +30,14 @@ class Utilities {
         
         #if DEBUG
         print("For development the Helper App should be started manually, please do so.")
-        return
+        throw ShareBoxError.noHelperInDevelopment
         #else
         // Check if helper is already running
         let runningApps = NSWorkspace.shared.runningApplications
         let helperRunning = runningApps.contains { app in
             app.bundleIdentifier == "com.thom1606.ShareBox.Helper"
         }
-
+        
         if helperRunning {
             print("Helper app is already running healthy, skipping this launch...")
             return
@@ -47,12 +45,26 @@ class Utilities {
         
         // Try to find helper app in different locations
         var helperPath: String?
-        
-        // 1. Try in main app bundle (production)
+
+        // Try in main app bundle (main app)
         if let bundlePath = Bundle.main.path(forResource: "ShareBox.Helper", ofType: "app") {
             helperPath = bundlePath
         }
-        
+
+        // Try in parent app's Resources (Finder Sync .appex)
+        if helperPath == nil {
+            // For .appex, Bundle.main is the extension bundle, so go up to the main app bundle
+            // The extension bundle is typically at .../YourApp.app/Contents/PlugIns/YourExtension.appex
+            // The helper is at .../YourApp.app/Contents/Resources/ShareBox.Helper.app
+            let extensionBundleURL = Bundle.main.bundleURL
+            let appBundleURL = extensionBundleURL.deletingLastPathComponent().deletingLastPathComponent()
+            let resourcesURL = appBundleURL.appendingPathComponent("Resources")
+            let helperURL = resourcesURL.appendingPathComponent("ShareBox.Helper.app")
+            if FileManager.default.fileExists(atPath: helperURL.path) {
+                helperPath = helperURL.path
+            }
+        }
+
         guard let helperPath = helperPath else {
             print("Helper app not found in bundle or build products, throwing...")
             throw ShareBoxError.helperNotInstalled
@@ -61,6 +73,5 @@ class Utilities {
         // Launch helper
         NSWorkspace.shared.open(URL(fileURLWithPath: helperPath))
         #endif
-        
     }
 }
