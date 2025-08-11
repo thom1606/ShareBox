@@ -50,69 +50,34 @@ class FinderSync: FIFinderSync {
     
     private func uploadFiles(items: [URL], target: URL, retry: Bool = false) {
         finderLogger.debug("Found items to upload, trying to get everything ready...")
-        
+
         // Create request for Mach
         let req: FileUploadBody = .init(
             items: items.map { .init(relative: $0.absoluteString.replacingOccurrences(of: target.absoluteString, with: ""), absolute: $0.absoluteString) }
         )
-        guard let mach = MachMessage(type: .fileUploadRequest, data: req.encode()).encode() else {
+        do {
+            finderLogger.debug("Request for mach created, sending packet to helper...")
+            let data = try Messenger.shared.send(MachMessage(type: .fileUploadRequest, data: req.encode()))
+            if data != nil {
+                // Handle possible errors thrown by the helper
+                if let response = try? JSONDecoder().decode([String: String].self, from: data!),
+                   response["status"] == "busy" {
+                    Utilities.showNotification(
+                        title: NSLocalizedString("Oops!", comment: ""),
+                        body: NSLocalizedString("An upload is already active, please wait for it to finish.", comment: "")
+                    )
+                    finderLogger.warning("Another ShareBoxis already active, user should try again after.")
+                    return
+                }
+            }
+            // Everything should be cool, we are done here
+            finderLogger.debug("Task successfully sent to the Helper app, handling everything from there.")
+        } catch {
             Utilities.showNotification(
                 title: NSLocalizedString("Oops!", comment: ""),
                 body: NSLocalizedString("Something went wrong internally, please try again.", comment: "")
             )
             finderLogger.error("Failed to create Mach message for file upload request, encoding failed. Aborting upload.")
-            return
-        }
-        
-        finderLogger.debug("Request for mach created, trying to start the connection...")
-        // Submit the paths to the helper
-        guard let remotePort = CFMessagePortCreateRemote(nil, Constants.Mach.portName as CFString) else {
-            do {
-                if retry {
-                    throw ShareBoxError.failedExecute("Failed to startup ShareBox Helper. Even after retry, it is not running.")
-                } else {
-                    finderLogger.error("Unable to connect to the ShareBox Helper Remote Port using Mach, trying to launch helper.")
-                    // Try and launch the helper to save this upload request
-                    try Utilities.launchHelperApp()
-                    finderLogger.info("Finder has started the helper, trying to submit data again...")
-                    // Looks good, retry upload once
-                    uploadFiles(items: items, target: target, retry: true)
-                    return
-                }
-            } catch {
-                Utilities.showNotification(
-                    title: NSLocalizedString("Oops!", comment: ""),
-                    body: NSLocalizedString("The ShareBox Helper is not running, please try again.", comment: "")
-                )
-                finderLogger.error("Helper connection failed: \(error.localizedDescription)")
-            }
-            return
-        }
-        
-        finderLogger.debug("Correctly connected to the Helper app Remote Port, sending request...")
-        
-        let messageID: Int32 = 0x1111
-        let timeout: CFTimeInterval = 1.0
-        
-        var returnData: Unmanaged<CFData>?
-        let status = CFMessagePortSendRequest(remotePort, messageID, mach, timeout, timeout, CFRunLoopMode.defaultMode.rawValue, &returnData)
-        if status == kCFMessagePortSuccess, let data = returnData?.takeRetainedValue() as Data? {
-            if let response = try? JSONDecoder().decode([String: String].self, from: data),
-               response["status"] == "busy" {
-                Utilities.showNotification(
-                    title: NSLocalizedString("Oops!", comment: ""),
-                    body: NSLocalizedString("An upload is already active, please wait for it to finish.", comment: "")
-                )
-                finderLogger.warning("Another ShareBoxis already active, user should try again after.")
-                return
-            }
-            finderLogger.debug("Task successfully sent to the Helper app, handling everything from there.")
-        } else {
-            Utilities.showNotification(
-                title: NSLocalizedString("Oops!", comment: ""),
-                body: NSLocalizedString("Failed to start the upload request with the Helper App, please make sure it is running!", comment: "")
-            )
-            finderLogger.error("Failed to send the message to the Helper app, status: \(status)")
         }
     }
 }

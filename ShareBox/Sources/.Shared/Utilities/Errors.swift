@@ -10,6 +10,7 @@ import Foundation
 enum ShareBoxError: Error {
     case failedExecute(String)
     case helperNotInstalled
+    case helperNotRunning
     case noHelperInDevelopment
     case fileNotFound
 }

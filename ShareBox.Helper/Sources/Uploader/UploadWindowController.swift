@@ -7,6 +7,7 @@
 
 import AppKit
 import SwiftUI
+import UserNotifications
 
 final class UploadWindowController: NSWindowController {
     static let shared = UploadWindowController()
@@ -21,7 +22,7 @@ final class UploadWindowController: NSWindowController {
         let screenFrame = activeScreen?.visibleFrame ?? NSScreen.main!.visibleFrame
 
         let windowWidth: CGFloat = SharedValues.uploaderWindowWidth
-        let windowHeight: CGFloat = screenFrame.size.height / 2
+        let windowHeight: CGFloat = max(600, screenFrame.size.height / 2)
         
         // Center it vertically on the screen
         let y = screenFrame.origin.y + (screenFrame.size.height - windowHeight) / 2
@@ -44,6 +45,9 @@ final class UploadWindowController: NSWindowController {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     func show(items: [FilePath]) {
+        // Ask for notification access once we show the uploader
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert]) { _, _ in }
+        
         // Re-render the ui with items instead of nothing
         if let window = self.window {
             window.contentView = NSHostingView(rootView: UploadView(items: items))

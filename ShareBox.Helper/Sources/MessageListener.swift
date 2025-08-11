@@ -7,6 +7,7 @@
 
 import SwiftUI
 import UniformTypeIdentifiers
+import UserNotifications
 
 class MessageListener {
     private var localPort: CFMessagePort?
@@ -27,6 +28,17 @@ class MessageListener {
                 let decoder = JSONDecoder()
                 let machMessage = try decoder.decode(MachMessage.self, from: receivedData)
                 switch (machMessage.type) {
+                case .requestNotifications:
+                    Notifications.requestAccess()
+                    break
+                case .notify:
+                    do {
+                        let msg = try decoder.decode(NotificationBody.self, from: machMessage.data!)
+                        Notifications.show(title: msg.title, body: msg.message)
+                    } catch {
+                        generalLogger.warning("Failed to send out notification: \(error.localizedDescription)")
+                    }
+                    break
                 case .fileUploadRequest:
                     generalLogger.debug("Received file upload request...")
                     // Check if already processing

@@ -9,6 +9,12 @@
 /* Begin PBXBuildFile section */
 		8426D9BD2E49E6D4008F6EB1 /* ShareBox.Helper.app in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8426D95C2E49DD87008F6EB1 /* ShareBox.Helper.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		8426D9CA2E49ED41008F6EB1 /* ShareBox.Finder.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 8426D9C22E49ED41008F6EB1 /* ShareBox.Finder.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		8494E4342E49FE61003065BD /* Debug.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 8494E4332E49FE61003065BD /* Debug.xcconfig */; };
+		8494E4352E49FE61003065BD /* Debug.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 8494E4332E49FE61003065BD /* Debug.xcconfig */; };
+		8494E4362E49FE61003065BD /* Debug.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 8494E4332E49FE61003065BD /* Debug.xcconfig */; };
+		8494E4382E49FE6B003065BD /* Release.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 8494E4372E49FE6B003065BD /* Release.xcconfig */; };
+		8494E4392E49FE6B003065BD /* Release.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 8494E4372E49FE6B003065BD /* Release.xcconfig */; };
+		8494E43A2E49FE6B003065BD /* Release.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 8494E4372E49FE6B003065BD /* Release.xcconfig */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +55,8 @@
 		8426D9462E49DD65008F6EB1 /* ShareBox.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ShareBox.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8426D95C2E49DD87008F6EB1 /* ShareBox.Helper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ShareBox.Helper.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8426D9C22E49ED41008F6EB1 /* ShareBox.Finder.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ShareBox.Finder.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		8494E4332E49FE61003065BD /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
+		8494E4372E49FE6B003065BD /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -59,7 +67,6 @@
 				Sources/.Shared/Types.swift,
 				Sources/.Shared/Utilities/Errors.swift,
 				Sources/.Shared/Utilities/Logs.swift,
-				Sources/.Shared/Utilities/Utilties.swift,
 			);
 			target = 8426D95B2E49DD87008F6EB1 /* ShareBox.Helper */;
 		};
@@ -77,9 +84,17 @@
 				Sources/.Shared/Types.swift,
 				Sources/.Shared/Utilities/Errors.swift,
 				Sources/.Shared/Utilities/Logs.swift,
+				Sources/.Shared/Utilities/Messenger.swift,
 				Sources/.Shared/Utilities/Utilties.swift,
 			);
 			target = 8426D9C12E49ED41008F6EB1 /* ShareBox.Finder */;
+		};
+		8494E43E2E49FECD003065BD /* Exceptions for "ShareBox" folder in "ShareBox" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 8426D9452E49DD65008F6EB1 /* ShareBox */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -87,6 +102,7 @@
 		8426D9482E49DD65008F6EB1 /* ShareBox */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
+				8494E43E2E49FECD003065BD /* Exceptions for "ShareBox" folder in "ShareBox" target */,
 				8426D9B52E49E5BC008F6EB1 /* Exceptions for "ShareBox" folder in "ShareBox.Helper" target */,
 				8426D9D12E49ED83008F6EB1 /* Exceptions for "ShareBox" folder in "ShareBox.Finder" target */,
 			);
@@ -136,6 +152,7 @@
 		8426D93D2E49DD65008F6EB1 = {
 			isa = PBXGroup;
 			children = (
+				8494E4322E49FE34003065BD /* Configuration */,
 				8426D9482E49DD65008F6EB1 /* ShareBox */,
 				8426D95D2E49DD87008F6EB1 /* ShareBox.Helper */,
 				8426D9C32E49ED41008F6EB1 /* ShareBox.Finder */,
@@ -151,6 +168,15 @@
 				8426D9C22E49ED41008F6EB1 /* ShareBox.Finder.appex */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		8494E4322E49FE34003065BD /* Configuration */ = {
+			isa = PBXGroup;
+			children = (
+				8494E4332E49FE61003065BD /* Debug.xcconfig */,
+				8494E4372E49FE6B003065BD /* Release.xcconfig */,
+			);
+			path = Configuration;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -272,6 +298,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8494E4392E49FE6B003065BD /* Release.xcconfig in Resources */,
+				8494E4342E49FE61003065BD /* Debug.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -279,6 +307,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8494E43A2E49FE6B003065BD /* Release.xcconfig in Resources */,
+				8494E4352E49FE61003065BD /* Debug.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -286,6 +316,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8494E4382E49FE6B003065BD /* Release.xcconfig in Resources */,
+				8494E4362E49FE61003065BD /* Debug.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -326,6 +358,7 @@
 /* Begin XCBuildConfiguration section */
 		8426D9532E49DD66008F6EB1 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8494E4332E49FE61003065BD /* Debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -389,6 +422,7 @@
 		};
 		8426D9542E49DD66008F6EB1 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8494E4372E49FE6B003065BD /* Release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -444,6 +478,7 @@
 		};
 		8426D9562E49DD66008F6EB1 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8494E4332E49FE61003065BD /* Debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -456,6 +491,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ShareBox/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -472,6 +508,7 @@
 		};
 		8426D9572E49DD66008F6EB1 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8494E4372E49FE6B003065BD /* Release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -484,6 +521,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ShareBox/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -501,6 +539,7 @@
 		};
 		8426D9692E49DD88008F6EB1 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8494E4332E49FE61003065BD /* Debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -513,6 +552,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "ShareBox-Helper-Info.plist";
 				INFOPLIST_KEY_LSBackgroundOnly = YES;
 				INFOPLIST_KEY_LSUIElement = NO;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
@@ -530,6 +570,7 @@
 		};
 		8426D96A2E49DD88008F6EB1 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8494E4372E49FE6B003065BD /* Release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -542,6 +583,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "ShareBox-Helper-Info.plist";
 				INFOPLIST_KEY_LSBackgroundOnly = YES;
 				INFOPLIST_KEY_LSUIElement = NO;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
@@ -560,6 +602,7 @@
 		};
 		8426D9CD2E49ED41008F6EB1 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8494E4332E49FE61003065BD /* Debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = ShareBox.Finder/ShareBox_Finder.entitlements;
 				CODE_SIGN_STYLE = Automatic;
@@ -588,6 +631,7 @@
 		};
 		8426D9CE2E49ED41008F6EB1 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8494E4372E49FE6B003065BD /* Release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = ShareBox.Finder/ShareBox_Finder.entitlements;
 				CODE_SIGN_STYLE = Automatic;

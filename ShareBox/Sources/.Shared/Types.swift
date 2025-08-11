@@ -14,6 +14,8 @@ struct MachMessage : Codable {
     
     enum MessageType: String, Codable {
         case fileUploadRequest
+        case requestNotifications
+        case notify
     }
 }
 
@@ -27,11 +29,9 @@ extension MachMessage {
     }
 }
 
-struct FileUploadBody: Codable {
-    var items: [FilePath]
-}
+protocol MachData: Codable {}
 
-extension FileUploadBody {
+extension MachData {
     public func encode() -> Data? {
         let encoder = JSONEncoder()
         guard let encodedMessage = try? encoder.encode(self) else {
@@ -39,6 +39,15 @@ extension FileUploadBody {
         }
         return encodedMessage
     }
+}
+
+// MachMessage Body Types
+struct NotificationBody: MachData {
+    var title: String
+    var message: String
+}
+struct FileUploadBody: MachData {
+    var items: [FilePath]
 }
 
 struct FilePath: Codable, Hashable {

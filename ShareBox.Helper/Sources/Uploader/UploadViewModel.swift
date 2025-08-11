@@ -15,4 +15,22 @@ import SwiftUI
     var notchPercentage: CGFloat = 0
     // The percentage of items/progress made in the upload, number between 0 and 100
     var uploadProgress: CGFloat = 0
+    
+    public func handleAppear(_ items: [FilePath]) async {
+        SharedValues.isProcessing = true
+        uploadProgress = 0
+
+        do {
+            try await Task.sleep(for: .milliseconds(300))
+            
+            withAnimation(.spring(duration: 0.3)) {
+                self.hidden = false
+                // TODO: check if we want to fully extend the notch at the start or not
+                self.notchPercentage = 1
+            }
+            SharedValues.isProcessing = false
+        } catch {
+            SharedValues.isProcessing = false
+        }
+    }
 }
