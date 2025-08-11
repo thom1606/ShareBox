@@ -16,6 +16,9 @@
 		8494E4392E49FE6B003065BD /* Release.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 8494E4372E49FE6B003065BD /* Release.xcconfig */; };
 		8494E43A2E49FE6B003065BD /* Release.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 8494E4372E49FE6B003065BD /* Release.xcconfig */; };
 		8494E45D2E4A322D003065BD /* ThomKit in Frameworks */ = {isa = PBXBuildFile; productRef = 8494E45C2E4A322D003065BD /* ThomKit */; };
+		8494E4BD2E4A3B14003065BD /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 8494E4BC2E4A3B14003065BD /* Localizable.xcstrings */; };
+		8494E4BE2E4A3B1E003065BD /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 8494E4BC2E4A3B14003065BD /* Localizable.xcstrings */; };
+		8494E4BF2E4A3B1E003065BD /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 8494E4BC2E4A3B14003065BD /* Localizable.xcstrings */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,6 +61,7 @@
 		8426D9C22E49ED41008F6EB1 /* ShareBox.Finder.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ShareBox.Finder.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		8494E4332E49FE61003065BD /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
 		8494E4372E49FE6B003065BD /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
+		8494E4BC2E4A3B14003065BD /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -155,6 +159,7 @@
 		8426D93D2E49DD65008F6EB1 = {
 			isa = PBXGroup;
 			children = (
+				8494E4BB2E4A3B08003065BD /* Resources */,
 				8494E4322E49FE34003065BD /* Configuration */,
 				8426D9482E49DD65008F6EB1 /* ShareBox */,
 				8426D95D2E49DD87008F6EB1 /* ShareBox.Helper */,
@@ -180,6 +185,14 @@
 				8494E4372E49FE6B003065BD /* Release.xcconfig */,
 			);
 			path = Configuration;
+			sourceTree = "<group>";
+		};
+		8494E4BB2E4A3B08003065BD /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				8494E4BC2E4A3B14003065BD /* Localizable.xcstrings */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -306,6 +319,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8494E4392E49FE6B003065BD /* Release.xcconfig in Resources */,
+				8494E4BE2E4A3B1E003065BD /* Localizable.xcstrings in Resources */,
 				8494E4342E49FE61003065BD /* Debug.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -315,6 +329,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8494E43A2E49FE6B003065BD /* Release.xcconfig in Resources */,
+				8494E4BD2E4A3B14003065BD /* Localizable.xcstrings in Resources */,
 				8494E4352E49FE61003065BD /* Debug.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -325,6 +340,7 @@
 			files = (
 				8494E4382E49FE6B003065BD /* Release.xcconfig in Resources */,
 				8494E4362E49FE61003065BD /* Debug.xcconfig in Resources */,
+				8494E4BF2E4A3B1E003065BD /* Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -423,6 +439,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
@@ -480,6 +497,7 @@
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
 				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 			};
 			name = Release;
 		};

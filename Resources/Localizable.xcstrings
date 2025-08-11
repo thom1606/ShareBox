@@ -1,0 +1,36 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "An upload is already active, please wait for it to finish." : {
+
+    },
+    "Hello, World!" : {
+
+    },
+    "No files or folders selected? Please try again after selecting items." : {
+      "comment" : "If ShareBox Ever get's triggered without files or folders selected."
+    },
+    "Oops!" : {
+
+    },
+    "Sign in to ShareBox to get started sharing files easy and quickly." : {
+
+    },
+    "Something went wrong internally, please try again." : {
+
+    },
+    "Upload failed" : {
+
+    },
+    "Upload to ShareBox" : {
+      "comment" : "Finder Context Menu Label"
+    },
+    "Welcome" : {
+
+    },
+    "Your item named \"%@\" has failed to upload and gave the following error:" : {
+
+    }
+  },
+  "version" : "1.0"
+}

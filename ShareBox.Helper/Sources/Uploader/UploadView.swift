@@ -14,13 +14,15 @@ struct UploadView: View {
 
     private var content: some View {
         HStack(spacing: 10) {
-            Button(action: {
-                Notifications.show(title: "Test notification", body: "Please work")
-            }, label: {
-                Text("Test")
-                    .foregroundStyle(.white)
-            })
-            Spacer(minLength: 0)
+            ScrollView {
+                VStack(spacing: 10) {
+                    ForEach(items, id: \.self) { item in
+                        ItemPreview(path: item.absolute, completed: state.completedPaths.contains(item.absolute), error: state.failedPaths[item.absolute])
+                    }
+                }
+                .padding(.vertical, 10)
+            }
+            .frame(maxWidth: .infinity)
             VStack {
                 ProgressView(progress: state.uploadProgress)
             }

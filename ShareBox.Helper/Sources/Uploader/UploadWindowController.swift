@@ -20,7 +20,6 @@ final class UploadWindowController: NSWindowController {
         let activeScreen = NSApp.keyWindow?.screen ?? NSScreen.main
         // Default to main screen's frame if activeScreen is nil
         let screenFrame = activeScreen?.visibleFrame ?? NSScreen.main!.visibleFrame
-
         let windowWidth: CGFloat = SharedValues.uploaderWindowWidth
         let windowHeight: CGFloat = max(600, screenFrame.size.height / 2)
         
@@ -28,7 +27,7 @@ final class UploadWindowController: NSWindowController {
         let y = screenFrame.origin.y + (screenFrame.size.height - windowHeight) / 2
 
         let window = NSWindow(
-            contentRect: NSRect(x: 0, y: y, width: windowWidth, height: windowHeight),
+            contentRect: NSRect(x: screenFrame.origin.x, y: y, width: windowWidth, height: windowHeight),
             styleMask: [.borderless],
             backing: .buffered,
             defer: false
