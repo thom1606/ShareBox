@@ -27,6 +27,15 @@ class MessageListener {
             do {
                 let decoder = JSONDecoder()
                 let machMessage = try decoder.decode(MachMessage.self, from: receivedData)
+                
+                let myBuildNumber = Int((Bundle.main.infoDictionary?["CFBundleVersion"] as? String) ?? "1") ?? 1
+                if myBuildNumber != machMessage.buildNumber {
+                    generalLogger.error("Invalid version of Helper running for this instance, killing this helper")
+                    let response = try? JSONEncoder().encode(["success": "false", "error": "INVALID_HELPER_VERSION"])
+                    NSApp.terminate(nil)
+                    return response.map { Unmanaged.passRetained($0 as CFData) }
+                }
+                
                 switch (machMessage.type) {
                 case .requestNotifications:
                     Notifications.requestAccess()
@@ -44,7 +53,7 @@ class MessageListener {
                     // Check if already processing
                     if SharedValues.isProcessing {
                         generalLogger.error("Another upload process is already in progress!")
-                        let response = try? JSONEncoder().encode(["status": "busy"])
+                        let response = try? JSONEncoder().encode(["success": "false", "status": "busy"])
                         return response.map { Unmanaged.passRetained($0 as CFData) }
                     } else {
                         // Initiate file upload

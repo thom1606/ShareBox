@@ -17,14 +17,27 @@ struct ShareBox_HelperApp: App {
     init() {
         // Ensure only one instance of the Helper app is running
         let bundleID = Bundle.main.bundleIdentifier ?? "com.thom1606.ShareBox.Helper"
-        
+        let myBuildNumber = Bundle.main.infoDictionary?["CFBundleVersion"] as? String
         let runningInstances = NSRunningApplication.runningApplications(withBundleIdentifier: bundleID)
         if runningInstances.count > 1 {
+            var shouldKill = true
+            if let bundleURL = runningInstances[0].bundleURL,
+               let infoPlist = NSDictionary(contentsOf: bundleURL.appendingPathComponent("Contents/Info.plist")),
+               let buildNumber = infoPlist["CFBundleVersion"] as? String {
+                if buildNumber != myBuildNumber {
+                    generalLogger.warning("Another instance of ShareBox Helper is running with a different build number. Exiting that instance.")
+                    // Terminate the other instance
+                    runningInstances[0].terminate()
+                    shouldKill = false
+                }
+            }
+            if shouldKill {
                 self.messageListener = nil
-            // Another instance is already running, terminate this one
-            generalLogger.warning("Another instance of ShareBox Helper is already running. Exiting this instance.")
-            NSApp.terminate(nil)
-            return
+                // Another instance is already running, terminate this one
+                generalLogger.warning("Another instance of ShareBox Helper is already running. Exiting this instance.")
+                NSApp.terminate(nil)
+                return
+            }
         }
 
         UNUserNotificationCenter.current().delegate = NotificationDelegate.shared

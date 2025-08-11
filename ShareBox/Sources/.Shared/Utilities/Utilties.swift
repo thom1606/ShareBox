@@ -20,7 +20,6 @@ class Utilities {
     
     /// Launch the Helper app if it is not already opened
     static func launchHelperApp() throws {
-        
         #if DEBUG
         print("For development the Helper App should be started manually, please do so.")
         throw ShareBoxError.noHelperInDevelopment

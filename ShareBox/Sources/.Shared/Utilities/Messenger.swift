@@ -33,6 +33,11 @@ class Messenger {
         var returnData: Unmanaged<CFData>?
         let status = CFMessagePortSendRequest(remote, messageID, message.encode(), timeout, timeout, CFRunLoopMode.defaultMode.rawValue, &returnData)
         if status == kCFMessagePortSuccess, let data = returnData?.takeRetainedValue() as Data? {
+            if let response = try? JSONDecoder().decode([String: String].self, from: data),
+               response["error"] == "INVALID_HELPER_VERSION" {
+                throw ShareBoxError.helperNotRunning
+            }
+            
             return data
         } else {
             return nil

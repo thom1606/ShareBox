@@ -8,9 +8,18 @@
 import Foundation
 import UniformTypeIdentifiers
 
-struct MachMessage : Codable {
+class MachMessage : Codable {
     var type: MessageType
     var data: Data?
+    
+    let buildNumber: Int
+    
+    init(type: MessageType, data: Data? = nil) {
+        self.type = type
+        self.data = data
+        let myBuildNumber = Bundle.main.infoDictionary?["CFBundleVersion"] as? String
+        buildNumber = Int(myBuildNumber ?? "1") ?? 1
+    }
     
     enum MessageType: String, Codable {
         case fileUploadRequest
