@@ -51,12 +51,7 @@ class Utilities {
         // 1. Try in main app bundle (production)
         if let bundlePath = Bundle.main.path(forResource: "ShareBox.Helper", ofType: "app") {
             helperPath = bundlePath
-            print(bundlePath)
         }
-        // 2. Try in build products directory (development)
-//        else if let buildProductsPath = findHelperInBuildProducts() {
-//            helperPath = buildProductsPath
-//        }
         
         guard let helperPath = helperPath else {
             print("Helper app not found in bundle or build products, throwing...")
@@ -67,39 +62,5 @@ class Utilities {
         NSWorkspace.shared.open(URL(fileURLWithPath: helperPath))
         #endif
         
-    }
-
-    /// Find the Helper App in the build folder for local execution
-    static func findHelperInBuildProducts() -> String? {
-        // Get the main app's bundle path
-        let mainAppPath = Bundle.main.bundlePath
-        print("main path", mainAppPath)
-        // If running from an .appex, find the containing .app, then get its parent directory
-        if mainAppPath.hasSuffix(".appex") {
-            var url = URL(fileURLWithPath: mainAppPath)
-            // Now traverse up until we find a .app
-            while url.pathExtension != "app" && url.path != "/" {
-                url.deleteLastPathComponent()
-            }
-            if url.pathExtension == "app" {
-                // url is now .../ShareBox.app
-                let parentOfApp = url.deletingLastPathComponent()
-                let helperAppURL = parentOfApp.appendingPathComponent("ShareBox.Helper.app")
-                if FileManager.default.fileExists(atPath: helperAppURL.path) {
-                    return helperAppURL.path
-                }
-            }
-        }
-        
-        // In development, the helper should be in the same directory as the main app
-        let mainAppURL = URL(fileURLWithPath: mainAppPath)
-        let buildProductsDir = mainAppURL.deletingLastPathComponent()
-        let helperPath = buildProductsDir.appendingPathComponent("ShareBox.Helper.app")
-        
-        // Check if helper exists at this path
-        if FileManager.default.fileExists(atPath: helperPath.path) {
-            return helperPath.path
-        }
-        return nil
     }
 }

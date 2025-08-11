@@ -15,9 +15,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "8426D9452E49DD65008F6EB1"
-               BuildableName = "ShareBox.app"
-               BlueprintName = "ShareBox"
+               BlueprintIdentifier = "8426D95B2E49DD87008F6EB1"
+               BuildableName = "ShareBox.Helper.app"
+               BlueprintName = "ShareBox.Helper"
                ReferencedContainer = "container:ShareBox.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -44,9 +44,9 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "8426D9452E49DD65008F6EB1"
-            BuildableName = "ShareBox.app"
-            BlueprintName = "ShareBox"
+            BlueprintIdentifier = "8426D95B2E49DD87008F6EB1"
+            BuildableName = "ShareBox.Helper.app"
+            BlueprintName = "ShareBox.Helper"
             ReferencedContainer = "container:ShareBox.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -61,9 +61,9 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "8426D9452E49DD65008F6EB1"
-            BuildableName = "ShareBox.app"
-            BlueprintName = "ShareBox"
+            BlueprintIdentifier = "8426D95B2E49DD87008F6EB1"
+            BuildableName = "ShareBox.Helper.app"
+            BlueprintName = "ShareBox.Helper"
             ReferencedContainer = "container:ShareBox.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

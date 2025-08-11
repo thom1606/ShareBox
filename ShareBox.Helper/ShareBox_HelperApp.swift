@@ -27,7 +27,7 @@ struct ShareBox_HelperApp: App {
             
 //            self.messageListener = .init()
             
-//            #if RELEASE
+            #if RELEASE
             do {
                 if SMAppService.mainApp.status == .notFound {
                     try SMAppService.mainApp.register()
@@ -36,11 +36,9 @@ struct ShareBox_HelperApp: App {
             } catch {
                 generalLogger.warning("Could not register helper as login item: \(error)")
             }
-//            #endif
+            #endif
     }
     var body: some Scene {
-        WindowGroup {
-            ContentView()
-        }
+        Settings {}
     }
 }
