@@ -6,12 +6,16 @@
 //
 
 import SwiftUI
+import ServiceManagement
 
 @main
 struct ShareBoxApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .onAppear {
+                    try? Utilities.launchHelperApp()
+                }
         }
     }
 }
