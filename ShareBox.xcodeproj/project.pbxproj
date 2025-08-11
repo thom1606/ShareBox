@@ -69,6 +69,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Sources/.Shared/Constants.swift,
+				Sources/.Shared/Services/ApiService.swift,
 				Sources/.Shared/Types.swift,
 				Sources/.Shared/Utilities/Errors.swift,
 				Sources/.Shared/Utilities/Keychain.swift,

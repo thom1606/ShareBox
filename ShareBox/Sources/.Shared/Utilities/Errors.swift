@@ -13,4 +13,5 @@ enum ShareBoxError: Error {
     case helperNotRunning
     case noHelperInDevelopment
     case fileNotFound
+    case fileNotUploaded
 }

@@ -55,17 +55,21 @@ struct ShareBox_HelperApp: App {
         }
         #endif
         
+        #if DEBUG
         // For Development purposes, launch the UI from here
         DispatchQueue.main.async {
             UploadWindowController.shared.show(
                 items: [
-//                    .init(relative: "favicon.ico", absolute: "file:///Users/thomvandenbroek/Projects/Fooxly/account/packages/client/public/favicon.ico"),
+                    .init(relative: "favicon.ico", absolute: "file:///Users/thomvandenbroek/Projects/Fooxly/account/packages/client/public/favicon.ico", isFolder: false),
+                    .init(relative: "favicon.icon", absolute: "file:///Users/thomvandenbroek/Projects/Fooxly/account/packages/client/public/favicon.icon", isFolder: false),
 //                    .init(relative: "src", absolute: "file:///Users/thomvandenbroek/Projects/Fooxly/account/packages/client/src/"),
-                    .init(relative: "IMG_1776.JPG", absolute: "file:///Users/thomvandenbroek/Other/IMG_1776.JPG"),
-                    .init(relative: "IMG_1777.JPG", absolute: "file:///Users/thomvandenbroek/Other/IMG_1777.JPG")
+                    .init(relative: "test", absolute: "file:///Users/thomvandenbroek/Projects/TryOut/test/", isFolder: true)
+//                    .init(relative: "IMG_1776.JPG", absolute: "file:///Users/thomvandenbroek/Other/IMG_1776.JPG"),
+//                    .init(relative: "IMG_1777.JPG", absolute: "file:///Users/thomvandenbroek/Other/IMG_1777.JPG")
                 ]
             )
         }
+        #endif
     }
 
     var body: some Scene {

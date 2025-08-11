@@ -10,9 +10,9 @@ import AppKit
 import UniformTypeIdentifiers
 
 struct ItemPreview: View {
-    var path: String
+    var state: UploadViewModel
+    var item: FilePath
     var completed: Bool
-    var error: String?
     
     // Local properties
     private var icon: NSImage?
@@ -22,17 +22,17 @@ struct ItemPreview: View {
     
     @State private var showErrorPopover: Bool = false
 
-    init(path: String, completed: Bool = false, error: String? = nil) {
-        self.path = path
+    init(state: UploadViewModel, item: FilePath, completed: Bool = false) {
+        self.state = state
+        self.item = item
         self.completed = completed
-        self.error = error
 
         // Use URL to properly decode percent-encoded file paths
         let fileURL: URL
-        if let url = URL(string: path), url.isFileURL {
+        if let url = URL(string: item.absolute), url.isFileURL {
             fileURL = url
         } else {
-            fileURL = URL(fileURLWithPath: path)
+            fileURL = URL(fileURLWithPath: item.absolute)
         }
         name = fileURL.lastPathComponent
 
@@ -48,6 +48,21 @@ struct ItemPreview: View {
             imagePreview = nil
             icon = NSWorkspace.shared.icon(forFile: fileURL.path)
         }
+    }
+    
+    private var errors: [String: String] {
+        if let itemError = state.failedPaths[item.absolute] {
+            return [item.absolute: itemError]
+        } else if item.isFolder {
+            var res: [String: String] = [:]
+            for key in state.failedPaths.keys {
+                if key.hasPrefix(item.absolute) {
+                    res[URL(fileURLWithPath: key).lastPathComponent] = state.failedPaths[key]!
+                }
+            }
+            return res
+        }
+        return [:]
     }
 
     var body: some View {
@@ -76,10 +91,10 @@ struct ItemPreview: View {
                     .foregroundStyle(.white)
                     .padding(.horizontal, 3)
             }
-            .opacity(completed && error == nil ? 1 : 0.4)
+            .opacity(completed && errors.isEmpty ? 1 : 0.4)
             
             // Failed overlay
-            if error != nil {
+            if !errors.isEmpty {
                 ZStack(alignment: .center) {
                     Image(systemName: "exclamationmark.triangle")
                         .resizable()
@@ -91,15 +106,33 @@ struct ItemPreview: View {
                         VStack(alignment: .leading, spacing: 0) {
                             Text("Upload failed")
                                 .font(.headline)
-                            Text("Your item named \"\(name)\" has failed to upload and gave the following error:")
-                                .multilineTextAlignment(.leading)
-                                .font(.body)
-                                .padding(.top, 3)
-                                .padding(.bottom, 5)
-                                .foregroundStyle(.primary)
-                            Text(error!)
-                                .font(.body)
-                                .foregroundStyle(.tertiary)
+                            Group {
+                                if item.isFolder {
+                                    Text("One or more files in your folder named \"\(name)\" has failed to upload and gave the following errors:")
+                                } else {
+                                    Text("Your item named \"\(name)\" has failed to upload and gave the following error:")
+                                }
+                            }
+                            .multilineTextAlignment(.leading)
+                            .font(.body)
+                            .padding(.top, 3)
+                            .padding(.bottom, 8)
+                            .foregroundStyle(.secondary)
+                            VStack(alignment: .leading) {
+                                ForEach(Array(errors.keys), id: \.self) { key in
+                                    if item.isFolder {
+                                        VStack(alignment: .leading, spacing: 0) {
+                                            Text(key)
+                                                .foregroundStyle(.primary)
+                                            Text(errors[key]!)
+                                        }
+                                    } else {
+                                        Text(errors[key]!)
+                                    }
+                                }
+                            }
+                            .font(.body)
+                            .foregroundStyle(.tertiary)
                         }
                         .frame(minWidth: 200, idealWidth: 200, maxWidth: 200)
                         .padding(10)
@@ -107,14 +140,13 @@ struct ItemPreview: View {
                 .onHover { isOver in
                     showErrorPopover = isOver
                 }
-                .frame(maxWidth: .infinity)
-                .frame(height: 40)
+                .frame(width: 67, height: 40)
             }
         }
-        .frame(maxWidth: .infinity)
+        .frame(width: 67)
     }
 }
 
 #Preview {
-    ItemPreview(path: "file:///Users/thomvandenbroek/Projects/TryOut/SwiftyXPC/Example%20App/")
+    ItemPreview(state: .init(), item: .init(relative: "Example App", absolute: "file:///Users/thomvandenbroek/Projects/TryOut/SwiftyXPC/Example%20App/", isFolder: true))
 }

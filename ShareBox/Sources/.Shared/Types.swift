@@ -62,6 +62,7 @@ struct FileUploadBody: MachData {
 struct FilePath: Codable, Hashable {
     var relative: String
     var absolute: String
+    var isFolder: Bool
 }
 
 extension FilePath {
