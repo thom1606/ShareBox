@@ -17,7 +17,7 @@ struct SettingsView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 HStack(spacing: 0) {
-                    Text("Share your files easily with one click. Your shared links will be available for a set time. After this, everything will be removed forever.")
+                    Text("Share your files easily with one click. Your shared links will be available for a set time. After this, everything will be removed forever. For support [open an issue](https://github.com/thom1606/ShareBox/issues/new?labels=support).")
                         .foregroundStyle(.secondary)
                         .font(.body)
                     Spacer(minLength: 0)
