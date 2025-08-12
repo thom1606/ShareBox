@@ -9,6 +9,12 @@ import Foundation
 import UserNotifications
 
 final class Notifications {
+    public static func getStatus(completion: @escaping (UNAuthorizationStatus) -> Void) {
+        UNUserNotificationCenter.current().getNotificationSettings { settings in
+            completion(settings.authorizationStatus)
+        }
+    }
+    
     public static func requestAccess() {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert]) { _, _ in }
     }

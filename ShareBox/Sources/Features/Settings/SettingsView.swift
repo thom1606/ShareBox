@@ -12,6 +12,9 @@ struct SettingsView: View {
     @AppStorage(Constants.Settings.storagePrefKey, store: userDefaults) private var selectedDuration = "3_days"
     @AppStorage(Constants.Settings.passwordPrefKey, store: userDefaults) private var groupsPassword = ""
     @AppStorage(Constants.Settings.hiddenFilesPrefKey, store: userDefaults) private var hiddenFilesPrefKey = false
+    
+    @State private var isNewUpdateAvailable = false
+    @State private var showFiles = false
 
     var body: some View {
         ScrollView {
@@ -22,8 +25,9 @@ struct SettingsView: View {
                         .font(.body)
                     Spacer(minLength: 0)
                 }
-                // TODO: add shared file list
-                Button(action: {}, label: {
+                Button(action: {
+                    showFiles.toggle()
+                }, label: {
                     Text("View my Shared Files")
                 })
                 .buttonStyle(MainButtonStyle(fullWidth: true))
@@ -43,17 +47,18 @@ struct SettingsView: View {
                         .font(.body)
                 }
                 LabeledTextFieldView(label: "Password", placeholder: "My Password", text: $groupsPassword)
-                SeparatorView()
-                VStack {
-                    Text("There is a new update available for ShareBox! Please download the latest version to enjoy new features and improvements.")
-                        .foregroundStyle(.secondary)
-                        .font(.body)
-                    // TODO: link
-                    Button(action: {}, label: {
-                        Text("New Update Available")
-                    })
-                    .buttonStyle(MainButtonStyle(fullWidth: true))
+                
+                if isNewUpdateAvailable {
+                    SeparatorView()
+                    VStack(spacing: 10) {
+                        Text("There is a new update available for ShareBox! Please download the latest version to enjoy new features and improvements.")
+                            .foregroundStyle(.secondary)
+                            .font(.body)
+                        Link("New Update Available", destination: URL(string: "https://sharebox.thomvandenbroek.com/download")!)
+                            .buttonStyle(MainButtonStyle(fullWidth: true))
+                    }
                 }
+
                 Rectangle()
                     .fill(.clear)
                     .frame(width: 30, height: 24)
@@ -62,6 +67,38 @@ struct SettingsView: View {
             .padding(.vertical, 8)
         }
         .clipped()
+        .onAppear(perform: load)
+        .sheet(isPresented: $showFiles) {
+            BoxesView(showFiles: $showFiles)
+        }
+    }
+    
+    /// Check for available updates
+    private func checkForUpdates() {
+        // get app version from Info.plist
+        guard let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String else {
+            print("Failed to get app version")
+            return
+        }
+        let encodedAppVersion = appVersion.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? appVersion
+        let updateURL = URL(string: "https://sharebox.thomvandenbroek.com/api/update?version=\(encodedAppVersion)")!
+        URLSession.shared.dataTask(with: updateURL) { _, response, error in
+            guard error == nil else {
+                print("Failed to check for updates: \(error?.localizedDescription ?? "Unknown error")")
+                return
+            }
+            // Check if the current version is the latest available
+            if let response = response as? HTTPURLResponse, response.statusCode == 200 {
+                DispatchQueue.main.async {
+                    isNewUpdateAvailable = true
+                }
+            }
+        }.resume()
+    }
+    
+    private func load() {
+        // Check for updates in ShareBox
+        checkForUpdates()
     }
 }
 

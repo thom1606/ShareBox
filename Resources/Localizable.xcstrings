@@ -1,19 +1,47 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "%lld Files, %lld Downloads, Expires %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld Files, %2$lld Downloads, Expires %3$@"
+          }
+        }
+      }
+    },
     "An upload is already active, please wait for it to finish." : {
+
+    },
+    "Content" : {
+
+    },
+    "Continue" : {
 
     },
     "Do you wish to include hidden files from your folders to your upload. Please be aware that hidden files could be sensitive and some should not be shared." : {
 
     },
+    "For the price of **€2,99** we would like to provide you with **250GB** of free cloud storage. With upgrade options coming in the future." : {
+
+    },
+    "Get started" : {
+
+    },
+    "Get your own box in the cloud, share files and folders with anyone, anywhere." : {
+
+    },
     "Include Hidden Files" : {
+
+    },
+    "Let's go!" : {
 
     },
     "My Password" : {
 
     },
-    "New Update Available" : {
+    "New update available" : {
 
     },
     "No files or folders selected? Please try again after selecting items." : {
@@ -28,19 +56,40 @@
     "Password" : {
 
     },
+    "Ready to Start?" : {
+
+    },
+    "Request access" : {
+
+    },
     "Share your files easily with one click. Your shared links will be available for a set time. After this, everything will be removed forever. For support [open an issue](https://github.com/thom1606/ShareBox/issues/new?labels=support)." : {
+
+    },
+    "Shared Boxes" : {
 
     },
     "Sign in to ShareBox to get started sharing files easy and quickly." : {
 
     },
+    "Sign me up!" : {
+
+    },
     "Something went wrong internally, please try again." : {
+
+    },
+    "Start with Sharing!" : {
+
+    },
+    "Stay Informed" : {
 
     },
     "Store Duration" : {
 
     },
     "There is a new update available for ShareBox! Please download the latest version to enjoy new features and improvements." : {
+
+    },
+    "To ensure you are always up to date with your upload progress, we would like to send you notifications when it's essential for you. No promotions or spam." : {
 
     },
     "Upload failed" : {
@@ -52,7 +101,16 @@
     "View my Shared Files" : {
 
     },
+    "We encountered a problem whilst requestion notification permissions. Would you like to continue without?" : {
+
+    },
     "Welcome" : {
+
+    },
+    "Welcome to ShareBox" : {
+
+    },
+    "You are all set to begin your journey with ShareBox! Start by selecting files in Finder and selecting the **\"Upload to ShareBox\"** option to start." : {
 
     },
     "Your item named \"%@\" has failed to upload and gave the following error:" : {

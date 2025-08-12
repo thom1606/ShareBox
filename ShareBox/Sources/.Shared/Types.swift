@@ -90,5 +90,10 @@ struct DetailedFile: Codable {
     var paths: FilePath
 }
 
-
-
+struct SharedGroup: Codable, Identifiable {
+    var id: String
+    var downloadCount: Int
+    var fileCount: Int
+    var expiresAt: String
+    var url: String
+}
