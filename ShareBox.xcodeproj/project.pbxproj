@@ -72,6 +72,7 @@
 				Sources/.Shared/Services/ApiService.swift,
 				Sources/.Shared/Types.swift,
 				Sources/.Shared/Utilities/Errors.swift,
+				Sources/.Shared/Utilities/Files.swift,
 				Sources/.Shared/Utilities/Keychain.swift,
 				Sources/.Shared/Utilities/Logs.swift,
 			);
@@ -90,6 +91,7 @@
 				Sources/.Shared/Constants.swift,
 				Sources/.Shared/Types.swift,
 				Sources/.Shared/Utilities/Errors.swift,
+				Sources/.Shared/Utilities/Files.swift,
 				Sources/.Shared/Utilities/Logs.swift,
 				Sources/.Shared/Utilities/Messenger.swift,
 				Sources/.Shared/Utilities/Utilties.swift,

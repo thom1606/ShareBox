@@ -53,7 +53,13 @@ class FinderSync: FIFinderSync {
 
         // Create request for Mach
         let req: FileUploadBody = .init(
-            items: items.map { .init(relative: $0.absoluteString.replacingOccurrences(of: target.absoluteString, with: ""), absolute: $0.absoluteString) }
+            items: items.map {
+                .init(
+                    relative: $0.absoluteString.replacingOccurrences(of: target.absoluteString, with: ""),
+                    absolute: $0.absoluteString,
+                    isFolder: Files.isDirectory(path: $0)
+                )
+            }
         )
         do {
             finderLogger.debug("Request for mach created, sending packet to helper...")

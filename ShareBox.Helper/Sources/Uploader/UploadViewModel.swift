@@ -39,10 +39,13 @@ import SwiftUI
             
             dataLogger.debug("Starting upload...")
 
+            let password = userDefaults.string(forKey: Constants.Settings.passwordPrefKey)
+            let storageDuration = userDefaults.string(forKey: Constants.Settings.storagePrefKey) ?? "3_days"
+
             // Start creating the group
             let createdGroupResponse: CreateGroupResponse = try await self.apiService.post(endpoint: "/api/groups", parameters: [
-                // TODO: link user password
-                "password": nil,
+                "password": password,
+                "expires_in": storageDuration
             ])
 
             dataLogger.debug("Created group with id '\(createdGroupResponse.groupId)' with url '\(createdGroupResponse.url)'")
@@ -56,11 +59,10 @@ import SwiftUI
                 let url = URL(filePath: item.absolute)
 
                 // Treat .app and .appex bundles as files, not folders
-                let lowercasedPath = url.path.lowercased()
-                let isBundleFile = lowercasedPath.hasSuffix(".app") || lowercasedPath.hasSuffix(".appex") || lowercasedPath.hasSuffix(".xpc")
+                let isDir = Files.isDirectory(path: url)
                 
 
-                if url.hasDirectoryPath && !isBundleFile {
+                if isDir {
                     // Remove the last folder from the absolutePath
                     let parentUrl = url.deletingLastPathComponent()
                     let basePath = parentUrl.path
@@ -107,7 +109,7 @@ import SwiftUI
                     
                     let shouldPutOnS3String: String = (Bundle.main.object(forInfoDictionaryKey: "UPLOAD_S3") as? String ?? "true")
                     if let shouldPutOnS3 = Bool(shouldPutOnS3String), !shouldPutOnS3 {
-                        dataLogger.debug("Skipping upload to R2 as it is disabled by environment.")
+                        dataLogger.debug("Skipping upload to S3 as it is disabled by environment.")
                         uploadProgress += perFileProgress
                         completedPaths.append(currentItem.absolute)
                         
@@ -302,7 +304,11 @@ import SwiftUI
     private func getFiles(basePath: String, url: URL) -> [FilePath] {
         var files: [FilePath] = []
         let fileManager = FileManager.default
-        let contents = try? fileManager.contentsOfDirectory(at: url, includingPropertiesForKeys: nil, options: [.skipsHiddenFiles])
+        var options: FileManager.DirectoryEnumerationOptions = []
+        if !userDefaults.bool(forKey: Constants.Settings.hiddenFilesPrefKey) {
+            options = [.skipsHiddenFiles]
+        }
+        let contents = try? fileManager.contentsOfDirectory(at: url, includingPropertiesForKeys: nil, options: options)
         for content in contents ?? [] {
             let lowercasedPath = content.path.lowercased()
             let isBundleFile = lowercasedPath.hasSuffix(".app") || lowercasedPath.hasSuffix(".appex") || lowercasedPath.hasSuffix(".xpc")
