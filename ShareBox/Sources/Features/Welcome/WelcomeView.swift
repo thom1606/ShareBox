@@ -22,11 +22,11 @@ struct WelcomeView<C: View>: View {
             }
             VStack {
                 Spacer()
-                Text("Welcome")
+                Text("Welcome!")
                     .foregroundStyle(.primary)
                     .font(.system(size: 36, weight: .bold))
                     .fontDesign(.serif)
-                Text("Sign in to ShareBox to get started sharing files easy and quickly.")
+                Text("Sign in to ShareBox to start sharing files easily and quickly.")
                     .foregroundStyle(.secondary)
                     .font(.title3)
                     .multilineTextAlignment(.center)

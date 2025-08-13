@@ -62,7 +62,7 @@ class MessageListener {
                     }
                 }
             } catch {
-                print("Failed to decode MachMessage: \(error)")
+                generalLogger.error("Failed to decode MachMessage: \(error)")
             }
 
             return Unmanaged.passRetained(data)

@@ -22,7 +22,7 @@ struct SettingsView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 HStack(spacing: 0) {
-                    Text("Share your files easily with one click. Your shared links will be available for a set time. After this, everything will be removed forever. For support [open an issue](https://github.com/thom1606/ShareBox/issues/new?labels=support).")
+                    Text("Easily share your files with a single click. Your shared links will be available for a limited time, after which they will be permanently removed. For support, please [open an issue](https://github.com/thom1606/ShareBox/issues/new?labels=support).")
                         .foregroundStyle(.secondary)
                         .font(.body)
                     Spacer(minLength: 0)
@@ -44,7 +44,7 @@ struct SettingsView: View {
                 ])
                 VStack {
                     CheckboxView(label: "Include Hidden Files", checked: $hiddenFilesPrefKey)
-                    Text("Do you wish to include hidden files from your folders to your upload? Please be aware that hidden files could be sensitive and some should not be shared.")
+                    Text("Would you like to include hidden files in your uploads? Please note that hidden files may contain sensitive information and should be shared with caution.")
                         .foregroundStyle(.secondary)
                         .font(.body)
                 }
@@ -53,7 +53,7 @@ struct SettingsView: View {
 
                 VStack(spacing: 10) {
                     HStack(spacing: 0) {
-                        Text("You can manage all your billing and subscription details here.")
+                        Text("Manage all your billing and subscription details here.")
                             .foregroundStyle(.secondary)
                             .font(.body)
                         Spacer(minLength: 0)
@@ -72,7 +72,7 @@ struct SettingsView: View {
                 if isNewUpdateAvailable {
                     SeparatorView()
                     VStack(spacing: 10) {
-                        Text("There is a new update available for ShareBox! Please download the latest version to enjoy new features and improvements.")
+                        Text("A new update for ShareBox is available! Download the latest version to enjoy new features and improvements.")
                             .foregroundStyle(.secondary)
                             .font(.body)
                         Link("New Update Available", destination: URL(string: "https://sharebox.thomvandenbroek.com/download")!)

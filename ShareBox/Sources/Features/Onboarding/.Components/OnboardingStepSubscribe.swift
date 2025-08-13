@@ -1,5 +1,4 @@
 //
-
 //  OnboardingStepSubscribe.swift
 //  ShareBox
 //
@@ -67,9 +66,9 @@ struct OnboardingStepSubscribe: View {
     }
 
     var description: LocalizedStringKey {
-        if errored { return LocalizedStringKey("Your payment was not received correctly. Would you please try again?") }
-        if processing { return LocalizedStringKey("Your payment is currently processing. Please wait a few minutes. If you do not see a confirmation in a few minutes, please [contact me](mailto:sharebox@thomvandenbroek.com).") }
-        return LocalizedStringKey("For the price of **€2,99** we would like to provide you with **250GB** of free cloud storage. With upgrade options coming in the future.")
+        if errored { return LocalizedStringKey("We couldn't process your payment. Could you please try again?") }
+        if processing { return LocalizedStringKey("Your payment is being processed. Please wait a few minutes. If you don't receive a confirmation soon, please [contact us](mailto:sharebox@thomvandenbroek.com).") }
+        return LocalizedStringKey("For just **€2.99**, enjoy **250GB** of cloud storage. Upgrade options will be available soon.")
     }
 
     var buttonText: LocalizedStringKey {

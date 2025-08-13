@@ -40,11 +40,11 @@ struct OnboardingStepFinal: View {
                         .padding(.bottom, 64)
                 }
             }
-            Text("Ready to Start?")
+            Text("Ready to Begin?")
                 .foregroundStyle(Color(NSColor.labelColor))
                 .font(.title.weight(.bold))
                 .padding(.bottom, 2)
-            Text("You are all set to begin your journey with ShareBox! Start by selecting files in Finder and selecting the **\"Upload to ShareBox\"** option to start.")
+            Text("You're all set to start your journey with ShareBox! Begin by selecting files in Finder and choosing the **\"Upload to ShareBox\"** option.")
                 .foregroundStyle(Color(NSColor.secondaryLabelColor))
                 .font(.title3)
                 .padding(.bottom, 12)

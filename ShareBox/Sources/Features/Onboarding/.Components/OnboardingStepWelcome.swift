@@ -31,16 +31,16 @@ struct OnboardingStepWelcome: View {
                         .padding(.bottom, 64)
                 }
             }
-            Text("Welcome to ShareBox")
+            Text("Welcome to ShareBox!")
                 .foregroundStyle(Color(NSColor.labelColor))
                 .font(.title.weight(.bold))
                 .padding(.bottom, 2)
-            Text("Get your own box in the cloud, share files and folders with anyone, anywhere.")
+            Text("Create your own cloud box and share files and folders with anyone, anywhere.")
                 .foregroundStyle(Color(NSColor.secondaryLabelColor))
                 .font(.title3)
                 .padding(.bottom, 12)
             Button(action: handleNext) {
-                Text("Get started")
+                Text("Let's Get Started")
             }
             .buttonStyle(MainButtonStyle())
         }

@@ -21,7 +21,7 @@ class Utilities {
     /// Launch the Helper app if it is not already opened
     static func launchHelperApp() throws {
         #if DEBUG
-        print("For development the Helper App should be started manually, please do so.")
+        print("For development the ShareBox Helper should be started manually, please do so.")
         throw ShareBoxError.noHelperInDevelopment
         #else
         // Check if helper is already running
@@ -31,7 +31,7 @@ class Utilities {
         }
 
         if helperRunning {
-            print("Helper app is already running healthy, skipping this launch...")
+            print("ShareBox Helper is already running healthy, skipping this launch...")
             return
         }
 
@@ -45,9 +45,6 @@ class Utilities {
 
         // Try in parent app's Resources (Finder Sync .appex)
         if helperPath == nil {
-            // For .appex, Bundle.main is the extension bundle, so go up to the main app bundle
-            // The extension bundle is typically at .../YourApp.app/Contents/PlugIns/YourExtension.appex
-            // The helper is at .../YourApp.app/Contents/Resources/ShareBox.Helper.app
             let extensionBundleURL = Bundle.main.bundleURL
             let appBundleURL = extensionBundleURL.deletingLastPathComponent().deletingLastPathComponent()
             let resourcesURL = appBundleURL.appendingPathComponent("Resources")
@@ -58,7 +55,7 @@ class Utilities {
         }
 
         guard let helperPath = helperPath else {
-            print("Helper app not found in bundle or build products, throwing...")
+            print("ShareBox Helper not found in bundle or build products, throwing...")
             throw ShareBoxError.helperNotInstalled
         }
 

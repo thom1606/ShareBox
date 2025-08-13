@@ -24,7 +24,7 @@ struct BoxesView: View {
                 .buttonStyle(.plain)
                 HStack {
                     Spacer()
-                    Text("Shared Boxes")
+                    Text("Your Shared Boxes")
                     Spacer()
                 }
             }

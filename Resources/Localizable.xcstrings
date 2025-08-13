@@ -1,38 +1,68 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "%lld Files, %lld Downloads, Expires %@" : {
+    "%lld files, %lld downloads, expires on %@" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "%1$lld Files, %2$lld Downloads, Expires %3$@"
+            "value" : "%1$lld files, %2$lld downloads, expires on %3$@"
           }
         }
       }
     },
+    "A new update for ShareBox is available! Download the latest version to enjoy new features and improvements." : {
+
+    },
+    "An unknown error occurred while uploading your files. Please try again later." : {
+
+    },
     "An upload is already active, please wait for it to finish." : {
+
+    },
+    "Cancel" : {
 
     },
     "Continue" : {
 
     },
-    "Do you wish to include hidden files from your folders to your upload? Please be aware that hidden files could be sensitive and some should not be shared." : {
+    "Create your own cloud box and share files and folders with anyone, anywhere." : {
 
     },
-    "For the price of **€2,99** we would like to provide you with **250GB** of free cloud storage. With upgrade options coming in the future." : {
+    "Easily share your files with a single click. Your shared links will be available for a limited time, after which they will be permanently removed. For support, please [open an issue](https://github.com/thom1606/ShareBox/issues/new?labels=support)." : {
 
     },
-    "Get started" : {
+    "Error 1001: Unknown API error" : {
 
     },
-    "Get your own box in the cloud, share files and folders with anyone, anywhere." : {
+    "Error 1002: File size is zero" : {
 
+    },
+    "Error 1003: File size is too big" : {
+
+    },
+    "Error 1004: No pre-signed url available" : {
+
+    },
+    "Error 1005: Uploading to S3 failed" : {
+
+    },
+    "For just **€2.99**, enjoy **250GB** of cloud storage. Upgrade options will be available soon." : {
+
+    },
+    "Hey! I want to share some files with you. You can download them from my ShareBox: %@" : {
+      "comment" : "Clipboard message"
     },
     "Include Hidden Files" : {
 
     },
+    "Let's Get Started" : {
+
+    },
     "Let's go!" : {
+
+    },
+    "Manage all your billing and subscription details here." : {
 
     },
     "Manage my Billing" : {
@@ -45,12 +75,18 @@
 
     },
     "No files or folders selected? Please try again after selecting items." : {
-      "comment" : "If ShareBox Ever get's triggered without files or folders selected."
+      "comment" : "If ShareBox ever gets triggered without files or folders selected."
     },
-    "One or more files in your folder named \"%@\" has failed to upload and gave the following errors:" : {
+    "Ok" : {
+
+    },
+    "One or more files in your folder named \"%@\" have failed to upload and gave the following errors:" : {
 
     },
     "Oops!" : {
+
+    },
+    "Open" : {
 
     },
     "Password" : {
@@ -59,19 +95,16 @@
     "Payment processing!" : {
 
     },
-    "Ready to Start?" : {
+    "Ready to Begin?" : {
 
     },
     "Request access" : {
 
     },
-    "Share your files easily with one click. Your shared links will be available for a set time. After this, everything will be removed forever. For support [open an issue](https://github.com/thom1606/ShareBox/issues/new?labels=support)." : {
+    "ShareBox Created" : {
 
     },
-    "Shared Boxes" : {
-
-    },
-    "Sign in to ShareBox to get started sharing files easy and quickly." : {
+    "Sign in to ShareBox to start sharing files easily and quickly." : {
 
     },
     "Sign me up!" : {
@@ -89,46 +122,75 @@
     "Store Duration" : {
 
     },
-    "There is a new update available for ShareBox! Please download the latest version to enjoy new features and improvements." : {
-
-    },
-    "To ensure you are always up to date with your upload progress, we would like to send you notifications when it's essential for you. No promotions or spam." : {
+    "To keep you updated on your upload progress, we would like to send you notifications when necessary. No promotions or spam." : {
 
     },
     "Try again" : {
 
     },
+    "Unauthorized" : {
+
+    },
     "Upload failed" : {
 
     },
+    "Upload Failed" : {
+
+    },
     "Upload to ShareBox" : {
-      "comment" : "Finder Context Menu Label"
+      "comment" : "Finder Context Menu Label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Upload to ShareBox"
+          }
+        }
+      }
     },
     "View my Shared Files" : {
 
     },
-    "We encountered a problem whilst requestion notification permissions. Would you like to continue without?" : {
+    "We couldn't process your payment. Could you please try again?" : {
 
     },
-    "Welcome" : {
+    "We encountered a problem while requesting notification permissions. Would you like to continue without them?" : {
 
     },
-    "Welcome to ShareBox" : {
+    "Welcome to ShareBox!" : {
 
     },
-    "You are all set to begin your journey with ShareBox! Start by selecting files in Finder and selecting the **\"Upload to ShareBox\"** option to start." : {
+    "Welcome!" : {
 
     },
-    "You can manage all your billing and subscription details here." : {
+    "Would you like to include hidden files in your uploads? Please note that hidden files may contain sensitive information and should be shared with caution." : {
+
+    },
+    "You are not signed in. Please open ShareBox and sign in to upload files." : {
+
+    },
+    "You do not have an active subscription. Please upgrade to upload your files." : {
+
+    },
+    "You have reached the maximum number of boxes you can create at this time. Please wait for some boxes to expire before creating more." : {
+
+    },
+    "You have reached your monthly upload limit. Please wait until the next billing cycle to upload additional files." : {
+
+    },
+    "You're all set to start your journey with ShareBox! Begin by selecting files in Finder and choosing the **\"Upload to ShareBox\"** option." : {
+
+    },
+    "Your files have been uploaded, and the link is copied to your clipboard!" : {
 
     },
     "Your item named \"%@\" has failed to upload and gave the following error:" : {
 
     },
-    "Your payment is currently processing. Please wait a few minutes. If you do not see a confirmation in a few minutes, please [contact me](mailto:sharebox@thomvandenbroek.com)." : {
+    "Your payment is being processed. Please wait a few minutes. If you don't receive a confirmation soon, please [contact us](mailto:sharebox@thomvandenbroek.com)." : {
 
     },
-    "Your payment was not received correctly. Would you please try again?" : {
+    "Your Shared Boxes" : {
 
     }
   },

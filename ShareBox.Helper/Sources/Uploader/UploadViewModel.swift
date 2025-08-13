@@ -12,7 +12,7 @@ import SwiftUI
     private let apiService = ApiService()
 
     var items: [FilePath] = []
-    // If the whole window should be off screen
+    // Indicates if the entire window should be hidden
     var hidden: Bool = true
     // How far out the notch should be visible, number between 0 and 1
     var notchPercentage: CGFloat = 0
@@ -26,6 +26,7 @@ import SwiftUI
     var completedPaths: [String] = []
     var failedPaths: [String: String] = [:]
 
+    // TODO: clean up code
     public func handleAppear(_ items: [FilePath]) async { // swiftlint:disable:this cyclomatic_complexity function_body_length superfluous_disable_command
         self.items = items
         SharedValues.isProcessing = true
@@ -162,15 +163,15 @@ import SwiftUI
 
                     switch apiError {
                     case "FILE_SIZE_ZERO":
-                        failedPaths[absolutePath] = "Error 1002: File size is zero"
+                        failedPaths[absolutePath] = String(localized: "Error 1002: File size is zero")
                     case "FILE_SIZE_TOO_LARGE":
-                        failedPaths[absolutePath] = "Error 1003: File size is to big"
+                        failedPaths[absolutePath] = String(localized: "Error 1003: File size is too big")
                     case "NO_PRESIGNED_URL":
-                        failedPaths[absolutePath] = "Error 1004: No pre-signed url available"
+                        failedPaths[absolutePath] = String(localized: "Error 1004: No pre-signed url available")
                     case "UPLOAD_S3_FAILED":
-                        failedPaths[absolutePath] = "Error 1005: Uploading to S3 failed"
+                        failedPaths[absolutePath] = String(localized: "Error 1005: Uploading to S3 failed")
                     default:
-                        failedPaths[absolutePath] = "Error 1001: Unknown API error"
+                        failedPaths[absolutePath] = String(localized: "Error 1001: Unknown API error")
                     }
                     completedPaths.append(absolutePath)
                     uploadProgress += perFileProgress
@@ -191,11 +192,11 @@ import SwiftUI
 
             let pasteboard = NSPasteboard.general
             pasteboard.clearContents()
-            pasteboard.setString(NSLocalizedString("Hey! I want to share some files with you. You can download them from my ShareBox: \(createdGroupResponse.url)", comment: "Clipboard message"), forType: .string)
+            pasteboard.setString(String(localized: "Hey! I want to share some files with you. You can download them from my ShareBox: \(createdGroupResponse.url)", comment: "Clipboard message"), forType: .string)
 
             Notifications.show(
-                title: "ShareBox Created",
-                body: "Your files have been uploaded and the link is copied to your clipboard!"
+                title: String(localized: "ShareBox Created"),
+                body: String(localized: "Your files have been uploaded, and the link is copied to your clipboard!")
             )
 
             try? await Task.sleep(for: .milliseconds(3000))
@@ -210,11 +211,11 @@ import SwiftUI
             if let apiError = error as? APIError, case .unauthorized = apiError {
                 self.showFailedOverlay = true
                 let alert = NSAlert()
-                alert.messageText = "Unauthorized"
-                alert.informativeText = "You are currently not signed in, please open ShareBox and sign in to upload files."
+                alert.messageText = String(localized: "Unauthorized")
+                alert.informativeText = String(localized: "You are not signed in. Please open ShareBox and sign in to upload files.")
                 alert.alertStyle = .warning
-                alert.addButton(withTitle: "Open")
-                alert.addButton(withTitle: "Cancel")
+                alert.addButton(withTitle: String(localized: "Open"))
+                alert.addButton(withTitle: String(localized: "Cancel"))
                 alert.window.center()
                 alert.window.level = .floating
                 alert.window.makeKeyAndOrderFront(nil)
@@ -228,10 +229,10 @@ import SwiftUI
                 case "GROUP_LIMIT_REACHED":
                     self.showFailedOverlay = true
                     let alert = NSAlert()
-                    alert.messageText = "Upload Failed"
-                    alert.informativeText = "You have reached the maximum amount of boxes you can create at this time. Please wait for some of your boxes to expire to create more."
+                    alert.messageText = String(localized: "Upload Failed")
+                    alert.informativeText = String(localized: "You have reached the maximum number of boxes you can create at this time. Please wait for some boxes to expire before creating more.")
                     alert.alertStyle = .warning
-                    alert.addButton(withTitle: "Ok")
+                    alert.addButton(withTitle: String(localized: "Ok"))
                     alert.window.center()
                     alert.window.level = .floating
                     alert.window.makeKeyAndOrderFront(nil)
@@ -240,10 +241,10 @@ import SwiftUI
                 case "FILES_SIZE_TOO_LARGE":
                     self.showFailedOverlay = true
                     let alert = NSAlert()
-                    alert.messageText = "Upload Failed"
-                    alert.informativeText = "You have reached your monthly upload limit. Please wait until the next billing cycle to upload more files."
+                    alert.messageText = String(localized: "Upload Failed")
+                    alert.informativeText = String(localized: "You have reached your monthly upload limit. Please wait until the next billing cycle to upload additional files.")
                     alert.alertStyle = .warning
-                    alert.addButton(withTitle: "Ok")
+                    alert.addButton(withTitle: String(localized: "Ok"))
                     alert.window.center()
                     alert.window.level = .floating
                     alert.window.makeKeyAndOrderFront(nil)
@@ -252,11 +253,11 @@ import SwiftUI
                 case "SUBSCRIPTION_NOT_FOUND":
                     self.showFailedOverlay = true
                     let alert = NSAlert()
-                    alert.messageText = "Upload Failed"
-                    alert.informativeText = "You do not have an active subscription at this time. Please upgrade to a subscription to upload your files."
+                    alert.messageText = String(localized: "Upload Failed")
+                    alert.informativeText = String(localized: "You do not have an active subscription. Please upgrade to upload your files.")
                     alert.alertStyle = .warning
-                    alert.addButton(withTitle: "Open")
-                    alert.addButton(withTitle: "Cancel")
+                    alert.addButton(withTitle: String(localized: "Open"))
+                    alert.addButton(withTitle: String(localized: "Cancel"))
                     alert.window.center()
                     alert.window.level = .floating
                     alert.window.makeKeyAndOrderFront(nil)
@@ -268,10 +269,10 @@ import SwiftUI
                 default:
                     self.showFailedOverlay = true
                     let alert = NSAlert()
-                    alert.messageText = "Upload Failed"
-                    alert.informativeText = "An unknown error occured whist uploading your files. Please try again later."
+                    alert.messageText = String(localized: "Upload Failed")
+                    alert.informativeText = String(localized: "An unknown error occurred while uploading your files. Please try again later.")
                     alert.alertStyle = .warning
-                    alert.addButton(withTitle: "Ok")
+                    alert.addButton(withTitle: String(localized: "Ok"))
                     alert.window.center()
                     alert.window.level = .floating
                     alert.window.makeKeyAndOrderFront(nil)
@@ -281,10 +282,10 @@ import SwiftUI
             } else {
                 self.showFailedOverlay = true
                 let alert = NSAlert()
-                alert.messageText = "Upload Failed"
-                alert.informativeText = "An unknown error occured whist uploading your files. Please try again later."
+                alert.messageText = String(localized: "Upload Failed")
+                alert.informativeText = String(localized: "An unknown error occurred while uploading your files. Please try again later.")
                 alert.alertStyle = .warning
-                alert.addButton(withTitle: "Ok")
+                alert.addButton(withTitle: String(localized: "Ok"))
                 alert.window.center()
                 alert.window.level = .floating
                 alert.window.makeKeyAndOrderFront(nil)

@@ -38,7 +38,7 @@ class FinderSync: FIFinderSync {
         guard let items = FIFinderSyncController.default().selectedItemURLs(), let target = FIFinderSyncController.default().targetedURL() else {
             Utilities.showNotification(
                 title: NSLocalizedString("Oops!", comment: ""),
-                body: NSLocalizedString("No files or folders selected? Please try again after selecting items.", comment: "If ShareBox Ever get's triggered without files or folders selected.")
+                body: NSLocalizedString("No files or folders selected? Please try again after selecting items.", comment: "If ShareBox ever gets triggered without files or folders selected.")
             )
             finderLogger.warning("ShareBox Upload was triggered without any files or folders selected. This should never be the case.")
             return
@@ -72,7 +72,7 @@ class FinderSync: FIFinderSync {
                         title: NSLocalizedString("Oops!", comment: ""),
                         body: NSLocalizedString("An upload is already active, please wait for it to finish.", comment: "")
                     )
-                    finderLogger.warning("Another ShareBoxis already active, user should try again after.")
+                    finderLogger.warning("Another ShareBox is already active, user should try again after.")
                     return
                 }
             }

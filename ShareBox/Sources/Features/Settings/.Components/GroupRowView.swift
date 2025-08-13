@@ -37,7 +37,7 @@ struct GroupRowView: View {
                         .foregroundStyle(.blue)
                         .fontWeight(.medium)
                     // Subtitle
-                    Text("\(group.fileCount) Files, \(group.downloadCount) Downloads, Expires \(expiresAtDisplay)")
+                    Text("\(group.fileCount) files, \(group.downloadCount) downloads, expires on \(expiresAtDisplay)")
                 }
                 .foregroundStyle(.secondary)
                 Spacer(minLength: 0)

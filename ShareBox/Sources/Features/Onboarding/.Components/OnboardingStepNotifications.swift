@@ -36,8 +36,8 @@ struct OnboardingStepNotifications: View {
     }
 
     var description: LocalizedStringKey {
-        if errored { return LocalizedStringKey("We encountered a problem whilst requestion notification permissions. Would you like to continue without?") }
-        return LocalizedStringKey("To ensure you are always up to date with your upload progress, we would like to send you notifications when it's essential for you. No promotions or spam.")
+        if errored { return LocalizedStringKey("We encountered a problem while requesting notification permissions. Would you like to continue without them?") }
+        return LocalizedStringKey("To keep you updated on your upload progress, we would like to send you notifications when necessary. No promotions or spam.")
     }
 
     var buttonText: LocalizedStringKey {

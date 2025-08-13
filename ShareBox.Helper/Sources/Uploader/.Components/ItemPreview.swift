@@ -106,7 +106,7 @@ struct ItemPreview: View {
                                 .font(.headline)
                             Group {
                                 if item.isFolder {
-                                    Text("One or more files in your folder named \"\(name)\" has failed to upload and gave the following errors:")
+                                    Text("One or more files in your folder named \"\(name)\" have failed to upload and gave the following errors:")
                                 } else {
                                     Text("Your item named \"\(name)\" has failed to upload and gave the following error:")
                                 }
@@ -146,5 +146,6 @@ struct ItemPreview: View {
 }
 
 #Preview {
-    ItemPreview(state: .init(), item: .init(relative: "Example App", absolute: "file:///Users/thomvandenbroek/Projects/TryOut/SwiftyXPC/Example%20App/", isFolder: true))
+    ItemPreview(state: .init(), item: .init(relative: "package.sh", absolute: "file://~/package.sh", isFolder: true))
+        .padding()
 }

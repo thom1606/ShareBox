@@ -69,6 +69,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		84116A082E4D3B6B00A8F32B /* Exceptions for "ShareBox.Helper" folder in "ShareBox.Helper" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"ShareBox-Helper-Info.plist",
+			);
+			target = 8426D95B2E49DD87008F6EB1 /* ShareBox.Helper */;
+		};
 		8426D9B52E49E5BC008F6EB1 /* Exceptions for "ShareBox" folder in "ShareBox.Helper" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -124,6 +131,9 @@
 		};
 		8426D95D2E49DD87008F6EB1 /* ShareBox.Helper */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				84116A082E4D3B6B00A8F32B /* Exceptions for "ShareBox.Helper" folder in "ShareBox.Helper" target */,
+			);
 			path = ShareBox.Helper;
 			sourceTree = "<group>";
 		};
