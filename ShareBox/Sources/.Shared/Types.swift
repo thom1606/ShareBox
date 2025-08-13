@@ -8,19 +8,19 @@
 import Foundation
 import UniformTypeIdentifiers
 
-class MachMessage : Codable {
+class MachMessage: Codable {
     var type: MessageType
     var data: Data?
-    
+
     let buildNumber: Int
-    
+
     init(type: MessageType, data: Data? = nil) {
         self.type = type
         self.data = data
         let myBuildNumber = Bundle.main.infoDictionary?["CFBundleVersion"] as? String
         buildNumber = Int(myBuildNumber ?? "1") ?? 1
     }
-    
+
     enum MessageType: String, Codable {
         case fileUploadRequest
         case requestNotifications
@@ -73,7 +73,7 @@ extension FilePath {
         if let attrSize = fileAttributes?[.size] as? Int64 {
             fileSize = attrSize
         }
-        
+
         var mimeType = "application/octet-stream"
         if let utType = UTType(filenameExtension: url.pathExtension) {
             if let preferredMIMEType = utType.preferredMIMEType {

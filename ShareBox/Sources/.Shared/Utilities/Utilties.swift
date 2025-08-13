@@ -17,7 +17,7 @@ class Utilities {
              )
         )
     }
-    
+
     /// Launch the Helper app if it is not already opened
     static func launchHelperApp() throws {
         #if DEBUG
@@ -29,12 +29,12 @@ class Utilities {
         let helperRunning = runningApps.contains { app in
             app.bundleIdentifier == "com.thom1606.ShareBox.Helper"
         }
-        
+
         if helperRunning {
             print("Helper app is already running healthy, skipping this launch...")
             return
         }
-        
+
         // Try to find helper app in different locations
         var helperPath: String?
 
@@ -61,7 +61,7 @@ class Utilities {
             print("Helper app not found in bundle or build products, throwing...")
             throw ShareBoxError.helperNotInstalled
         }
-        
+
         // Launch helper
         NSWorkspace.shared.open(URL(fileURLWithPath: helperPath))
         #endif

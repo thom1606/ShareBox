@@ -291,7 +291,7 @@ import SwiftUI
         // This is also for future support of adding files to a box
         SharedValues.isProcessing = false
     }
-    
+
     // Fetch files and folders from a folder
     private func getFiles(basePath: String, url: URL) -> [FilePath] {
         var files: [FilePath] = []

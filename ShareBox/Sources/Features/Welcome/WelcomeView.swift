@@ -14,7 +14,7 @@ struct WelcomeView<C: View>: View {
     @State var state = WelcomeViewModel()
 
     @ViewBuilder var content: () -> C
-    
+
     var body: some View {
         ZStack {
             if state.authenticated {

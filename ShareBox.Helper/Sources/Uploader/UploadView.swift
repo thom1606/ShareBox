@@ -15,7 +15,7 @@ struct UploadView: View {
     private var showSomeOverlay: Bool {
         state.showCompleteOverlay || state.showFailedOverlay
     }
-    
+
     private var content: some View {
         ZStack {
             HStack(spacing: 10) {
@@ -45,13 +45,13 @@ struct UploadView: View {
         .padding(.horizontal, 10)
         .padding(.vertical, 90)
     }
-    
+
     var body: some View {
         ZStack(alignment: .topLeading) {
             NotchShape(notchPercentage: state.notchPercentage)
                 .fill(.black)
                 .animation(.spring(duration: 0.3), value: state.notchPercentage)
-            
+
             ZStack(alignment: .topLeading) {
                 // Content
                 content
@@ -82,7 +82,7 @@ struct UploadView: View {
                 .allowsHitTesting(state.showClose)
                 .offset(x: 10, y: 65)
                 .zIndex(9)
-                
+
                 // Complete Overlay
                 ZStack(alignment: .topLeading) {
                     // To make sure the close button is hidden, we add a small rectangle on the same place :)
@@ -101,7 +101,7 @@ struct UploadView: View {
                             .rotationEffect(state.showCompleteOverlay ? .degrees(0) : .degrees(-180))
                             .opacity(state.showCompleteOverlay ? 1 : 0)
                             .animation(.bouncy, value: state.showCompleteOverlay)
-                        
+
                         Image(systemName: "xmark.seal")
                             .resizable()
                             .scaledToFit()

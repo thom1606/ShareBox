@@ -9,12 +9,12 @@ import SwiftUI
 
 struct BoxesView: View {
     @Binding var showFiles: Bool
-    
+
     @State private var groups: [SharedGroup] = []
     @State private var loaded: Bool = false
-    
+
     private let apiService = ApiService()
-    
+
     var body: some View {
         VStack(spacing: 0) {
             ZStack(alignment: .leading) {
@@ -50,7 +50,7 @@ struct BoxesView: View {
         .frame(width: 600, height: 450)
         .task { await load() }
     }
-    
+
     private func load() async {
         do {
             self.groups = try await apiService.get(endpoint: "/api/groups")

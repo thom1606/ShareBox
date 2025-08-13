@@ -10,7 +10,7 @@ import ThomKit
 
 struct GroupRowView: View {
     var group: SharedGroup
-    
+
     private var expiresAtDate: Date? {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "en_US_POSIX")
@@ -18,7 +18,7 @@ struct GroupRowView: View {
         formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
         return formatter.date(from: group.expiresAt)
     }
-    
+
     private var expiresAtDisplay: String {
         guard let date = expiresAtDate else {
             return group.expiresAt

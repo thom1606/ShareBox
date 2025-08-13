@@ -1,4 +1,3 @@
-
 //
 //  OnboardingStepNotifications.swift
 //  ShareBox
@@ -19,7 +18,7 @@ struct OnboardingStepNotifications: View {
             pageSelection += 1
             return
         }
-        
+
         do {
             _ = try Messenger.shared.send(.init(type: .requestNotifications))
             pageSelection += 1
@@ -30,7 +29,7 @@ struct OnboardingStepNotifications: View {
             }
         }
     }
-    
+
     var title: LocalizedStringKey {
         if errored { return LocalizedStringKey("Oops!") }
         return LocalizedStringKey("Stay Informed")

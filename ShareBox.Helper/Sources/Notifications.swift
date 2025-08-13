@@ -14,16 +14,16 @@ final class Notifications {
             completion(settings.authorizationStatus)
         }
     }
-    
+
     public static func requestAccess() {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert]) { _, _ in }
     }
-    
+
     public static func show(title: String, body: String) {
         let content = UNMutableNotificationContent()
         content.title = title
         content.body = body
-        
+
         UNUserNotificationCenter.current().delegate = nil
         UNUserNotificationCenter.current().add(UNNotificationRequest(identifier: "ShareBox", content: content, trigger: nil))
     }

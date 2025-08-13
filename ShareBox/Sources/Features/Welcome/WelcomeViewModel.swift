@@ -12,24 +12,24 @@ import AuthenticationServices
 @Observable class WelcomeViewModel {
     var authenticated: Bool
     var signInFailed: Bool = false
-    
+
     private var api = ApiService()
 
     init() {
         authenticated = Keychain.shared.fetchToken(key: "AccessToken") != nil && Keychain.shared.fetchToken(key: "RefreshToken") != nil
-        
+
         if authenticated {
             Task {
                 await fetchUserDetails()
             }
-                
+
         }
     }
-    
+
     private func fetchUserDetails() async {
         do {
             let userData: UserDataResponse = try await api.get(endpoint: "/api/auth/user")
-            
+
             // Keep track of the subscription details
             userDefaults.set(userData.subscription?.status, forKey: Constants.User.subscriptionStatusKey)
         } catch {
@@ -39,7 +39,7 @@ import AuthenticationServices
             }
         }
     }
-    
+
     public func onSignIn(result: Result<ASAuthorization, any Error>) {
         signInFailed = false
         switch result {
@@ -76,22 +76,19 @@ import AuthenticationServices
                         }
                     }
                 } else {
-                    // TODO: log with sentry
-                    print("No user access code")
+                    generalLogger.error("User has no valid access code")
                     withAnimation {
                         signInFailed = true
                     }
                 }
             } else {
-                // TODO: log with sentry
-                print("No user credentials")
+                generalLogger.error("No user credentials found")
                 withAnimation {
                     signInFailed = true
                 }
             }
         case .failure:
-            // TODO: log with sentry
-            print("Failed to sign in")
+            generalLogger.warning("Apple Sign In Failed or cancelled by user")
             withAnimation {
                 signInFailed = true
             }
@@ -102,13 +99,13 @@ import AuthenticationServices
 private struct UserDataResponse: Codable {
     var user: User
     var subscription: Subscription?
-    
+
     struct User: Codable {
         var id: String
         var fullName: String
         var email: String
     }
-    
+
     struct Subscription: Codable {
         var status: String
     }

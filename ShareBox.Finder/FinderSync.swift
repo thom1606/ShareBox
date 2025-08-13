@@ -24,7 +24,7 @@ class FinderSync: FIFinderSync {
             }
         }
     }
-    
+
     override func menu(for menuKind: FIMenuKind) -> NSMenu? {
         if menuKind == .toolbarItemMenu { return nil }
         // Produce a menu for the extension.
@@ -32,7 +32,7 @@ class FinderSync: FIFinderSync {
         menu.addItem(withTitle: NSLocalizedString("Upload to ShareBox", comment: "Finder Context Menu Label"), action: #selector(handleFileSelection(_:)), keyEquivalent: "")
         return menu
     }
-    
+
     @IBAction func handleFileSelection(_ sender: AnyObject?) {
         // Make sure we have all the required data to proceed
         guard let items = FIFinderSyncController.default().selectedItemURLs(), let target = FIFinderSyncController.default().targetedURL() else {
@@ -43,11 +43,11 @@ class FinderSync: FIFinderSync {
             finderLogger.warning("ShareBox Upload was triggered without any files or folders selected. This should never be the case.")
             return
         }
-        
+
         // Initiate the upload to the helper app
         uploadFiles(items: items, target: target)
     }
-    
+
     private func uploadFiles(items: [URL], target: URL, retry: Bool = false) {
         finderLogger.debug("Found items to upload, trying to get everything ready...")
 
@@ -87,4 +87,3 @@ class FinderSync: FIFinderSync {
         }
     }
 }
-

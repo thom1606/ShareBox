@@ -23,7 +23,7 @@ struct OnboardingStepSubscribe: View {
         do {
             let res: SubscribeResponse = try await apiService.get(endpoint: "/api/subscribe")
             NSWorkspace.shared.open(URL(string: res.url)!)
-            
+
             // start looping to catch the completion of a subscription
             Task {
                 await fetchStatus(id: res.sessionId)
@@ -33,7 +33,7 @@ struct OnboardingStepSubscribe: View {
             withAnimation { subscribing = false }
         }
     }
-    
+
     private func fetchStatus(id: String) async {
         try? await Task.sleep(for: .seconds(30))
         do {
@@ -59,7 +59,7 @@ struct OnboardingStepSubscribe: View {
             await fetchStatus(id: id)
         }
     }
-    
+
     var title: LocalizedStringKey {
         if errored { return LocalizedStringKey("Oops!") }
         if processing { return LocalizedStringKey("Payment processing!") }
@@ -106,7 +106,7 @@ struct OnboardingStepSubscribe: View {
                 Task {
                     await handleSubscribe()
                 }
-            }) {
+            }, label: {
                 ZStack {
                     Text(buttonText)
                         .animation(.snappy, value: buttonText)
@@ -116,7 +116,7 @@ struct OnboardingStepSubscribe: View {
                         .controlSize(.small)
                         .opacity(subscribing ? 1 : 0)
                 }
-            }
+            })
             .buttonStyle(MainButtonStyle())
         }
         .frame(maxWidth: .infinity)

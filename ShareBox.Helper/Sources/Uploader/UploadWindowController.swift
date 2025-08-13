@@ -11,7 +11,7 @@ import UserNotifications
 
 final class UploadWindowController: NSWindowController {
     static let shared = UploadWindowController()
-    
+
     private init() {
         let root = UploadView(items: [])
         let hosting = NSHostingView(rootView: root)
@@ -46,7 +46,7 @@ final class UploadWindowController: NSWindowController {
     func show(items: [FilePath]) {
         // Ask for notification access once we show the uploader
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert]) { _, _ in }
-        
+
         // Re-render the ui with items instead of nothing
         if let window = self.window {
             window.contentView = NSHostingView(rootView: UploadView(items: items))
@@ -56,4 +56,3 @@ final class UploadWindowController: NSWindowController {
         NSApplication.shared.activate(ignoringOtherApps: true)
     }
 }
-

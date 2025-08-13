@@ -13,13 +13,13 @@ struct ItemPreview: View {
     var state: UploadViewModel
     var item: FilePath
     var completed: Bool
-    
+
     // Local properties
     private var icon: NSImage?
     private var name: String
     private var isImage: Bool
     private var imagePreview: NSImage?
-    
+
     @State private var showErrorPopover: Bool = false
 
     init(state: UploadViewModel, item: FilePath, completed: Bool = false) {
@@ -49,16 +49,14 @@ struct ItemPreview: View {
             icon = NSWorkspace.shared.icon(forFile: fileURL.path)
         }
     }
-    
+
     private var errors: [String: String] {
         if let itemError = state.failedPaths[item.absolute] {
             return [item.absolute: itemError]
         } else if item.isFolder {
             var res: [String: String] = [:]
-            for key in state.failedPaths.keys {
-                if key.hasPrefix(item.absolute) {
-                    res[URL(fileURLWithPath: key).lastPathComponent] = state.failedPaths[key]!
-                }
+            for key in state.failedPaths.keys where key.hasPrefix(item.absolute) {
+                res[URL(fileURLWithPath: key).lastPathComponent] = state.failedPaths[key]!
             }
             return res
         }
@@ -92,7 +90,7 @@ struct ItemPreview: View {
                     .padding(.horizontal, 3)
             }
             .opacity(completed && errors.isEmpty ? 1 : 0.4)
-            
+
             // Failed overlay
             if !errors.isEmpty {
                 ZStack(alignment: .center) {

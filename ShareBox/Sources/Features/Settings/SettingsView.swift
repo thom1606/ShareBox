@@ -12,12 +12,12 @@ struct SettingsView: View {
     @AppStorage(Constants.Settings.storagePrefKey, store: userDefaults) private var selectedDuration = "3_days"
     @AppStorage(Constants.Settings.passwordPrefKey, store: userDefaults) private var groupsPassword = ""
     @AppStorage(Constants.Settings.hiddenFilesPrefKey, store: userDefaults) private var hiddenFilesPrefKey = false
-    
+
     @State private var isNewUpdateAvailable = false
     @State private var showFiles = false
     @State private var loadingBilling = false
     private let api = ApiService()
-    
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
@@ -50,7 +50,7 @@ struct SettingsView: View {
                 }
                 LabeledTextFieldView(label: "Password", placeholder: "My Password", text: $groupsPassword)
                 SeparatorView()
-                
+
                 VStack(spacing: 10) {
                     HStack(spacing: 0) {
                         Text("You can manage all your billing and subscription details here.")
@@ -93,7 +93,7 @@ struct SettingsView: View {
             BoxesView(showFiles: $showFiles)
         }
     }
-    
+
     /// Check for available updates
     private func checkForUpdates() {
         // get app version from Info.plist
@@ -116,7 +116,7 @@ struct SettingsView: View {
             }
         }.resume()
     }
-    
+
     private func openBilling() {
         if loadingBilling { return }
         withAnimation { self.loadingBilling = true }
@@ -135,7 +135,7 @@ struct SettingsView: View {
             }
         }
     }
-    
+
     private func load() {
         // Check for updates in ShareBox
         checkForUpdates()

@@ -24,7 +24,7 @@ class Keychain {
         // Save new key
         SecItemAdd(query as CFDictionary, nil)
     }
-    
+
     func deleteToken(key: String) {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
@@ -33,7 +33,7 @@ class Keychain {
         ]
         SecItemDelete(query as CFDictionary)
     }
-    
+
     func fetchToken(key: String) -> String? {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,

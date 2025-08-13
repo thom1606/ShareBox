@@ -13,7 +13,7 @@ import UserNotifications
 @main
 struct ShareBox_HelperApp: App {
     private let messageListener: MessageListener?
-    
+
     init() {
         // Ensure only one instance of the Helper app is running
         let bundleID = Bundle.main.bundleIdentifier ?? "com.thom1606.ShareBox.Helper"
@@ -54,7 +54,7 @@ struct ShareBox_HelperApp: App {
             generalLogger.warning("Could not register helper as login item: \(error)")
         }
         #endif
-        
+
         #if DEBUG
         // For Development purposes, launch the UI from here
         DispatchQueue.main.async {

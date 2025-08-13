@@ -237,6 +237,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 8426D9682E49DD88008F6EB1 /* Build configuration list for PBXNativeTarget "ShareBox.Helper" */;
 			buildPhases = (
+				8477DA5A2E4CA1C500162F53 /* ShellScript */,
 				8426D9582E49DD87008F6EB1 /* Sources */,
 				8426D9592E49DD87008F6EB1 /* Frameworks */,
 				8426D95A2E49DD87008F6EB1 /* Resources */,
@@ -371,6 +372,25 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
+				"$(DERIVED_FILE_DIR)/swiftlint.result",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [[ \"$(uname -m)\" == arm64 ]]\nthen\n    export PATH=\"/opt/homebrew/bin:$PATH\"\nfi\n\nif command -v swiftlint >/dev/null 2>&1\nthen\n    swiftlint\nelse\n    echo \"warning: `swiftlint` command not found - See https://github.com/realm/SwiftLint#installation for installation instructions.\"\nfi\n";
+		};
+		8477DA5A2E4CA1C500162F53 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/swiftlint.result",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;

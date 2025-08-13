@@ -18,21 +18,21 @@ struct NotchShape: Shape {
     private var xWidth: CGFloat {
         map(minRange: 0, maxRange: 1, minDomain: 23, maxDomain: SharedValues.uploaderWindowWidth, value: animatableData)
     }
-    
+
     private var smallOffset: CGFloat {
         map(minRange: 0, maxRange: 1, minDomain: 40, maxDomain: 0, value: animatableData)
     }
-    
-    func map(minRange:CGFloat, maxRange:CGFloat, minDomain:CGFloat, maxDomain:CGFloat, value:CGFloat) -> CGFloat {
+
+    func map(minRange: CGFloat, maxRange: CGFloat, minDomain: CGFloat, maxDomain: CGFloat, value: CGFloat) -> CGFloat {
         return minDomain + (maxDomain - minDomain) * (value - minRange) / (maxRange - minRange)
     }
-    
+
     func path(in rect: CGRect) -> Path {
         let pointOffset: CGFloat = 100
         let controlOffset: CGFloat = 25
 
         var path = Path()
-        
+
         path.move(to: CGPoint(x: rect.minX, y: rect.minY + smallOffset))
         path.addCurve(
             to: CGPoint(x: xWidth, y: rect.minY + pointOffset),
