@@ -15,6 +15,9 @@ final class Constants {
         static let passwordPrefKey = "GROUPS_PASSWORD"
         static let hiddenFilesPrefKey = "INCLUDE_HIDDEN_FILES"
     }
+    final class User {
+        static let subscriptionStatusKey = "SUBSCRIPTION_STATUS"
+    }
     final class Mach {
         static let portName = "group.com.thom1606.ShareBox.mach"
     }

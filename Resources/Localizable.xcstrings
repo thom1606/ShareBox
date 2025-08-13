@@ -14,9 +14,6 @@
     "An upload is already active, please wait for it to finish." : {
 
     },
-    "Content" : {
-
-    },
     "Continue" : {
 
     },
@@ -41,7 +38,7 @@
     "My Password" : {
 
     },
-    "New update available" : {
+    "New Update Available" : {
 
     },
     "No files or folders selected? Please try again after selecting items." : {
@@ -54,6 +51,9 @@
 
     },
     "Password" : {
+
+    },
+    "Payment processing!" : {
 
     },
     "Ready to Start?" : {
@@ -92,6 +92,9 @@
     "To ensure you are always up to date with your upload progress, we would like to send you notifications when it's essential for you. No promotions or spam." : {
 
     },
+    "Try again" : {
+
+    },
     "Upload failed" : {
 
     },
@@ -114,6 +117,12 @@
 
     },
     "Your item named \"%@\" has failed to upload and gave the following error:" : {
+
+    },
+    "Your payment is currently processing. Please wait a few minutes. If you do not see a confirmation in a few minutes, please [contact me](mailto://sharebox@thomvandenbroek.com)." : {
+
+    },
+    "Your payment was not received correctly. Would you please try again?" : {
 
     }
   },

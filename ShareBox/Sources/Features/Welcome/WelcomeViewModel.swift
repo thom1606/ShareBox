@@ -17,6 +17,27 @@ import AuthenticationServices
 
     init() {
         authenticated = Keychain.shared.fetchToken(key: "AccessToken") != nil && Keychain.shared.fetchToken(key: "RefreshToken") != nil
+        
+        if authenticated {
+            Task {
+                await fetchUserDetails()
+            }
+                
+        }
+    }
+    
+    private func fetchUserDetails() async {
+        do {
+            let userData: UserDataResponse = try await api.get(endpoint: "/api/auth/user")
+            
+            // Keep track of the subscription details
+            userDefaults.set(userData.subscription?.status, forKey: Constants.User.subscriptionStatusKey)
+        } catch {
+            if let apiError = error as? APIError, case .unauthorized = apiError {
+                // Failed to authenticate
+                authenticated = false
+            }
+        }
     }
     
     public func onSignIn(result: Result<ASAuthorization, any Error>) {
@@ -40,6 +61,10 @@ import AuthenticationServices
                             // If we have been authorized we update tokens
                             Keychain.shared.saveToken(res.accessToken, key: "AccessToken")
                             Keychain.shared.saveToken(res.refreshToken, key: "RefreshToken")
+
+                            // Retrieve user details
+                            await fetchUserDetails()
+
                             withAnimation {
                                 authenticated = true
                             }
@@ -71,5 +96,20 @@ import AuthenticationServices
                 signInFailed = true
             }
         }
+    }
+}
+
+private struct UserDataResponse: Codable {
+    var user: User
+    var subscription: Subscription?
+    
+    struct User: Codable {
+        var id: String
+        var fullName: String
+        var email: String
+    }
+    
+    struct Subscription: Codable {
+        var status: String
     }
 }
