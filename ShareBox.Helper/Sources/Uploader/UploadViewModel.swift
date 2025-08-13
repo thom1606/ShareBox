@@ -29,7 +29,6 @@ import SwiftUI
     public func handleAppear(_ items: [FilePath]) async { // swiftlint:disable:this cyclomatic_complexity function_body_length superfluous_disable_command
         self.items = items
         SharedValues.isProcessing = true
-
         do {
             withAnimation(.spring(duration: 0.3)) {
                 self.hidden = false
@@ -38,7 +37,6 @@ import SwiftUI
             }
 
             dataLogger.debug("Starting upload...")
-
             let password = userDefaults.string(forKey: Constants.Settings.passwordPrefKey)
             let storageDuration = userDefaults.string(forKey: Constants.Settings.storagePrefKey) ?? "3_days"
 
@@ -149,7 +147,6 @@ import SwiftUI
                 } catch {
                     if let error = error as? ShareBoxError, case .fileNotFound = error {
                         dataLogger.error("tried to upload file \(key) but it doesn't exist.")
-                    // TODO: catch some more errors for better support cases
                     } else {
                         let currentItem = fileItems.first(where: { $0.relative == key })!
                         finalFailed[currentItem.relative] = "UPLOAD_S3_FAILED"
@@ -225,15 +222,68 @@ import SwiftUI
                 if response == .alertFirstButtonReturn {
                     self.openMainApp()
                 }
-                // After opening the window, we will stop this upload attempt
                 self.hideWindow()
-            // TODO: catch some different kind of errors if possible/needed
+            } else if let error = error as? APIError, case .serverError(_, let errorResponse) = error {
+                switch errorResponse.error {
+                case "GROUP_LIMIT_REACHED":
+                    self.showFailedOverlay = true
+                    let alert = NSAlert()
+                    alert.messageText = "Upload Failed"
+                    alert.informativeText = "You have reached the maximum amount of boxes you can create at this time. Please wait for some of your boxes to expire to create more."
+                    alert.alertStyle = .warning
+                    alert.addButton(withTitle: "Ok")
+                    alert.window.center()
+                    alert.window.level = .floating
+                    alert.window.makeKeyAndOrderFront(nil)
+                    alert.runModal()
+                    self.hideWindow()
+                case "FILES_SIZE_TOO_LARGE":
+                    self.showFailedOverlay = true
+                    let alert = NSAlert()
+                    alert.messageText = "Upload Failed"
+                    alert.informativeText = "You have reached your monthly upload limit. Please wait until the next billing cycle to upload more files."
+                    alert.alertStyle = .warning
+                    alert.addButton(withTitle: "Ok")
+                    alert.window.center()
+                    alert.window.level = .floating
+                    alert.window.makeKeyAndOrderFront(nil)
+                    alert.runModal()
+                    self.hideWindow()
+                case "SUBSCRIPTION_NOT_FOUND":
+                    self.showFailedOverlay = true
+                    let alert = NSAlert()
+                    alert.messageText = "Upload Failed"
+                    alert.informativeText = "You do not have an active subscription at this time. Please upgrade to a subscription to upload your files."
+                    alert.alertStyle = .warning
+                    alert.addButton(withTitle: "Open")
+                    alert.addButton(withTitle: "Cancel")
+                    alert.window.center()
+                    alert.window.level = .floating
+                    alert.window.makeKeyAndOrderFront(nil)
+                    let response = alert.runModal()
+                    if response == .alertFirstButtonReturn {
+                        self.openMainApp()
+                    }
+                    self.hideWindow()
+                default:
+                    self.showFailedOverlay = true
+                    let alert = NSAlert()
+                    alert.messageText = "Upload Failed"
+                    alert.informativeText = "An unknown error occured whist uploading your files. Please try again later."
+                    alert.alertStyle = .warning
+                    alert.addButton(withTitle: "Ok")
+                    alert.window.center()
+                    alert.window.level = .floating
+                    alert.window.makeKeyAndOrderFront(nil)
+                    alert.runModal()
+                    self.hideWindow()
+                }
             } else {
                 self.showFailedOverlay = true
                 let alert = NSAlert()
                 alert.messageText = "Upload Failed"
                 alert.informativeText = "An unknown error occured whist uploading your files. Please try again later."
-                alert.alertStyle = .informational
+                alert.alertStyle = .warning
                 alert.addButton(withTitle: "Ok")
                 alert.window.center()
                 alert.window.level = .floating

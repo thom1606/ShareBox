@@ -20,7 +20,7 @@ enum APIError: Error {
     case invalidResponse
     case decodingError(Error)
     case networkError(Error)
-    case serverError(Int)
+    case serverError(Int, ErrorResponse)
     case unauthorized
     case unknown
 }
@@ -103,7 +103,6 @@ class ApiService {
 
         do {
             let (data, response) = try await session.data(for: request)
-
             guard let httpResponse = response as? HTTPURLResponse else {
                 throw APIError.invalidResponse
             }
@@ -114,7 +113,7 @@ class ApiService {
                 } catch {
                     // If the decoder fails, i want to print the data
                     #if DEBUG
-                        print("We failed to decode the following JSON body:")
+                        print("Failed to decode the following JSON body:")
                         print(String(data: data, encoding: .utf8) ?? "No data")
                     #endif
                     throw APIError.decodingError(error)
@@ -143,9 +142,9 @@ class ApiService {
                     throw APIError.unauthorized
                 }
             case 400 ... 499:
-                throw APIError.serverError(httpResponse.statusCode)
+                throw APIError.serverError(httpResponse.statusCode, try JSONDecoder().decode(ErrorResponse.self, from: data))
             case 500 ... 599:
-                throw APIError.serverError(httpResponse.statusCode)
+                throw APIError.serverError(httpResponse.statusCode, try JSONDecoder().decode(ErrorResponse.self, from: data))
             default:
                 throw APIError.unknown
             }
@@ -198,4 +197,8 @@ class ApiService {
 public struct TokenResponse: Codable {
     var accessToken: String
     var refreshToken: String
+}
+
+public struct ErrorResponse: Codable {
+    var error: String
 }
