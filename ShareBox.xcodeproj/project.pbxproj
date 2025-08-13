@@ -9,6 +9,9 @@
 /* Begin PBXBuildFile section */
 		8426D9BD2E49E6D4008F6EB1 /* ShareBox.Helper.app in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8426D95C2E49DD87008F6EB1 /* ShareBox.Helper.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		8426D9CA2E49ED41008F6EB1 /* ShareBox.Finder.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 8426D9C22E49ED41008F6EB1 /* ShareBox.Finder.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		8477DA562E4C9F2300162F53 /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = 8477DA552E4C9F2300162F53 /* .swiftlint.yml */; };
+		8477DA572E4C9F2300162F53 /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = 8477DA552E4C9F2300162F53 /* .swiftlint.yml */; };
+		8477DA582E4C9F2300162F53 /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = 8477DA552E4C9F2300162F53 /* .swiftlint.yml */; };
 		8494E4342E49FE61003065BD /* Debug.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 8494E4332E49FE61003065BD /* Debug.xcconfig */; };
 		8494E4352E49FE61003065BD /* Debug.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 8494E4332E49FE61003065BD /* Debug.xcconfig */; };
 		8494E4362E49FE61003065BD /* Debug.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 8494E4332E49FE61003065BD /* Debug.xcconfig */; };
@@ -59,6 +62,7 @@
 		8426D9462E49DD65008F6EB1 /* ShareBox.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ShareBox.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8426D95C2E49DD87008F6EB1 /* ShareBox.Helper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ShareBox.Helper.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8426D9C22E49ED41008F6EB1 /* ShareBox.Finder.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ShareBox.Finder.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		8477DA552E4C9F2300162F53 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
 		8494E4332E49FE61003065BD /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
 		8494E4372E49FE6B003065BD /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
 		8494E4BC2E4A3B14003065BD /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
@@ -162,6 +166,7 @@
 		8426D93D2E49DD65008F6EB1 = {
 			isa = PBXGroup;
 			children = (
+				8477DA552E4C9F2300162F53 /* .swiftlint.yml */,
 				8494E4BB2E4A3B08003065BD /* Resources */,
 				8494E4322E49FE34003065BD /* Configuration */,
 				8426D9482E49DD65008F6EB1 /* ShareBox */,
@@ -205,6 +210,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 8426D9552E49DD66008F6EB1 /* Build configuration list for PBXNativeTarget "ShareBox" */;
 			buildPhases = (
+				8477DA592E4C9F5D00162F53 /* ShellScript */,
 				8426D9422E49DD65008F6EB1 /* Sources */,
 				8426D9432E49DD65008F6EB1 /* Frameworks */,
 				8426D9442E49DD65008F6EB1 /* Resources */,
@@ -321,6 +327,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8477DA582E4C9F2300162F53 /* .swiftlint.yml in Resources */,
 				8494E4392E49FE6B003065BD /* Release.xcconfig in Resources */,
 				8494E4BE2E4A3B1E003065BD /* Localizable.xcstrings in Resources */,
 				8494E4342E49FE61003065BD /* Debug.xcconfig in Resources */,
@@ -331,6 +338,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8477DA572E4C9F2300162F53 /* .swiftlint.yml in Resources */,
 				8494E43A2E49FE6B003065BD /* Release.xcconfig in Resources */,
 				8494E4BD2E4A3B14003065BD /* Localizable.xcstrings in Resources */,
 				8494E4352E49FE61003065BD /* Debug.xcconfig in Resources */,
@@ -341,6 +349,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8477DA562E4C9F2300162F53 /* .swiftlint.yml in Resources */,
 				8494E4382E49FE6B003065BD /* Release.xcconfig in Resources */,
 				8494E4362E49FE61003065BD /* Debug.xcconfig in Resources */,
 				8494E4BF2E4A3B1E003065BD /* Localizable.xcstrings in Resources */,
@@ -348,6 +357,26 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		8477DA592E4C9F5D00162F53 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [[ \"$(uname -m)\" == arm64 ]]\nthen\n    export PATH=\"/opt/homebrew/bin:$PATH\"\nfi\n\nif command -v swiftlint >/dev/null 2>&1\nthen\n    swiftlint\nelse\n    echo \"warning: `swiftlint` command not found - See https://github.com/realm/SwiftLint#installation for installation instructions.\"\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		8426D9422E49DD65008F6EB1 /* Sources */ = {
@@ -518,6 +547,7 @@
 				DEVELOPMENT_TEAM = U6WA8YA735;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ShareBox/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
@@ -548,6 +578,7 @@
 				DEVELOPMENT_TEAM = U6WA8YA735;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ShareBox/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
@@ -579,6 +610,7 @@
 				DEVELOPMENT_TEAM = U6WA8YA735;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "ShareBox-Helper-Info.plist";
 				INFOPLIST_KEY_LSBackgroundOnly = YES;
@@ -610,6 +642,7 @@
 				DEVELOPMENT_TEAM = U6WA8YA735;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "ShareBox-Helper-Info.plist";
 				INFOPLIST_KEY_LSBackgroundOnly = YES;
@@ -638,6 +671,7 @@
 				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = U6WA8YA735;
 				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ShareBox.Finder/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ShareBox.Finder;
@@ -667,6 +701,7 @@
 				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = U6WA8YA735;
 				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ShareBox.Finder/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ShareBox.Finder;

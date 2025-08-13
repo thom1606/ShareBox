@@ -22,12 +22,12 @@ final class UploadWindowController: NSWindowController {
         let screenFrame = activeScreen?.visibleFrame ?? NSScreen.main!.visibleFrame
         let windowWidth: CGFloat = SharedValues.uploaderWindowWidth
         let windowHeight: CGFloat = max(600, screenFrame.size.height / 2)
-        
+
         // Center it vertically on the screen
-        let y = screenFrame.origin.y + (screenFrame.size.height - windowHeight) / 2
+        let posY = screenFrame.origin.y + (screenFrame.size.height - windowHeight) / 2
 
         let window = NSWindow(
-            contentRect: NSRect(x: screenFrame.origin.x, y: y, width: windowWidth, height: windowHeight),
+            contentRect: NSRect(x: screenFrame.origin.x, y: posY, width: windowWidth, height: windowHeight),
             styleMask: [.borderless],
             backing: .buffered,
             defer: false

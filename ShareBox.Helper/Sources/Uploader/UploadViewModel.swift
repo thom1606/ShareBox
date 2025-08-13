@@ -22,11 +22,11 @@ import SwiftUI
     var showFailedOverlay: Bool = false
     var showProgressbar: Bool = true
     var showClose: Bool = false
-    
+
     var completedPaths: [String] = []
     var failedPaths: [String: String] = [:]
-    
-    public func handleAppear(_ items: [FilePath]) async {
+
+    public func handleAppear(_ items: [FilePath]) async { // swiftlint:disable:this cyclomatic_complexity function_body_length superfluous_disable_command
         self.items = items
         SharedValues.isProcessing = true
 
@@ -36,7 +36,7 @@ import SwiftUI
                 // TODO: check if we want to fully extend the notch at the start or not (user setting)
                 self.notchPercentage = 1
             }
-            
+
             dataLogger.debug("Starting upload...")
 
             let password = userDefaults.string(forKey: Constants.Settings.passwordPrefKey)
@@ -50,9 +50,9 @@ import SwiftUI
 
             dataLogger.debug("Created group with id '\(createdGroupResponse.groupId)' with url '\(createdGroupResponse.url)'")
             uploadProgress = 5
-            
+
             var folderPaths: [String: [FilePath]] = [:]
-            
+
             // Start finding all the files which should be uploaded, so deep search folders for child items
             var fileItems: [FilePath] = []
             for item in items {
@@ -60,13 +60,10 @@ import SwiftUI
 
                 // Treat .app and .appex bundles as files, not folders
                 let isDir = Files.isDirectory(path: url)
-                
-
                 if isDir {
                     // Remove the last folder from the absolutePath
                     let parentUrl = url.deletingLastPathComponent()
                     let basePath = parentUrl.path
-                    
 
                     // For all folders, it should go in and fetch all those children until there are no folders left
                     let files = getFiles(basePath: "file://\(basePath)/", url: URL(string: item.absolute)!)
@@ -91,10 +88,10 @@ import SwiftUI
                     ]
                 }
             ])
-            
+
             dataLogger.debug("Registered current selection of files to the group...")
             uploadProgress = 9
-                        
+
             // Update the last 90% of the uploadProgress based on the amount of files failed with the totalCount (keep 1% left for finishing)
             let totalCount = CGFloat(fileItems.count)
             let perFileProgress: CGFloat = 90 / totalCount
@@ -106,13 +103,13 @@ import SwiftUI
                     guard let currentItem = fileItems.first(where: { $0.relative == key }) else {
                         throw ShareBoxError.fileNotFound
                     }
-                    
+
                     let shouldPutOnS3String: String = (Bundle.main.object(forInfoDictionaryKey: "UPLOAD_S3") as? String ?? "true")
                     if let shouldPutOnS3 = Bool(shouldPutOnS3String), !shouldPutOnS3 {
                         dataLogger.debug("Skipping upload to S3 as it is disabled by environment.")
                         uploadProgress += perFileProgress
                         completedPaths.append(currentItem.absolute)
-                        
+
                         // If the file is part of a folder, we want to make sure to keep updating the parent folder progress
                         for key in folderPaths.keys {
                             folderPaths[key] = folderPaths[key]?.filter { $0.absolute != currentItem.absolute }
@@ -122,7 +119,7 @@ import SwiftUI
                         }
                         continue
                     }
-                    
+
                     let fileData = try Data(contentsOf: URL(string: currentItem.absolute)!)
                     var request = URLRequest(url: URL(string: addFilesResponse.files[key]!)!)
                     request.httpMethod = "PUT"
@@ -141,7 +138,7 @@ import SwiftUI
                     }
                     completedPaths.append(currentItem.absolute)
                     uploadProgress += perFileProgress
-                    
+
                     // If the file is part of a folder, we want to make sure to keep updating the parent folder progress
                     for key in folderPaths.keys {
                         folderPaths[key] = folderPaths[key]?.filter { $0.absolute != currentItem.absolute }
@@ -165,23 +162,18 @@ import SwiftUI
                 for key in finalFailed.keys {
                     let apiError = finalFailed[key]!
                     let absolutePath = fileItems.first(where: { $0.relative == key })?.absolute ?? "/"
-    
+
                     switch apiError {
                     case "FILE_SIZE_ZERO":
                         failedPaths[absolutePath] = "Error 1002: File size is zero"
-                        break
                     case "FILE_SIZE_TOO_LARGE":
                         failedPaths[absolutePath] = "Error 1003: File size is to big"
-                        break
                     case "NO_PRESIGNED_URL":
                         failedPaths[absolutePath] = "Error 1004: No pre-signed url available"
-                        break
                     case "UPLOAD_S3_FAILED":
                         failedPaths[absolutePath] = "Error 1005: Uploading to S3 failed"
-                        break
                     default:
                         failedPaths[absolutePath] = "Error 1001: Unknown API error"
-                        break
                     }
                     completedPaths.append(absolutePath)
                     uploadProgress += perFileProgress
@@ -196,10 +188,10 @@ import SwiftUI
             }
 
             try? await Task.sleep(for: .milliseconds(200))
-            
+
             // Show overlay to transition UI and notify user that the upload is done
             self.showCompleteOverlay = true
-            
+
             let pasteboard = NSPasteboard.general
             pasteboard.clearContents()
             pasteboard.setString(NSLocalizedString("Hey! I want to share some files with you. You can download them from my ShareBox: \(createdGroupResponse.url)", comment: "Clipboard message"), forType: .string)
@@ -208,9 +200,9 @@ import SwiftUI
                 title: "ShareBox Created",
                 body: "Your files have been uploaded and the link is copied to your clipboard!"
             )
-            
+
             try? await Task.sleep(for: .milliseconds(3000))
-            
+
             // Show the end UI with final upload result
             self.showProgressbar = false
             self.showClose = true
@@ -251,7 +243,7 @@ import SwiftUI
             }
         }
     }
-    
+
     public func hideWindow() {
         withAnimation(.spring(duration: 0.3)) {
             self.hidden = true
@@ -262,7 +254,7 @@ import SwiftUI
             self.resetState()
         }
     }
-    
+
     /// Open the main ShareBox Application for the user to handle stuff on there
     public func openMainApp() {
         let helperBundleURL = Bundle.main.bundleURL

@@ -15,7 +15,9 @@ struct SettingsView: View {
     
     @State private var isNewUpdateAvailable = false
     @State private var showFiles = false
-
+    @State private var loadingBilling = false
+    private let api = ApiService()
+    
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
@@ -42,12 +44,31 @@ struct SettingsView: View {
                 ])
                 VStack {
                     CheckboxView(label: "Include Hidden Files", checked: $hiddenFilesPrefKey)
-                    Text("Do you wish to include hidden files from your folders to your upload. Please be aware that hidden files could be sensitive and some should not be shared.")
+                    Text("Do you wish to include hidden files from your folders to your upload? Please be aware that hidden files could be sensitive and some should not be shared.")
                         .foregroundStyle(.secondary)
                         .font(.body)
                 }
                 LabeledTextFieldView(label: "Password", placeholder: "My Password", text: $groupsPassword)
+                SeparatorView()
                 
+                VStack(spacing: 10) {
+                    HStack(spacing: 0) {
+                        Text("You can manage all your billing and subscription details here.")
+                            .foregroundStyle(.secondary)
+                            .font(.body)
+                        Spacer(minLength: 0)
+                    }
+                    Button(action: openBilling, label: {
+                        ZStack {
+                            Text("Manage my Billing")
+                                .opacity(loadingBilling ? 0 : 1)
+                            ProgressView()
+                                .controlSize(.small)
+                                .opacity(loadingBilling ? 1 : 0)
+                        }
+                    })
+                    .buttonStyle(MainButtonStyle(fullWidth: true))
+                }
                 if isNewUpdateAvailable {
                     SeparatorView()
                     VStack(spacing: 10) {
@@ -96,10 +117,33 @@ struct SettingsView: View {
         }.resume()
     }
     
+    private func openBilling() {
+        if loadingBilling { return }
+        withAnimation { self.loadingBilling = true }
+        Task {
+            do {
+                let res: BillingResponse = try await api.get(endpoint: "/api/billing")
+                NSWorkspace.shared.open(URL(string: res.url)!)
+                DispatchQueue.main.async {
+                    withAnimation { self.loadingBilling = false }
+                }
+            } catch {
+                print(error)
+                DispatchQueue.main.async {
+                    withAnimation { self.loadingBilling = false }
+                }
+            }
+        }
+    }
+    
     private func load() {
         // Check for updates in ShareBox
         checkForUpdates()
     }
+}
+
+private struct BillingResponse: Codable {
+    var url: String
 }
 
 #Preview {

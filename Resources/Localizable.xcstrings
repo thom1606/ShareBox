@@ -17,7 +17,7 @@
     "Continue" : {
 
     },
-    "Do you wish to include hidden files from your folders to your upload. Please be aware that hidden files could be sensitive and some should not be shared." : {
+    "Do you wish to include hidden files from your folders to your upload? Please be aware that hidden files could be sensitive and some should not be shared." : {
 
     },
     "For the price of **€2,99** we would like to provide you with **250GB** of free cloud storage. With upgrade options coming in the future." : {
@@ -33,6 +33,9 @@
 
     },
     "Let's go!" : {
+
+    },
+    "Manage my Billing" : {
 
     },
     "My Password" : {
@@ -116,10 +119,13 @@
     "You are all set to begin your journey with ShareBox! Start by selecting files in Finder and selecting the **\"Upload to ShareBox\"** option to start." : {
 
     },
+    "You can manage all your billing and subscription details here." : {
+
+    },
     "Your item named \"%@\" has failed to upload and gave the following error:" : {
 
     },
-    "Your payment is currently processing. Please wait a few minutes. If you do not see a confirmation in a few minutes, please [contact me](mailto://sharebox@thomvandenbroek.com)." : {
+    "Your payment is currently processing. Please wait a few minutes. If you do not see a confirmation in a few minutes, please [contact me](mailto:sharebox@thomvandenbroek.com)." : {
 
     },
     "Your payment was not received correctly. Would you please try again?" : {
