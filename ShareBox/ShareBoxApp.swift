@@ -6,22 +6,46 @@
 //
 
 import SwiftUI
-import ServiceManagement
-import ThomKit
 
 @main
 struct ShareBoxApp: App {
+    @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+
+    init() {
+        if isAnotherInstanceRunning() {
+            NSApp.terminate(nil)
+        }
+    }
+    
+    private func isAnotherInstanceRunning() -> Bool {
+        let runningApps = NSRunningApplication.runningApplications(withBundleIdentifier: Bundle.main.bundleIdentifier ?? "")
+        return runningApps.count > 1
+    }
+    
     var body: some Scene {
-        WindowGroup {
-            FrostedWindow {
-                ContentView()
-            }
-            .frame(width: 425, height: 600)
-            .onAppear {
-                try? Utilities.launchHelperApp()
+        Window("Uploader", id: "uploader") {
+            UploadView()
+        }
+        .commands {
+            CommandGroup(replacing: .newItem) {
+                // Disable the "New Window" menu item
             }
         }
-        .defaultSize(width: 425, height: 600)
-        .windowResizability(.contentSize)
+        Window("Settings", id: "settings") {
+            Text("Settings window")
+        }
+    }
+}
+
+class AppDelegate: NSObject, NSApplicationDelegate {
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        if let window = NSApplication.shared.windows.first {
+            window.styleMask.remove(.titled)
+            window.isOpaque = false
+            window.backgroundColor = .clear
+            window.hasShadow = false
+            window.level = .mainMenu
+            window.makeKeyAndOrderFront(nil)
+        }
     }
 }

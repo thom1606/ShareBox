@@ -16,7 +16,7 @@ class Keychain {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrAccount as String: key,
-            kSecAttrAccessGroup as String: "group.com.thom1606.ShareBox",
+//            kSecAttrAccessGroup as String: "group.com.thom1606.ShareBox",
             kSecValueData as String: data
         ]
         // Remove old item if exists
@@ -29,7 +29,7 @@ class Keychain {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrAccount as String: key,
-            kSecAttrAccessGroup as String: "group.com.thom1606.ShareBox"
+//            kSecAttrAccessGroup as String: "group.com.thom1606.ShareBox"
         ]
         SecItemDelete(query as CFDictionary)
     }
@@ -38,7 +38,7 @@ class Keychain {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrAccount as String: key,
-            kSecAttrAccessGroup as String: "group.com.thom1606.ShareBox",
+//            kSecAttrAccessGroup as String: "group.com.thom1606.ShareBox",
             kSecReturnData as String: true,
             kSecMatchLimit as String: kSecMatchLimitOne
         ]

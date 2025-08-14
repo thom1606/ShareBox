@@ -86,6 +86,7 @@
 				Sources/.Shared/Utilities/Files.swift,
 				Sources/.Shared/Utilities/Keychain.swift,
 				Sources/.Shared/Utilities/Logs.swift,
+				Sources/.Shared/Utilities/WindowAccessor.swift,
 			);
 			target = 8426D95B2E49DD87008F6EB1 /* ShareBox.Helper */;
 		};
@@ -106,6 +107,7 @@
 				Sources/.Shared/Utilities/Logs.swift,
 				Sources/.Shared/Utilities/Messenger.swift,
 				Sources/.Shared/Utilities/Utilties.swift,
+				Sources/.Shared/Utilities/WindowAccessor.swift,
 			);
 			target = 8426D9C12E49ED41008F6EB1 /* ShareBox.Finder */;
 		};
@@ -582,6 +584,7 @@
 				INFOPLIST_FILE = ShareBox/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ShareBox;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -616,6 +619,7 @@
 				INFOPLIST_FILE = ShareBox/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ShareBox;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

@@ -101,6 +101,12 @@
     "Request access" : {
 
     },
+    "Settings" : {
+
+    },
+    "Settings window" : {
+
+    },
     "ShareBox Created" : {
 
     },
@@ -147,6 +153,9 @@
           }
         }
       }
+    },
+    "Uploader" : {
+
     },
     "View my Shared Files" : {
 

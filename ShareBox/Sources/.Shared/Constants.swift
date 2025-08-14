@@ -18,6 +18,9 @@ final class Constants {
     final class User {
         static let subscriptionStatusKey = "SUBSCRIPTION_STATUS"
     }
+    final class Uploader {
+        static let windowWidth: CGFloat = 100
+    }
     final class Mach {
         static let portName = "group.com.thom1606.ShareBox.mach"
     }
