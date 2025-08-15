@@ -16,15 +16,11 @@ struct NotchShape: Shape {
     }
 
     private var xWidth: CGFloat {
-        map(minRange: 0, maxRange: 1, minDomain: 23, maxDomain: Constants.Uploader.windowWidth, value: animatableData)
+        Utilities.map(minRange: 0, maxRange: 1, minDomain: 23, maxDomain: Constants.Uploader.windowWidth, value: animatableData)
     }
 
     private var smallOffset: CGFloat {
-        map(minRange: 0, maxRange: 1, minDomain: 40, maxDomain: 0, value: animatableData)
-    }
-
-    func map(minRange: CGFloat, maxRange: CGFloat, minDomain: CGFloat, maxDomain: CGFloat, value: CGFloat) -> CGFloat {
-        return minDomain + (maxDomain - minDomain) * (value - minRange) / (maxRange - minRange)
+        Utilities.map(minRange: 0, maxRange: 1, minDomain: 40, maxDomain: 0, value: animatableData)
     }
 
     func path(in rect: CGRect) -> Path {

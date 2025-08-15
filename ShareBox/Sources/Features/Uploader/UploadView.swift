@@ -24,7 +24,7 @@ struct UploadView: View {
                     state.fileCountBeforeDrop = state.selectedItems.count
                     state.pulloutPercentage = 1
                     state.offScreen = false
-                } else {
+                } else if !state.didDropFiles {
                     // When the file is being moved away, we want it to wait for the state to update quickly
                     // before making a decision to fully close the UI or not.
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
@@ -67,6 +67,22 @@ struct UploadView: View {
         .allowsHitTesting(state.presentingOverlay)
     }
 
+    private var fileList: some View {
+        ScrollView {
+            VStack(spacing: 10) {
+                ForEach(state.selectedItems, id: \.self) { item in
+                    ItemPreview(
+                        state: state,
+                        item: item
+                    )
+                }
+            }
+            // Extra padding for fades
+            .padding(.vertical, 10)
+        }
+        .frame(maxWidth: .infinity)
+    }
+
     private var mainBody: some View {
         ZStack {
             Color.clear
@@ -77,7 +93,7 @@ struct UploadView: View {
 
             ZStack {
                 Color.clear
-                // TODO: show file list here
+                fileList
                 // Overlay which can be toggled by state model
                 overlay
             }
@@ -87,7 +103,6 @@ struct UploadView: View {
             .onHover { isOver in
                 if !state.canInteract { return }
                 if isOver {
-                    state.stopClosingUI()
                     state.pulloutPercentage = 1
                 } else {
                     state.pulloutPercentage = 0

@@ -12,9 +12,11 @@ struct ShareBoxApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
     init() {
+        #if RELEASE
         if isAnotherInstanceRunning() {
             NSApp.terminate(nil)
         }
+        #endif
     }
     
     private func isAnotherInstanceRunning() -> Bool {

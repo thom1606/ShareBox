@@ -17,6 +17,10 @@ class Utilities {
              )
         )
     }
+    
+    static func map(minRange: CGFloat, maxRange: CGFloat, minDomain: CGFloat, maxDomain: CGFloat, value: CGFloat) -> CGFloat {
+        return minDomain + (maxDomain - minDomain) * (value - minRange) / (maxRange - minRange)
+    }
 
     /// Launch the Helper app if it is not already opened
     static func launchHelperApp() throws {
