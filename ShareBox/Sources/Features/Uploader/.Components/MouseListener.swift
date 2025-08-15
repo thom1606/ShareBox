@@ -10,17 +10,19 @@ import SwiftUI
 class MouseListener {
     private var mouseMonitor: Any?
     private var window: NSWindow?
-    
+    public var paused: Bool = false
+
     func startTrackingMouse(window: NSWindow) {
         self.window = window
         self.updateWindowPosition()
-        mouseMonitor = NSEvent.addGlobalMonitorForEvents(matching: .mouseMoved) { [weak self] event in
+        mouseMonitor = NSEvent.addGlobalMonitorForEvents(matching: .mouseMoved) { [weak self] _ in
             self?.updateWindowPosition()
         }
     }
 
     private func updateWindowPosition() {
         guard let window = window else { return }
+        if paused { return }
         let mouseLocation = NSEvent.mouseLocation
         if let screen = NSScreen.screens.first(where: { $0.frame.contains(mouseLocation) }) {
             let screenFrame = screen.visibleFrame

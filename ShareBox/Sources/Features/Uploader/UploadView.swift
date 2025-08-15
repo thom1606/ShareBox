@@ -40,7 +40,7 @@ struct UploadView: View {
                 }
             }
             .onHover { isOver in
-                if !state.canInteract || !isOver || state.selectedItems.isEmpty { return }
+                if !state.canInteract || !isOver { return }
                 state.offScreen = false
                 state.pulloutPercentage = 1
             }
@@ -108,7 +108,7 @@ struct UploadView: View {
     var body: some View {
         GeometryReader { geo in
             ZStack(alignment: .leading) {
-                Color.red
+                Color.clear
 
                 // Height Bound Wrapper
                 ZStack(alignment: .leading) {
