@@ -19,11 +19,11 @@ struct SettingsView: View {
                     .tabItem {
                         Label("Preferences", systemImage: "gear")
                     }
-                Text("Account")
+                AccountSettingsView()
                     .tabItem {
                         Label("Account", systemImage: "person.circle")
                     }
-                Text("Third View")
+                AboutSettingsView()
                     .tabItem {
                         Label("About", systemImage: "info.circle.fill")
                     }

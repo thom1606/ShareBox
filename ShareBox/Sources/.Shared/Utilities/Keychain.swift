@@ -8,6 +8,10 @@
 import Foundation
 import Security
 
+extension Notification.Name {
+    static let keychainItemChanged = Notification.Name("keychainItemChanged")
+}
+
 class Keychain {
     static var shared = Keychain()
 
@@ -22,7 +26,10 @@ class Keychain {
         // Remove old item if exists
         SecItemDelete(query as CFDictionary)
         // Save new key
-        SecItemAdd(query as CFDictionary, nil)
+        let status = SecItemAdd(query as CFDictionary, nil)
+        if status == errSecSuccess {
+            NotificationCenter.default.post(name: .keychainItemChanged, object: nil, userInfo: ["key": key, "action": "save"])
+        }
     }
 
     func deleteToken(key: String) {
@@ -30,7 +37,10 @@ class Keychain {
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrAccount as String: key
         ]
-        SecItemDelete(query as CFDictionary)
+        let status = SecItemDelete(query as CFDictionary)
+        if status == errSecSuccess {
+            NotificationCenter.default.post(name: .keychainItemChanged, object: nil, userInfo: ["key": key, "action": "delete"])
+        }
     }
 
     func fetchToken(key: String) -> String? {

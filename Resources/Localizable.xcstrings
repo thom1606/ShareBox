@@ -31,6 +31,9 @@
     "An upload is already active, please wait for it to finish." : {
 
     },
+    "App Details" : {
+
+    },
     "Authenticated" : {
 
     },
@@ -38,6 +41,15 @@
 
     },
     "Box Password" : {
+
+    },
+    "Build number" : {
+
+    },
+    "Build version" : {
+
+    },
+    "Contact Support" : {
 
     },
     "Continue" : {
@@ -49,7 +61,19 @@
     "Determine the duration of time a Box will be accessible after being shared." : {
 
     },
+    "Developed by Thom van den Broek" : {
+
+    },
+    "Developer" : {
+
+    },
+    "Email" : {
+
+    },
     "Enable mouse activation" : {
+
+    },
+    "Feedback" : {
 
     },
     "For just **€2.99**, enjoy **250GB** of cloud storage. Upgrade options will be available soon." : {
@@ -76,6 +100,12 @@
     "Let's go!" : {
 
     },
+    "Manage billing" : {
+
+    },
+    "Name" : {
+
+    },
     "No files or folders selected? Please try again after selecting items." : {
       "comment" : "If ShareBox ever gets triggered without files or folders selected."
     },
@@ -89,6 +119,9 @@
 
     },
     "Oops!" : {
+
+    },
+    "Open billing" : {
 
     },
     "Payment processing!" : {
@@ -115,10 +148,19 @@
     "ShareBox Settings" : {
 
     },
+    "Sign in" : {
+
+    },
+    "Sign in to ShareBox" : {
+
+    },
     "Sign in to ShareBox to start sharing files easily and quickly." : {
 
     },
     "Sign me up!" : {
+
+    },
+    "Sign out" : {
 
     },
     "Something went wrong internally, please try again." : {
@@ -139,7 +181,16 @@
     "Storage duration" : {
 
     },
-    "Third View" : {
+    "Subscribe" : {
+
+    },
+    "Subscribe to ShareBox" : {
+
+    },
+    "Subscription" : {
+
+    },
+    "Support" : {
 
     },
     "To keep you updated on your upload progress, we would like to send you notifications when necessary. No promotions or spam." : {
@@ -169,6 +220,12 @@
       }
     },
     "Uploader" : {
+
+    },
+    "User Details" : {
+
+    },
+    "Visit Website" : {
 
     },
     "We couldn't process your payment. Could you please try again?" : {
