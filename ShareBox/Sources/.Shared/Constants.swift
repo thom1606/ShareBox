@@ -14,6 +14,8 @@ final class Constants {
         static let storagePrefKey = "STORAGE_DURATION"
         static let passwordPrefKey = "GROUPS_PASSWORD"
         static let hiddenFilesPrefKey = "INCLUDE_HIDDEN_FILES"
+        static let mouseActivationPrefKey = "MOUSE_ACTIVATION"
+        static let keepInDockPrefKey = "KEEP_IN_DOCK"
     }
     final class User {
         static let subscriptionStatusKey = "SUBSCRIPTION_STATUS"

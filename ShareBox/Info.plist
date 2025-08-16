@@ -6,5 +6,16 @@
 	<string>$(BASE_URL)</string>
 	<key>UPLOAD_S3</key>
 	<string>$(UPLOAD_S3)</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.thom1606.ShareBox</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>sharebox</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>

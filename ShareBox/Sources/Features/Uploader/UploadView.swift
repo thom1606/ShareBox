@@ -9,7 +9,7 @@ import SwiftUI
 
 struct UploadView: View {
     @State private var state = UploaderViewModel()
-    @Environment(\.openWindow) private var openWindow
+    @AppStorage(Constants.Settings.mouseActivationPrefKey) private var enableMouseActivation = true
 
     private var dragAndDropHandler: some View {
         Color.black.opacity(0.001)
@@ -18,6 +18,7 @@ struct UploadView: View {
             .frame(width: state.uiState == .hidden || state.uiState == .peeking ? 13 : Constants.Uploader.windowWidth)
             .onDrop(of: [.fileURL], isTargeted: $state.isLiveDropTarget, perform: state.onItemsDrop)
             .onHover { isOver in
+                if !enableMouseActivation { return }
                 if isOver { state.isDropzoneHovered = isOver } else {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: { state.isDropzoneHovered = false })
                 }
@@ -68,6 +69,20 @@ struct UploadView: View {
 
             ZStack(alignment: .leading) {
                 Color.clear
+                if state.droppedItems.isEmpty {
+                    HStack(spacing: 0) {
+                        Spacer(minLength: 0)
+                        VStack(spacing: 8) {
+                            Image(systemName: "questionmark.folder")
+                                .font(.largeTitle)
+                                .foregroundStyle(.white)
+                            Text("Start adding files")
+                                .foregroundStyle(.white.opacity(0.7))
+                                .multilineTextAlignment(.center)
+                        }
+                        Spacer(minLength: 0)
+                    }
+                }
                 fileList
 
                 VStack(alignment: .center) {
@@ -96,6 +111,10 @@ struct UploadView: View {
             .padding(.vertical, 50)
             .offset(x: state.uiState == .peeking || state.uiState == .hidden ? -115 : 0)
             .animation(.spring(duration: 0.3), value: state.uiState)
+            .mask(
+                NotchShape(pulloutPercentage: state.uiState == .visible ? 1 : 0)
+                    .fill(.white)
+            )
         }
         .offset(x: state.uiState == .hidden ? -23 : 0)
         .animation(.spring(duration: 0.3), value: state.uiState)

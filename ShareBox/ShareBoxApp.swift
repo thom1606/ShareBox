@@ -11,6 +11,9 @@ import UserNotifications
 @main
 struct ShareBoxApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    
+    // Properties
+    @AppStorage(Constants.Settings.keepInDockPrefKey) private var keepInDock = false
 
     init() {
         #if RELEASE
@@ -19,6 +22,12 @@ struct ShareBoxApp: App {
         }
         #endif
         UNUserNotificationCenter.current().delegate = NotificationDelegate.shared
+        
+        if keepInDock {
+            NSApplication.shared.setActivationPolicy(.regular)
+        } else {
+            NSApplication.shared.setActivationPolicy(.accessory)
+        }
     }
     
     private func isAnotherInstanceRunning() -> Bool {
@@ -29,10 +38,6 @@ struct ShareBoxApp: App {
     var body: some Scene {
         Window("Uploader", id: "uploader") {
             UploadView()
-                .onAppear {
-                    print("requesting notificaiton access")
-                    UNUserNotificationCenter.current().requestAuthorization(options: [.alert]) { _, _ in }
-                }
         }
         .windowResizability(.contentSize)
         .commands {
@@ -40,8 +45,14 @@ struct ShareBoxApp: App {
                 // Disable the "New Window" menu item
             }
         }
-        Window("Settings", id: "settings") {
-            Text("Settings window")
+        Settings {
+            SettingsView()
+                .navigationTitle("ShareBox Settings")
+        }
+        .defaultSize(width: 600, height: 600)
+        .defaultPosition(.center)
+        Window("Onboarding", id: "onboarding") {
+            Text("Onboarding window")
         }
     }
 }
@@ -57,6 +68,29 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             window.makeKeyAndOrderFront(nil)
         }
     }
+    
+    // Add this method to handle incoming URLs
+   func application(_ application: NSApplication, open urls: [URL]) {
+       for url in urls {
+           handleIncomingURL(url)
+       }
+   }
+   
+   private func handleIncomingURL(_ url: URL) {
+       // Parse the URL and extract tokens
+       if let components = URLComponents(url: url, resolvingAgainstBaseURL: true),
+          let queryItems = components.queryItems {
+           let refreshToken = queryItems.first(where: { $0.name == "refreshToken" })?.value
+           let accessToken = queryItems.first(where: { $0.name == "accessToken" })?.value
+
+           if refreshToken != nil && accessToken != nil {
+               Keychain.shared.saveToken(refreshToken!, key: "RefreshToken")
+               Keychain.shared.saveToken(accessToken!, key: "AccessToken")
+               
+               Utilities.showNotification(title: String(localized: "Authenticated"), body: String(localized: "You have been authenticated successfully, enjoy sharing files!"))
+           }
+       }
+   }
 }
 
 // Singleton delegate to handle notifications
@@ -68,7 +102,6 @@ class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
                                 willPresent notification: UNNotification,
                                 withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         // Show banner, badge, and play sound even if app is in foreground
-        print("received notification")
         completionHandler([.banner, .badge, .sound])
     }
 }

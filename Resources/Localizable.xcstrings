@@ -1,17 +1,28 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "%lld files, %lld downloads, expires on %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$lld files, %2$lld downloads, expires on %3$@"
-          }
-        }
-      }
+    "1 day" : {
+
     },
-    "A new update for ShareBox is available! Download the latest version to enjoy new features and improvements." : {
+    "2 days" : {
+
+    },
+    "3 days" : {
+
+    },
+    "5 days" : {
+
+    },
+    "5 minutes" : {
+
+    },
+    "7 days" : {
+
+    },
+    "About" : {
+
+    },
+    "Account" : {
 
     },
     "An unknown error occurred while uploading your files. Please try again later." : {
@@ -20,22 +31,43 @@
     "An upload is already active, please wait for it to finish." : {
 
     },
+    "Authenticated" : {
+
+    },
+    "Behaviour" : {
+
+    },
+    "Box Password" : {
+
+    },
     "Continue" : {
 
     },
     "Create your own cloud box and share files and folders with anyone, anywhere." : {
 
     },
-    "Easily share your files with a single click. Your shared links will be available for a limited time, after which they will be permanently removed. For support, please [open an issue](https://github.com/thom1606/ShareBox/issues/new?labels=support)." : {
+    "Determine the duration of time a Box will be accessible after being shared." : {
+
+    },
+    "Enable mouse activation" : {
 
     },
     "For just **€2.99**, enjoy **250GB** of cloud storage. Upgrade options will be available soon." : {
 
     },
+    "General" : {
+
+    },
     "Hey! I want to share some files with you. You can download them from my ShareBox: %@" : {
       "comment" : "Clipboard message"
     },
-    "Include Hidden Files" : {
+    "Include files which are normally hidden in Finder. Be aware that this may cause sensitive files to be shared unintentionally." : {
+
+    },
+    "Include hidden files" : {
+
+    },
+    "Keep in Dock" : {
 
     },
     "Let's Get Started" : {
@@ -44,20 +76,14 @@
     "Let's go!" : {
 
     },
-    "Manage all your billing and subscription details here." : {
-
-    },
-    "Manage my Billing" : {
-
-    },
-    "My Password" : {
-
-    },
-    "New Update Available" : {
-
-    },
     "No files or folders selected? Please try again after selecting items." : {
       "comment" : "If ShareBox ever gets triggered without files or folders selected."
+    },
+    "Onboarding" : {
+
+    },
+    "Onboarding window" : {
+
     },
     "One or more files in your folder named \"%@\" have failed to upload and gave the following errors:" : {
 
@@ -65,10 +91,13 @@
     "Oops!" : {
 
     },
-    "Password" : {
+    "Payment processing!" : {
 
     },
-    "Payment processing!" : {
+    "Preferences" : {
+
+    },
+    "Protect your boxes by letting users enter a password to access them." : {
 
     },
     "Ready to Begin?" : {
@@ -77,13 +106,13 @@
     "Request access" : {
 
     },
-    "Settings" : {
-
-    },
-    "Settings window" : {
+    "Request notification access" : {
 
     },
     "ShareBox Created" : {
+
+    },
+    "ShareBox Settings" : {
 
     },
     "Sign in to ShareBox to start sharing files easily and quickly." : {
@@ -95,13 +124,22 @@
     "Something went wrong internally, please try again." : {
 
     },
+    "Start adding files" : {
+
+    },
+    "Start at login" : {
+
+    },
     "Start with Sharing!" : {
 
     },
     "Stay Informed" : {
 
     },
-    "Store Duration" : {
+    "Storage duration" : {
+
+    },
+    "Third View" : {
 
     },
     "To keep you updated on your upload progress, we would like to send you notifications when necessary. No promotions or spam." : {
@@ -133,9 +171,6 @@
     "Uploader" : {
 
     },
-    "View my Shared Files" : {
-
-    },
     "We couldn't process your payment. Could you please try again?" : {
 
     },
@@ -148,13 +183,16 @@
     "Welcome!" : {
 
     },
-    "Would you like to include hidden files in your uploads? Please note that hidden files may contain sensitive information and should be shared with caution." : {
+    "When enabled, moving your mouse to the screen edge will active the ShareBox Uploader." : {
 
     },
     "You are not signed in. Please open ShareBox and sign in to upload files." : {
 
     },
     "You do not have an active subscription. Please upgrade to upload your files." : {
+
+    },
+    "You have been authenticated successfully, enjoy sharing files!" : {
 
     },
     "You have reached the maximum number of boxes you can create at this time. Please wait for some boxes to expire before creating more." : {
@@ -170,9 +208,6 @@
 
     },
     "Your payment is being processed. Please wait a few minutes. If you don't receive a confirmation soon, please [contact us](mailto:sharebox@thomvandenbroek.com)." : {
-
-    },
-    "Your Shared Boxes" : {
 
     }
   },

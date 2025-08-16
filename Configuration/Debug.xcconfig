@@ -5,6 +5,6 @@
 //  Created by Thom van den Broek on 11/08/2025.
 //
 
-BASE_URL = http:/$()/localhost:5173
-//BASE_URL = https:/$()/sharebox.thomvandenbroek.com
+//BASE_URL = http:/$()/localhost:5173
+BASE_URL = https:/$()/sharebox.thomvandenbroek.com
 UPLOAD_S3 = false

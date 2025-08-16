@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ToolbarView: View {
-    @Environment(\.openWindow) private var openWindow
+    @Environment(\.openSettings) private var openSettings
 
     var state: UploaderViewModel
 
@@ -20,7 +20,7 @@ struct ToolbarView: View {
 
     var body: some View {
         HStack(spacing: 8) {
-            Button(action: { openWindow(id: "settings") }, label: {
+            Button(action: { openSettings() }, label: {
                 Image(systemName: "gearshape")
             })
             .buttonStyle(.plain)
