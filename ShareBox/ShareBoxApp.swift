@@ -77,18 +77,22 @@ class AppDelegate: NSObject, NSApplicationDelegate {
    }
    
    private func handleIncomingURL(_ url: URL) {
-       // Parse the URL and extract tokens
-       if let components = URLComponents(url: url, resolvingAgainstBaseURL: true),
-          let queryItems = components.queryItems {
-           let refreshToken = queryItems.first(where: { $0.name == "refreshToken" })?.value
-           let accessToken = queryItems.first(where: { $0.name == "accessToken" })?.value
-
-           if refreshToken != nil && accessToken != nil {
-               Keychain.shared.saveToken(refreshToken!, key: "RefreshToken")
-               Keychain.shared.saveToken(accessToken!, key: "AccessToken")
+       if url.scheme == "sharebox" && url.host == "auth" {
+           // Parse the URL and extract tokens
+           if let components = URLComponents(url: url, resolvingAgainstBaseURL: true),
+              let queryItems = components.queryItems {
+               let refreshToken = queryItems.first(where: { $0.name == "refreshToken" })?.value
+               let accessToken = queryItems.first(where: { $0.name == "accessToken" })?.value
                
-               Utilities.showNotification(title: String(localized: "Authenticated"), body: String(localized: "You have been authenticated successfully, enjoy sharing files!"))
+               if refreshToken != nil && accessToken != nil {
+                   Keychain.shared.saveToken(refreshToken!, key: "RefreshToken")
+                   Keychain.shared.saveToken(accessToken!, key: "AccessToken")
+                   
+                   Utilities.showNotification(title: String(localized: "Authenticated"), body: String(localized: "You have been authenticated successfully, enjoy sharing files!"))
+               }
            }
+       } else if url.scheme == "sharebox" && url.host == "subscribed" {
+           NotificationCenter.default.post(name: .userDetailsChanged, object: nil, userInfo: [:])
        }
    }
 }

@@ -166,9 +166,15 @@ struct AccountSettingsView: View {
                     }
                 }
             }
+            NotificationCenter.default.addObserver(forName: .userDetailsChanged, object: nil, queue: .main) { _ in
+                Task {
+                    await fetchUserDetails()
+                }
+            }
         }
         .onDisappear {
             NotificationCenter.default.removeObserver(self, name: .keychainItemChanged, object: nil)
+            NotificationCenter.default.removeObserver(self, name: .userDetailsChanged, object: nil)
         }
         .task {
             await fetchUserDetails()
