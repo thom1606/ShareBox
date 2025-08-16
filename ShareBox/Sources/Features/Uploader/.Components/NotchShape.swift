@@ -16,7 +16,7 @@ struct NotchShape: Shape {
     }
 
     private var xWidth: CGFloat {
-        Utilities.map(minRange: 0, maxRange: 1, minDomain: 23, maxDomain: Constants.Uploader.windowWidth, value: animatableData)
+        Utilities.map(minRange: 0, maxRange: 1, minDomain: 13, maxDomain: Constants.Uploader.windowWidth, value: animatableData)
     }
 
     private var smallOffset: CGFloat {

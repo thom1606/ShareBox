@@ -7,19 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		8426D9BD2E49E6D4008F6EB1 /* ShareBox.Helper.app in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8426D95C2E49DD87008F6EB1 /* ShareBox.Helper.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		8426D9CA2E49ED41008F6EB1 /* ShareBox.Finder.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 8426D9C22E49ED41008F6EB1 /* ShareBox.Finder.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		8477DA562E4C9F2300162F53 /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = 8477DA552E4C9F2300162F53 /* .swiftlint.yml */; };
-		8477DA572E4C9F2300162F53 /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = 8477DA552E4C9F2300162F53 /* .swiftlint.yml */; };
 		8477DA582E4C9F2300162F53 /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = 8477DA552E4C9F2300162F53 /* .swiftlint.yml */; };
 		8494E4342E49FE61003065BD /* Debug.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 8494E4332E49FE61003065BD /* Debug.xcconfig */; };
-		8494E4352E49FE61003065BD /* Debug.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 8494E4332E49FE61003065BD /* Debug.xcconfig */; };
 		8494E4362E49FE61003065BD /* Debug.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 8494E4332E49FE61003065BD /* Debug.xcconfig */; };
 		8494E4382E49FE6B003065BD /* Release.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 8494E4372E49FE6B003065BD /* Release.xcconfig */; };
 		8494E4392E49FE6B003065BD /* Release.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 8494E4372E49FE6B003065BD /* Release.xcconfig */; };
-		8494E43A2E49FE6B003065BD /* Release.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 8494E4372E49FE6B003065BD /* Release.xcconfig */; };
 		8494E45D2E4A322D003065BD /* ThomKit in Frameworks */ = {isa = PBXBuildFile; productRef = 8494E45C2E4A322D003065BD /* ThomKit */; };
-		8494E4BD2E4A3B14003065BD /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 8494E4BC2E4A3B14003065BD /* Localizable.xcstrings */; };
 		8494E4BE2E4A3B1E003065BD /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 8494E4BC2E4A3B14003065BD /* Localizable.xcstrings */; };
 		8494E4BF2E4A3B1E003065BD /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 8494E4BC2E4A3B14003065BD /* Localizable.xcstrings */; };
 /* End PBXBuildFile section */
@@ -35,16 +30,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		8426D9BC2E49E6C1008F6EB1 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 7;
-			files = (
-				8426D9BD2E49E6D4008F6EB1 /* ShareBox.Helper.app in CopyFiles */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		8426D9CF2E49ED41008F6EB1 /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -60,7 +45,6 @@
 
 /* Begin PBXFileReference section */
 		8426D9462E49DD65008F6EB1 /* ShareBox.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ShareBox.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		8426D95C2E49DD87008F6EB1 /* ShareBox.Helper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ShareBox.Helper.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8426D9C22E49ED41008F6EB1 /* ShareBox.Finder.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ShareBox.Finder.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		8477DA552E4C9F2300162F53 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
 		8494E4332E49FE61003065BD /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
@@ -69,27 +53,6 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		84116A082E4D3B6B00A8F32B /* Exceptions for "ShareBox.Helper" folder in "ShareBox.Helper" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				"ShareBox-Helper-Info.plist",
-			);
-			target = 8426D95B2E49DD87008F6EB1 /* ShareBox.Helper */;
-		};
-		8426D9B52E49E5BC008F6EB1 /* Exceptions for "ShareBox" folder in "ShareBox.Helper" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Sources/.Shared/Constants.swift,
-				Sources/.Shared/Services/ApiService.swift,
-				Sources/.Shared/Types.swift,
-				Sources/.Shared/Utilities/Errors.swift,
-				Sources/.Shared/Utilities/Files.swift,
-				Sources/.Shared/Utilities/Keychain.swift,
-				Sources/.Shared/Utilities/Logs.swift,
-				Sources/.Shared/Utilities/WindowAccessor.swift,
-			);
-			target = 8426D95B2E49DD87008F6EB1 /* ShareBox.Helper */;
-		};
 		8426D9CB2E49ED41008F6EB1 /* Exceptions for "ShareBox.Finder" folder in "ShareBox.Finder" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -125,18 +88,9 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				8494E43E2E49FECD003065BD /* Exceptions for "ShareBox" folder in "ShareBox" target */,
-				8426D9B52E49E5BC008F6EB1 /* Exceptions for "ShareBox" folder in "ShareBox.Helper" target */,
 				8426D9D12E49ED83008F6EB1 /* Exceptions for "ShareBox" folder in "ShareBox.Finder" target */,
 			);
 			path = ShareBox;
-			sourceTree = "<group>";
-		};
-		8426D95D2E49DD87008F6EB1 /* ShareBox.Helper */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				84116A082E4D3B6B00A8F32B /* Exceptions for "ShareBox.Helper" folder in "ShareBox.Helper" target */,
-			);
-			path = ShareBox.Helper;
 			sourceTree = "<group>";
 		};
 		8426D9C32E49ED41008F6EB1 /* ShareBox.Finder */ = {
@@ -158,13 +112,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		8426D9592E49DD87008F6EB1 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		8426D9BF2E49ED41008F6EB1 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -182,7 +129,6 @@
 				8494E4BB2E4A3B08003065BD /* Resources */,
 				8494E4322E49FE34003065BD /* Configuration */,
 				8426D9482E49DD65008F6EB1 /* ShareBox */,
-				8426D95D2E49DD87008F6EB1 /* ShareBox.Helper */,
 				8426D9C32E49ED41008F6EB1 /* ShareBox.Finder */,
 				8426D9472E49DD65008F6EB1 /* Products */,
 			);
@@ -192,7 +138,6 @@
 			isa = PBXGroup;
 			children = (
 				8426D9462E49DD65008F6EB1 /* ShareBox.app */,
-				8426D95C2E49DD87008F6EB1 /* ShareBox.Helper.app */,
 				8426D9C22E49ED41008F6EB1 /* ShareBox.Finder.appex */,
 			);
 			name = Products;
@@ -226,7 +171,6 @@
 				8426D9422E49DD65008F6EB1 /* Sources */,
 				8426D9432E49DD65008F6EB1 /* Frameworks */,
 				8426D9442E49DD65008F6EB1 /* Resources */,
-				8426D9BC2E49E6C1008F6EB1 /* CopyFiles */,
 				8426D9CF2E49ED41008F6EB1 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
@@ -243,29 +187,6 @@
 			);
 			productName = ShareBox;
 			productReference = 8426D9462E49DD65008F6EB1 /* ShareBox.app */;
-			productType = "com.apple.product-type.application";
-		};
-		8426D95B2E49DD87008F6EB1 /* ShareBox.Helper */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 8426D9682E49DD88008F6EB1 /* Build configuration list for PBXNativeTarget "ShareBox.Helper" */;
-			buildPhases = (
-				8477DA5A2E4CA1C500162F53 /* ShellScript */,
-				8426D9582E49DD87008F6EB1 /* Sources */,
-				8426D9592E49DD87008F6EB1 /* Frameworks */,
-				8426D95A2E49DD87008F6EB1 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			fileSystemSynchronizedGroups = (
-				8426D95D2E49DD87008F6EB1 /* ShareBox.Helper */,
-			);
-			name = ShareBox.Helper;
-			packageProductDependencies = (
-			);
-			productName = ShareBox.Helper;
-			productReference = 8426D95C2E49DD87008F6EB1 /* ShareBox.Helper.app */;
 			productType = "com.apple.product-type.application";
 		};
 		8426D9C12E49ED41008F6EB1 /* ShareBox.Finder */ = {
@@ -303,9 +224,6 @@
 					8426D9452E49DD65008F6EB1 = {
 						CreatedOnToolsVersion = 16.2;
 					};
-					8426D95B2E49DD87008F6EB1 = {
-						CreatedOnToolsVersion = 16.2;
-					};
 					8426D9C12E49ED41008F6EB1 = {
 						CreatedOnToolsVersion = 16.2;
 					};
@@ -329,7 +247,6 @@
 			projectRoot = "";
 			targets = (
 				8426D9452E49DD65008F6EB1 /* ShareBox */,
-				8426D95B2E49DD87008F6EB1 /* ShareBox.Helper */,
 				8426D9C12E49ED41008F6EB1 /* ShareBox.Finder */,
 			);
 		};
@@ -344,17 +261,6 @@
 				8494E4392E49FE6B003065BD /* Release.xcconfig in Resources */,
 				8494E4BE2E4A3B1E003065BD /* Localizable.xcstrings in Resources */,
 				8494E4342E49FE61003065BD /* Debug.xcconfig in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		8426D95A2E49DD87008F6EB1 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				8477DA572E4C9F2300162F53 /* .swiftlint.yml in Resources */,
-				8494E43A2E49FE6B003065BD /* Release.xcconfig in Resources */,
-				8494E4BD2E4A3B14003065BD /* Localizable.xcstrings in Resources */,
-				8494E4352E49FE61003065BD /* Debug.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -374,24 +280,7 @@
 /* Begin PBXShellScriptBuildPhase section */
 		8477DA592E4C9F5D00162F53 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/swiftlint.result",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "if [[ \"$(uname -m)\" == arm64 ]]\nthen\n    export PATH=\"/opt/homebrew/bin:$PATH\"\nfi\n\nif command -v swiftlint >/dev/null 2>&1\nthen\n    swiftlint\nelse\n    echo \"warning: `swiftlint` command not found - See https://github.com/realm/SwiftLint#installation for installation instructions.\"\nfi\n";
-		};
-		8477DA5A2E4CA1C500162F53 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);
@@ -412,13 +301,6 @@
 
 /* Begin PBXSourcesBuildPhase section */
 		8426D9422E49DD65008F6EB1 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		8426D9582E49DD87008F6EB1 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -636,79 +518,6 @@
 			};
 			name = Release;
 		};
-		8426D9692E49DD88008F6EB1 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8494E4332E49FE61003065BD /* Debug.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = ShareBox.Helper/ShareBox_Helper.entitlements;
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 2;
-				DEVELOPMENT_ASSET_PATHS = "\"ShareBox.Helper/Preview Content\"";
-				DEVELOPMENT_TEAM = U6WA8YA735;
-				ENABLE_HARDENED_RUNTIME = YES;
-				ENABLE_PREVIEWS = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = NO;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "ShareBox.Helper/ShareBox-Helper-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = ShareBox.Helper;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
-				INFOPLIST_KEY_LSBackgroundOnly = YES;
-				INFOPLIST_KEY_LSUIElement = NO;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.thom1606.ShareBox.Helper;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
-			};
-			name = Debug;
-		};
-		8426D96A2E49DD88008F6EB1 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8494E4372E49FE6B003065BD /* Release.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = ShareBox.Helper/ShareBox_Helper.entitlements;
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 2;
-				DEVELOPMENT_ASSET_PATHS = "\"ShareBox.Helper/Preview Content\"";
-				DEVELOPMENT_TEAM = U6WA8YA735;
-				ENABLE_HARDENED_RUNTIME = YES;
-				ENABLE_PREVIEWS = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = NO;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "ShareBox.Helper/ShareBox-Helper-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = ShareBox.Helper;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
-				INFOPLIST_KEY_LSBackgroundOnly = YES;
-				INFOPLIST_KEY_LSUIElement = NO;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.thom1606.ShareBox.Helper;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = RELEASE;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
-			};
-			name = Release;
-		};
 		8426D9CD2E49ED41008F6EB1 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 8494E4332E49FE61003065BD /* Debug.xcconfig */;
@@ -788,15 +597,6 @@
 			buildConfigurations = (
 				8426D9562E49DD66008F6EB1 /* Debug */,
 				8426D9572E49DD66008F6EB1 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		8426D9682E49DD88008F6EB1 /* Build configuration list for PBXNativeTarget "ShareBox.Helper" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				8426D9692E49DD88008F6EB1 /* Debug */,
-				8426D96A2E49DD88008F6EB1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

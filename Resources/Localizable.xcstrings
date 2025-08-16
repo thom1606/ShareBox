@@ -20,9 +20,6 @@
     "An upload is already active, please wait for it to finish." : {
 
     },
-    "Cancel" : {
-
-    },
     "Continue" : {
 
     },
@@ -30,21 +27,6 @@
 
     },
     "Easily share your files with a single click. Your shared links will be available for a limited time, after which they will be permanently removed. For support, please [open an issue](https://github.com/thom1606/ShareBox/issues/new?labels=support)." : {
-
-    },
-    "Error 1001: Unknown API error" : {
-
-    },
-    "Error 1002: File size is zero" : {
-
-    },
-    "Error 1003: File size is too big" : {
-
-    },
-    "Error 1004: No pre-signed url available" : {
-
-    },
-    "Error 1005: Uploading to S3 failed" : {
 
     },
     "For just **€2.99**, enjoy **250GB** of cloud storage. Upgrade options will be available soon." : {
@@ -77,16 +59,10 @@
     "No files or folders selected? Please try again after selecting items." : {
       "comment" : "If ShareBox ever gets triggered without files or folders selected."
     },
-    "Ok" : {
-
-    },
     "One or more files in your folder named \"%@\" have failed to upload and gave the following errors:" : {
 
     },
     "Oops!" : {
-
-    },
-    "Open" : {
 
     },
     "Password" : {
@@ -182,9 +158,6 @@
 
     },
     "You have reached the maximum number of boxes you can create at this time. Please wait for some boxes to expire before creating more." : {
-
-    },
-    "You have reached your monthly upload limit. Please wait until the next billing cycle to upload additional files." : {
 
     },
     "You're all set to start your journey with ShareBox! Begin by selecting files in Finder and choosing the **\"Upload to ShareBox\"** option." : {

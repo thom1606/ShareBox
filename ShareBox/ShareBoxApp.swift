@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UserNotifications
 
 @main
 struct ShareBoxApp: App {
@@ -17,6 +18,7 @@ struct ShareBoxApp: App {
             NSApp.terminate(nil)
         }
         #endif
+        UNUserNotificationCenter.current().delegate = NotificationDelegate.shared
     }
     
     private func isAnotherInstanceRunning() -> Bool {
@@ -27,7 +29,12 @@ struct ShareBoxApp: App {
     var body: some Scene {
         Window("Uploader", id: "uploader") {
             UploadView()
+                .onAppear {
+                    print("requesting notificaiton access")
+                    UNUserNotificationCenter.current().requestAuthorization(options: [.alert]) { _, _ in }
+                }
         }
+        .windowResizability(.contentSize)
         .commands {
             CommandGroup(replacing: .newItem) {
                 // Disable the "New Window" menu item
@@ -49,5 +56,19 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             window.level = .mainMenu
             window.makeKeyAndOrderFront(nil)
         }
+    }
+}
+
+// Singleton delegate to handle notifications
+class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
+    static let shared = NotificationDelegate()
+
+    // This method is called when a notification is delivered while the app is in the foreground
+    func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                willPresent notification: UNNotification,
+                                withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        // Show banner, badge, and play sound even if app is in foreground
+        print("received notification")
+        completionHandler([.banner, .badge, .sound])
     }
 }

@@ -1,0 +1,60 @@
+//
+//  ToolbarView.swift
+//  ShareBox
+//
+//  Created by Thom van den Broek on 16/08/2025.
+//
+
+import SwiftUI
+
+struct ToolbarView: View {
+    @Environment(\.openWindow) private var openWindow
+
+    var state: UploaderViewModel
+
+    private var activeItemCount: Int {
+        var total = 1
+        if !state.hasOngoingUpload && !state.droppedItems.isEmpty { total += 1 }
+        return total
+    }
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Button(action: { openWindow(id: "settings") }, label: {
+                Image(systemName: "gearshape")
+            })
+            .buttonStyle(.plain)
+            if !state.hasOngoingUpload && !state.droppedItems.isEmpty {
+                Button(action: { state.closeNotch(reset: true) }, label: {
+                    Image(systemName: "checkmark.circle")
+                })
+                .buttonStyle(.plain)
+                .transition(.scale.combined(with: .opacity))
+                .animation(.spring(duration: 0.4, bounce: 0.3), value: !state.hasOngoingUpload && !state.droppedItems.isEmpty)
+            }
+        }
+        .font(.title3)
+        .foregroundStyle(.white)
+        .padding(.horizontal, 6)
+        .padding(.vertical, 6)
+        .background(
+            GeometryReader { geo in
+                RoundedRectangle(cornerRadius: 20)
+                    .fill(.white.opacity(0.25))
+                    .frame(width: activeItemCount == 1 ? geo.size.height : geo.size.width, height: geo.size.height)
+                    .animation(.spring(duration: 0.3), value: geo.size.width)
+            }
+        )
+        .overlay(
+            Rectangle()
+                .fill(.black)
+                .opacity(state.hasActiveOverlay ? 1 : 0)
+                .animation(.spring(duration: 0.3), value: state.hasActiveOverlay)
+                .allowsHitTesting(state.hasActiveOverlay)
+        )
+    }
+}
+
+#Preview {
+    ToolbarView(state: .init())
+}

@@ -18,6 +18,7 @@ struct ItemPreview: View {
     private var name: String
     private var isImage: Bool
     private var imagePreview: NSImage?
+    private var couldBeFound: Bool = false
 
     @State private var showErrorPopover: Bool = false
 
@@ -67,6 +68,7 @@ struct ItemPreview: View {
             var hasIncomplete = false
             // Check for all files inside if they are completed
             for key in state.uploadProgress.keys where key.hasPrefix(item.absolute) {
+                if key == item.absolute { continue }
                 let status = state.uploadProgress[key]!.status
                 if status != .completed && status != .failed {
                     hasIncomplete = true
@@ -83,10 +85,17 @@ struct ItemPreview: View {
             var itemCount = 0
             var totalCombinedProgress: CGFloat = 0
             for key in state.uploadProgress.keys where key.hasPrefix(item.absolute) {
+                if key == item.absolute { continue }
                 itemCount += 1
-                totalCombinedProgress += state.uploadProgress[key]?.uploadProgress ?? 0
+                totalCombinedProgress += state.uploadProgress[key]!.uploadProgress
             }
-            return itemCount > 0 ? totalCombinedProgress / CGFloat(itemCount) : 0
+            if itemCount > 0 {
+                var result = totalCombinedProgress / CGFloat(itemCount)
+                if result == 0 { result = 0.01 }
+                return result
+            }
+            if !isCompleted { return 0.01 }
+            return 0
         }
         return state.uploadProgress[item.absolute]?.uploadProgress ?? 0
     }
@@ -98,17 +107,17 @@ struct ItemPreview: View {
                     Image(nsImage: imagePreview)
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 40, height: 40)
+                        .frame(width: 50, height: 50)
                 } else if let icon = icon {
                     Image(nsImage: icon)
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 40, height: 40)
+                        .frame(width: 50, height: 50)
                 } else {
                     Image(systemName: "questionmark.folder")
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 40, height: 40)
+                        .frame(width: 50, height: 50)
                 }
                 Text(name)
                     .font(.caption)
@@ -120,12 +129,12 @@ struct ItemPreview: View {
             .opacity(isCompleted && errors.isEmpty ? 1 : 0.4)
 
             // Progress overlay
-            if !isCompleted && errors.isEmpty && uploadProgress > 0.01 {
+            if !isCompleted && errors.isEmpty && uploadProgress > 0.001 {
                 ZStack(alignment: .center) {
                     ProgressCircle(progress: uploadProgress)
                         .frame(width: 30, height: 30)
                 }
-                .frame(width: 67, height: 40)
+                .frame(width: 50, height: 50)
             }
 
             // Failed overlay
@@ -136,51 +145,51 @@ struct ItemPreview: View {
                         .scaledToFit()
                         .foregroundStyle(.yellow)
                         .frame(width: 30, height: 30)
-                    }
-                    .popover(isPresented: $showErrorPopover) {
-                        VStack(alignment: .leading, spacing: 0) {
-                            Text("Upload failed")
-                                .font(.headline)
-                            Group {
-                                if item.isFolder {
-                                    Text("One or more files in your folder named \"\(name)\" have failed to upload and gave the following errors:")
-                                } else {
-                                    Text("Your item named \"\(name)\" has failed to upload and gave the following error:")
-                                }
+                }
+                .popover(isPresented: $showErrorPopover) {
+                    VStack(alignment: .leading, spacing: 0) {
+                        Text("Upload failed")
+                            .font(.headline)
+                        Group {
+                            if item.isFolder {
+                                Text("One or more files in your folder named \"\(name)\" have failed to upload and gave the following errors:")
+                            } else {
+                                Text("Your item named \"\(name)\" has failed to upload and gave the following error:")
                             }
-                            .multilineTextAlignment(.leading)
-                            .font(.body)
-                            .padding(.top, 3)
-                            .padding(.bottom, 8)
-                            .foregroundStyle(.secondary)
-                            VStack(alignment: .leading) {
-//                                ForEach(Array(errors.keys) as [String], id: \.self) { key in
-//                                    if item.isFolder {
-//                                        VStack(alignment: .leading, spacing: 0) {
-//                                            Text(key)
-//                                                .foregroundStyle(.primary)
-////                                            ForEach(errors[key]!, id: \.self) { error in
-////                                                Text(error.rawValue)
-////                                            }
-//                                        }
-//                                    } else {
-//                                        Text(errors[key]!)
-//                                    }
-//                                }
-                            }
-                            .font(.body)
-                            .foregroundStyle(.tertiary)
                         }
-                        .frame(minWidth: 200, idealWidth: 200, maxWidth: 200)
-                        .padding(10)
+                        .multilineTextAlignment(.leading)
+                        .font(.body)
+                        .padding(.top, 3)
+                        .padding(.bottom, 8)
+                        .foregroundStyle(.secondary)
+                        VStack(alignment: .leading) {
+                            //                                ForEach(Array(errors.keys) as [String], id: \.self) { key in
+                            //                                    if item.isFolder {
+                            //                                        VStack(alignment: .leading, spacing: 0) {
+                            //                                            Text(key)
+                            //                                                .foregroundStyle(.primary)
+                            ////                                            ForEach(errors[key]!, id: \.self) { error in
+                            ////                                                Text(error.rawValue)
+                            ////                                            }
+                            //                                        }
+                            //                                    } else {
+                            //                                        Text(errors[key]!)
+                            //                                    }
+                            //                                }
+                        }
+                        .font(.body)
+                        .foregroundStyle(.tertiary)
+                    }
+                    .frame(minWidth: 200, idealWidth: 200, maxWidth: 200)
+                    .padding(10)
                 }
                 .onHover { isOver in
                     showErrorPopover = isOver
                 }
-                .frame(width: 67, height: 40)
+                .frame(width: 50, height: 50)
             }
         }
-        .frame(width: 67)
+        .frame(width: 80)
     }
 }
 

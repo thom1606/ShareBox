@@ -28,8 +28,7 @@ class Keychain {
     func deleteToken(key: String) {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
-            kSecAttrAccount as String: key,
-//            kSecAttrAccessGroup as String: "group.com.thom1606.ShareBox"
+            kSecAttrAccount as String: key
         ]
         SecItemDelete(query as CFDictionary)
     }
@@ -38,7 +37,6 @@ class Keychain {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrAccount as String: key,
-//            kSecAttrAccessGroup as String: "group.com.thom1606.ShareBox",
             kSecReturnData as String: true,
             kSecMatchLimit as String: kSecMatchLimitOne
         ]

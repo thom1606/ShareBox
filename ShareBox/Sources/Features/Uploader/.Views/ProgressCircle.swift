@@ -10,23 +10,28 @@ import SwiftUI
 struct ThreeQuarterFilledCircle: Shape {
     var progress: CGFloat // Progress between 0 and 100
 
+    var animatableData: CGFloat {
+        get { progress }
+        set { progress = newValue }
+    }
+
     func path(in rect: CGRect) -> Path {
         var path = Path()
         let center = CGPoint(x: rect.midX, y: rect.midY)
         let radius = min(rect.width, rect.height) / 2
-        
+
         // Start angle at top (-90 degrees), end angle at 270 degrees (3/4 of circle)
         path.addArc(center: center,
                     radius: radius,
                     startAngle: .degrees(-90),
                     endAngle: .degrees(
-                        Utilities.map(minRange: 0, maxRange: 100, minDomain: -90, maxDomain: 270, value: progress)),
+                        Utilities.map(minRange: 0, maxRange: 100, minDomain: -90, maxDomain: 270, value: animatableData)),
                     clockwise: false)
-        
+
         // Close the path to make it a filled wedge
         path.addLine(to: center)
         path.closeSubpath()
-        
+
         return path
     }
 }
@@ -40,6 +45,7 @@ struct ProgressCircle: View {
                 .fill(.white.opacity(0.3))
             ThreeQuarterFilledCircle(progress: progress)
                 .fill(.white)
+                .animation(.easeInOut, value: progress)
         }
     }
 }
