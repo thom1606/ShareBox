@@ -16,6 +16,7 @@ import UserNotifications
         case visible
     }
     var mouseListener = MouseListener()
+    var messageListener: MachMessageListener?
     // Active Drag & Drop state indicator
     var isLiveDropTarget: Bool = false {
         didSet {
@@ -30,27 +31,24 @@ import UserNotifications
     var showErrorOverlay: Bool = false
     var droppedItems: [FilePath] = []
     var isCreatingGroup: Bool = false
-    private var groupDetails: BoxDetails?
-    private var hasShownSuccessNotification: Bool = false
+    var groupDetails: BoxDetails?
 
     // Uploading props
     private var waitingContinuations: [CheckedContinuation<BoxDetails, Error>] = []
     // Track each file their status, progress and possible error
     var uploadProgress: [String: FilePathProgress] = [:] {
         didSet {
-            if groupDetails == nil || uploadProgress.isEmpty || hasShownSuccessNotification { return }
-            hasShownSuccessNotification = true
-            // After the batch is done, we check if there are any other open files, if not, the upload is complete and we show and success notification and copy the url to the clipboard
+            if groupDetails == nil || uploadProgress.isEmpty { return }
+            // After the batch is done, we check if there are any other open files, if not, the upload is complete and we show the success notification
             var hasOpenStandingProgress = false
             for item in uploadProgress.values where item.status != .completed && item.status != .failed {
                 hasOpenStandingProgress = true
             }
             if !hasOpenStandingProgress {
-                let pasteboard = NSPasteboard.general
-                pasteboard.clearContents()
-                pasteboard.setString(String(localized: "Hey! I want to share some files with you. You can download them from my ShareBox: \(groupDetails!.url)", comment: "Clipboard message"), forType: .string)
-
-                Utilities.showNotification(title: String(localized: "ShareBox Created"), body: String(localized: "Your files have been uploaded, and the link is copied to your clipboard!"))
+                let boolString = UserDefaults.standard.string(forKey: Constants.Settings.uploadNotificationsPrefKey)
+                if boolString == "1" || boolString == nil {
+                    Utilities.showNotification(title: String(localized: "ShareBox Uploaded"), body: String(localized: "All your files have been uploaded. Close this Box to copy the link to your clipboard."))
+                }
             }
         }
     }
@@ -69,7 +67,6 @@ import UserNotifications
     }
 
     var hasOngoingUpload: Bool {
-        if !hasShownSuccessNotification { return true }
         var hasOpenStandingProgress = false
         for item in uploadProgress.values where item.status != .completed && item.status != .failed {
             hasOpenStandingProgress = true
@@ -91,6 +88,17 @@ import UserNotifications
     }
 
     var showLoadingOverlay: Bool = false
+
+    init() {
+        setup()
+    }
+
+    /// Setup some additional listeners / values
+    private func setup() {
+        self.messageListener = MachMessageListener(onUpload: { paths in
+            self.addNewFiles(paths: paths)
+        })
+    }
 
     /// Support for dropping file items into the app
     func onItemsDrop(providers: [NSItemProvider]) -> Bool {
@@ -118,8 +126,6 @@ import UserNotifications
                 }
 
                 if path == nil { return }
-                // Don't add duplicates
-                if self.droppedItems.contains(where: { $0.absolute == path!.absolute }) { return }
                 finalPaths.append(path!)
             }
         }
@@ -135,24 +141,28 @@ import UserNotifications
     /// Add new files to the uploader
     private func addNewFiles(paths: [FilePath]) {
         if paths.isEmpty { return }
-        self.droppedItems.append(contentsOf: paths)
+        // Filter out all the duplicates
+        let nonDuplicatePaths = paths.filter { path in !self.droppedItems.contains(where: { $0.absolute == path.absolute }) }
+        if self.groupDetails == nil { self.showLoadingOverlay = true }
+        // Append the new files to the array
+        self.droppedItems.append(contentsOf: nonDuplicatePaths)
         Task { @MainActor in
             // Start of by notarizing the current batch so we don't lose track of what is already being handled.
-            for path in paths {
+            for path in nonDuplicatePaths where !path.isFolder {
                 self.uploadProgress[path.absolute] = .init(status: .notarized)
             }
 
             // Wait for the group to be created
             guard let group = try? await ensureGroup() else {
                 // Group creation failed, we will remove these files from the known upload
-                self.droppedItems.removeAll(where: paths.contains)
-                for path in paths {
+                self.droppedItems.removeAll(where: nonDuplicatePaths.contains)
+                for path in nonDuplicatePaths {
                     self.uploadProgress.removeValue(forKey: path.absolute)
                 }
                 return
             }
             self.showLoadingOverlay = false
-            let batch = UploadBatch(groupId: group.groupId, paths: paths, onProgress: { path, fileProgress in
+            let batch = UploadBatch(groupId: group.groupId, paths: nonDuplicatePaths, onProgress: { path, fileProgress in
                 self.uploadProgress[path] = fileProgress
             })
             // Start the file upload
@@ -170,6 +180,7 @@ import UserNotifications
             // Make sure only one instance can create a group
             guard !self.isCreatingGroup else { return }
             self.isCreatingGroup = true
+            self.showLoadingOverlay = true
 
             Task {
                 try? await Task.sleep(for: .seconds(1))
@@ -218,12 +229,19 @@ import UserNotifications
     }
 
     /// Close out the notch and group upload progress
-    func closeNotch(reset: Bool = false) {
+    func closeNotch(reset: Bool = false, notify: Bool = false) {
         // Toggle off options which could be witholding the UI without any user interaction
         self.showErrorOverlay = false
         self.showLoadingOverlay = false
         if reset {
-            self.hasShownSuccessNotification = false
+            if notify {
+                let pasteboard = NSPasteboard.general
+                pasteboard.clearContents()
+                pasteboard.setString(String(localized: "Hey! I want to share some files with you. You can download them from my ShareBox: \(groupDetails!.url)", comment: "Clipboard message"), forType: .string)
+
+                Utilities.showNotification(title: String(localized: "Link Copied!"), body: String(localized: "The ShareBox link is copied to your clipboard!"))
+            }
+
             self.droppedItems.removeAll()
             self.uploadProgress.removeAll()
             self.groupDetails = nil

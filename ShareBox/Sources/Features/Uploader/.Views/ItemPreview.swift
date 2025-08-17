@@ -64,16 +64,22 @@ struct ItemPreview: View {
     }
 
     private var isCompleted: Bool {
+        if state.groupDetails == nil { return false }
+        if state.isCreatingGroup { return false }
+
         if item.isFolder {
             var hasIncomplete = false
+            var registeredItems = 0
             // Check for all files inside if they are completed
             for key in state.uploadProgress.keys where key.hasPrefix(item.absolute) {
                 if key == item.absolute { continue }
+                registeredItems += 1
                 let status = state.uploadProgress[key]!.status
                 if status != .completed && status != .failed {
                     hasIncomplete = true
                 }
             }
+            if registeredItems == 0 { return false }
             return !hasIncomplete
         }
         let status = state.uploadProgress[item.absolute]?.status ?? .unknown
@@ -94,7 +100,6 @@ struct ItemPreview: View {
                 if result == 0 { result = 0.01 }
                 return result
             }
-            if !isCompleted { return 0.01 }
             return 0
         }
         return state.uploadProgress[item.absolute]?.uploadProgress ?? 0

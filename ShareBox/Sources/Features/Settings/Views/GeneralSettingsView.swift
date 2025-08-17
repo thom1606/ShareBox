@@ -13,6 +13,7 @@ struct GeneralSettingsView: View {
     @AppStorage(Constants.Settings.keepInDockPrefKey) private var keepInDock = false
     @AppStorage(Constants.Settings.mouseActivationPrefKey) private var enableMouseActivation = true
     @AppStorage(Constants.Settings.hiddenFilesPrefKey) private var includeHiddenFiles = false
+    @AppStorage(Constants.Settings.uploadNotificationsPrefKey) private var showUploadNotifications = true
     @AppStorage(Constants.Settings.passwordPrefKey) private var boxPassword = ""
     @AppStorage(Constants.Settings.storagePrefKey) private var storageDuration = "3_days"
 
@@ -65,6 +66,15 @@ struct GeneralSettingsView: View {
                         Button(action: requestNotificationAccess, label: {
                             Text("Request access")
                         })
+                    }
+                } else {
+                    Toggle(isOn: $showUploadNotifications) {
+                        VStack(alignment: .leading) {
+                            Text("Send notifcation after upload")
+                            Text("When enabled, a notification is send after all your files have been uploaded.")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                        }
                     }
                 }
             }

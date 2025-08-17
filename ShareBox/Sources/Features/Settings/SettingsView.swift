@@ -23,6 +23,10 @@ struct SettingsView: View {
                     .tabItem {
                         Label("Account", systemImage: "person.circle")
                     }
+                BoxesSettingsView()
+                    .tabItem {
+                        Label("Boxes", systemImage: "shippingbox.fill")
+                    }
                 AboutSettingsView()
                     .tabItem {
                         Label("About", systemImage: "info.circle.fill")

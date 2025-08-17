@@ -14,8 +14,15 @@ struct ToolbarView: View {
 
     private var activeItemCount: Int {
         var total = 1
-        if !state.hasOngoingUpload && !state.droppedItems.isEmpty { total += 1 }
+        if !state.hasOngoingUpload && !hasOpenStandingProgresses && !state.droppedItems.isEmpty { total += 1 }
         return total
+    }
+
+    private var hasOpenStandingProgresses: Bool {
+        for item in state.uploadProgress.values where item.status != .completed && item.status != .failed {
+            return true
+        }
+        return false
     }
 
     var body: some View {
@@ -24,8 +31,8 @@ struct ToolbarView: View {
                 Image(systemName: "gearshape")
             })
             .buttonStyle(.plain)
-            if !state.hasOngoingUpload && !state.droppedItems.isEmpty {
-                Button(action: { state.closeNotch(reset: true) }, label: {
+            if !state.hasOngoingUpload && !hasOpenStandingProgresses && !state.droppedItems.isEmpty {
+                Button(action: { state.closeNotch(reset: true, notify: true) }, label: {
                     Image(systemName: "checkmark.circle")
                 })
                 .buttonStyle(.plain)

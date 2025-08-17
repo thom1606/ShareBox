@@ -9,9 +9,7 @@ import Foundation
 
 enum ShareBoxError: Error {
     case failedExecute(String)
-    case helperNotInstalled
-    case helperNotRunning
-    case noHelperInDevelopment
+    case appNotRunning
     case fileNotFound
     case fileNotUploaded
     case noGroupCreated

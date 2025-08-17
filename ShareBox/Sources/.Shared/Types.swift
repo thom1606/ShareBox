@@ -8,57 +8,6 @@
 import Foundation
 import UniformTypeIdentifiers
 
-class MachMessage: Codable {
-    var type: MessageType
-    var data: Data?
-
-    let buildNumber: Int
-
-    init(type: MessageType, data: Data? = nil) {
-        self.type = type
-        self.data = data
-        let myBuildNumber = Bundle.main.infoDictionary?["CFBundleVersion"] as? String
-        buildNumber = Int(myBuildNumber ?? "1") ?? 1
-    }
-
-    enum MessageType: String, Codable {
-        case fileUploadRequest
-        case requestNotifications
-        case notify
-    }
-}
-
-extension MachMessage {
-    public func encode() -> CFData? {
-        let encoder = JSONEncoder()
-        guard let encodedMessage = try? encoder.encode(self) else {
-            return nil
-        }
-        return encodedMessage as CFData
-    }
-}
-
-protocol MachData: Codable {}
-
-extension MachData {
-    public func encode() -> Data? {
-        let encoder = JSONEncoder()
-        guard let encodedMessage = try? encoder.encode(self) else {
-            return nil
-        }
-        return encodedMessage
-    }
-}
-
-// MachMessage Body Types
-struct NotificationBody: MachData {
-    var title: String
-    var message: String
-}
-struct FileUploadBody: MachData {
-    var items: [FilePath]
-}
-
 struct FilePath: Codable, Hashable {
     var relative: String
     var absolute: String

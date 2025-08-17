@@ -1,7 +1,20 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "%lld files, expires on %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld files, expires on %2$@"
+          }
+        }
+      }
+    },
     "1 day" : {
+
+    },
+    "1 file, expires on %@" : {
 
     },
     "2 days" : {
@@ -25,10 +38,10 @@
     "Account" : {
 
     },
-    "An unknown error occurred while uploading your files. Please try again later." : {
+    "All your files have been uploaded. Close this Box to copy the link to your clipboard." : {
 
     },
-    "An upload is already active, please wait for it to finish." : {
+    "An unknown error occurred while uploading your files. Please try again later." : {
 
     },
     "App Details" : {
@@ -43,6 +56,9 @@
     "Box Password" : {
 
     },
+    "Boxes" : {
+
+    },
     "Build number" : {
 
     },
@@ -50,12 +66,6 @@
 
     },
     "Contact Support" : {
-
-    },
-    "Continue" : {
-
-    },
-    "Create your own cloud box and share files and folders with anyone, anywhere." : {
 
     },
     "Determine the duration of time a Box will be accessible after being shared." : {
@@ -76,9 +86,6 @@
     "Feedback" : {
 
     },
-    "For just **€2.99**, enjoy **250GB** of cloud storage. Upgrade options will be available soon." : {
-
-    },
     "General" : {
 
     },
@@ -94,10 +101,7 @@
     "Keep in Dock" : {
 
     },
-    "Let's Get Started" : {
-
-    },
-    "Let's go!" : {
+    "Link Copied!" : {
 
     },
     "Manage billing" : {
@@ -124,7 +128,7 @@
     "Open billing" : {
 
     },
-    "Payment processing!" : {
+    "Open Boxes" : {
 
     },
     "Preferences" : {
@@ -133,31 +137,25 @@
     "Protect your boxes by letting users enter a password to access them." : {
 
     },
-    "Ready to Begin?" : {
-
-    },
     "Request access" : {
 
     },
     "Request notification access" : {
 
     },
-    "ShareBox Created" : {
+    "Send notifcation after upload" : {
 
     },
     "ShareBox Settings" : {
+
+    },
+    "ShareBox Uploaded" : {
 
     },
     "Sign in" : {
 
     },
     "Sign in to ShareBox" : {
-
-    },
-    "Sign in to ShareBox to start sharing files easily and quickly." : {
-
-    },
-    "Sign me up!" : {
 
     },
     "Sign out" : {
@@ -170,12 +168,6 @@
 
     },
     "Start at login" : {
-
-    },
-    "Start with Sharing!" : {
-
-    },
-    "Stay Informed" : {
 
     },
     "Storage duration" : {
@@ -193,10 +185,7 @@
     "Support" : {
 
     },
-    "To keep you updated on your upload progress, we would like to send you notifications when necessary. No promotions or spam." : {
-
-    },
-    "Try again" : {
+    "The ShareBox link is copied to your clipboard!" : {
 
     },
     "Unauthorized" : {
@@ -228,16 +217,7 @@
     "Visit Website" : {
 
     },
-    "We couldn't process your payment. Could you please try again?" : {
-
-    },
-    "We encountered a problem while requesting notification permissions. Would you like to continue without them?" : {
-
-    },
-    "Welcome to ShareBox!" : {
-
-    },
-    "Welcome!" : {
+    "When enabled, a notification is send after all your files have been uploaded." : {
 
     },
     "When enabled, moving your mouse to the screen edge will active the ShareBox Uploader." : {
@@ -255,16 +235,7 @@
     "You have reached the maximum number of boxes you can create at this time. Please wait for some boxes to expire before creating more." : {
 
     },
-    "You're all set to start your journey with ShareBox! Begin by selecting files in Finder and choosing the **\"Upload to ShareBox\"** option." : {
-
-    },
-    "Your files have been uploaded, and the link is copied to your clipboard!" : {
-
-    },
     "Your item named \"%@\" has failed to upload and gave the following error:" : {
-
-    },
-    "Your payment is being processed. Please wait a few minutes. If you don't receive a confirmation soon, please [contact us](mailto:sharebox@thomvandenbroek.com)." : {
 
     }
   },

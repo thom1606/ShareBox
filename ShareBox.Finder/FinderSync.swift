@@ -43,7 +43,6 @@ class FinderSync: FIFinderSync {
             finderLogger.warning("ShareBox Upload was triggered without any files or folders selected. This should never be the case.")
             return
         }
-
         // Initiate the upload to the helper app
         uploadFiles(items: items, target: target)
     }
@@ -52,32 +51,31 @@ class FinderSync: FIFinderSync {
         finderLogger.debug("Found items to upload, trying to get everything ready...")
 
         // Create request for Mach
-        let req: FileUploadBody = .init(
+        let req: MachFileUploadBody = .init(
             items: items.map {
                 .init(
-                    relative: $0.absoluteString.replacingOccurrences(of: target.absoluteString, with: ""),
+                    relative: $0.lastPathComponent,
                     absolute: $0.absoluteString,
-                    isFolder: Files.isDirectory(path: $0)
+                    isFolder: $0.hasDirectoryPath
                 )
             }
         )
-        do {
-            finderLogger.debug("Request for mach created, sending packet to helper...")
-            let data = try Messenger.shared.send(MachMessage(type: .fileUploadRequest, data: req.encode()))
-            if data != nil {
-                // Handle possible errors thrown by the helper
-                if let response = try? JSONDecoder().decode([String: String].self, from: data!),
-                   response["status"] == "busy" {
-                    Utilities.showNotification(
-                        title: NSLocalizedString("Oops!", comment: ""),
-                        body: NSLocalizedString("An upload is already active, please wait for it to finish.", comment: "")
-                    )
-                    finderLogger.warning("Another ShareBox is already active, user should try again after.")
-                    return
-                }
+
+        // Check if the main app is running
+        if !NSWorkspace.shared.runningApplications.contains(where: { $0.bundleIdentifier == "com.thom1606.ShareBox" }) {
+            // Start the main app
+            NSWorkspace.shared.open(URL(string: "sharebox://")!)
+            // Wait for the main app to be running
+            while !NSWorkspace.shared.runningApplications.contains(where: { $0.bundleIdentifier == "com.thom1606.ShareBox" }) {
+                sleep(1)
             }
+        }
+
+        do {
+            finderLogger.debug("Request for mach created, sending packet to uploader...")
+            _ = try MachMessenger.shared.send(MachMessage(type: .fileUploadRequest, data: req.encode()))
             // Everything should be cool, we are done here
-            finderLogger.debug("Task successfully sent to the Helper app, handling everything from there.")
+            finderLogger.debug("Task successfully sent to the ShareBox Uploader, handling everything from there.")
         } catch {
             Utilities.showNotification(
                 title: NSLocalizedString("Oops!", comment: ""),
