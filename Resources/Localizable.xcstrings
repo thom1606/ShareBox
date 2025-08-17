@@ -35,9 +35,6 @@
     "7 days" : {
 
     },
-    "A little bit more secure" : {
-
-    },
     "About" : {
 
     },
@@ -59,9 +56,6 @@
     "Behaviour" : {
 
     },
-    "Box password" : {
-
-    },
     "Box Password" : {
 
     },
@@ -80,7 +74,7 @@
     "Continue" : {
 
     },
-    "Create an account" : {
+    "Create your account" : {
 
     },
     "Determine the duration of time a Box will be accessible after being shared." : {
@@ -98,26 +92,20 @@
     "Enable mouse activation" : {
 
     },
+    "Enhance your security" : {
+
+    },
     "Feedback" : {
 
     },
-    "For just **€2.99**/mo, enjoy a neat **250GB** upload limit each month. Upgrade options will be available soon.\n\nGet access to your space in the cloud with the possibility to upload up to **250GB** of files each month." : {
+    "For just **€2.99**/month, enjoy a **250GB** upload limit, ensuring your files are always ready to share. Upgrade options will be available soon, offering even more flexibility.\n\nSecure your personal cloud space and effortlessly upload up to **250GB** of files each month." : {
 
     },
     "General" : {
 
     },
-    "Get status notifications" : {
-
-    },
-    "Go ahead and move your mouse to the left edge of your screen to start with ShareBox. You can also right click on a file or folder in Finder and select **Upload to ShareBox**." : {
-
-    },
     "Hey! I want to share some files with you. You can download them from my ShareBox: %@" : {
       "comment" : "Clipboard message"
-    },
-    "I'm ready!" : {
-
     },
     "Include files which are normally hidden in Finder. Be aware that this may cause sensitive files to be shared unintentionally." : {
 
@@ -144,6 +132,9 @@
 
     },
     "Manage billing" : {
+
+    },
+    "Move your mouse to the left edge of your screen to start using ShareBox. Alternatively, right-click on a file or folder in Finder and select **Upload to ShareBox**." : {
 
     },
     "Name" : {
@@ -176,22 +167,31 @@
     "Protect your boxes by letting users enter a password to access them." : {
 
     },
+    "Receive status notifications" : {
+
+    },
     "Request access" : {
 
     },
     "Request notification access" : {
 
     },
-    "Security is important for everyone, that’s why you have some options to better protect your files." : {
+    "Security is important for everyone, which is why you have options to better protect your files." : {
 
     },
     "Select" : {
 
     },
+    "Select storage duration" : {
+
+    },
     "Send notifcation after upload" : {
 
     },
-    "Setup your experience" : {
+    "Set box password" : {
+
+    },
+    "Set up your experience" : {
 
     },
     "ShareBox Settings" : {
@@ -212,7 +212,7 @@
     "Sign up" : {
 
     },
-    "Sign up using your **Apple ID** to get your own space in the ShareBox cloud." : {
+    "Sign up using your **Apple ID** to secure your own space in the ShareBox cloud." : {
 
     },
     "Something went wrong internally, please try again." : {
@@ -230,7 +230,7 @@
     "Start setup" : {
 
     },
-    "Start with sharing!" : {
+    "Start sharing!" : {
 
     },
     "Storage duration" : {
@@ -299,6 +299,9 @@
 
     },
     "You have reached the maximum number of boxes you can create at this time. Please wait for some boxes to expire before creating more." : {
+
+    },
+    "You're ready!" : {
 
     },
     "Your item named \"%@\" has failed to upload and gave the following error:" : {

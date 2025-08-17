@@ -16,11 +16,11 @@ struct OnboardingFinalPage: View {
             HStack {
                 VStack(alignment: .leading, spacing: 30) {
                     VStack(alignment: .leading, spacing: 5) {
-                        Text("I'm ready!")
+                        Text("You're ready!")
                             .fontDesign(.serif)
                             .font(.largeTitle)
                             .fontWeight(.bold)
-                        Text("Go ahead and move your mouse to the left edge of your screen to start with ShareBox. You can also right click on a file or folder in Finder and select **Upload to ShareBox**.")
+                        Text("Move your mouse to the left edge of your screen to start using ShareBox. Alternatively, right-click on a file or folder in Finder and select **Upload to ShareBox**.")
                             .foregroundStyle(.secondary)
                             .font(.title3)
                     }

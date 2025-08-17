@@ -17,11 +17,11 @@ struct OnboardingSignInView: View {
             HStack {
                 VStack(alignment: .leading, spacing: 30) {
                     VStack(alignment: .leading, spacing: 5) {
-                        Text("Create an account")
+                        Text("Create your account")
                             .fontDesign(.serif)
                             .font(.largeTitle)
                             .fontWeight(.bold)
-                        Text("Sign up using your **Apple ID** to get your own space in the ShareBox cloud.")
+                        Text("Sign up using your **Apple ID** to secure your own space in the ShareBox cloud.")
                             .foregroundStyle(.secondary)
                             .font(.title3)
                     }

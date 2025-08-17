@@ -28,7 +28,7 @@ struct OnboardingExperienceView: View {
             HStack {
                 VStack(alignment: .leading, spacing: 30) {
                     VStack(alignment: .leading, spacing: 5) {
-                        Text("Setup your experience")
+                        Text("Set up your experience")
                             .fontDesign(.serif)
                             .font(.largeTitle)
                             .fontWeight(.bold)
@@ -64,7 +64,7 @@ struct OnboardingExperienceView: View {
                                 .onChange(of: requestNotifications) {
                                     if requestNotifications { requestNotificationAccess() }
                                 }
-                            Text("Get status notifications")
+                            Text("Receive status notifications")
                         }
                         .offset(x: -10)
                         HStack {

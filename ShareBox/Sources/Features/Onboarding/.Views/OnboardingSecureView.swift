@@ -20,11 +20,11 @@ struct OnboardingSecureView: View {
             HStack {
                 VStack(alignment: .leading, spacing: 30) {
                     VStack(alignment: .leading, spacing: 5) {
-                        Text("A little bit more secure")
+                        Text("Enhance your security")
                             .fontDesign(.serif)
                             .font(.largeTitle)
                             .fontWeight(.bold)
-                        Text("Security is important for everyone, that’s why you have some options to better protect your files.")
+                        Text("Security is important for everyone, which is why you have options to better protect your files.")
                             .foregroundStyle(.secondary)
                             .font(.title3)
                     }
@@ -36,8 +36,8 @@ struct OnboardingSecureView: View {
                             Text("Include hidden files")
                         }
                         .offset(x: -10)
-                        TextFieldView(label: "Box password", placeholder: "password", text: $boxPassword)
-                        PickerView(label: "Storage duration", selection: $storageDuration, items: [
+                        TextFieldView(label: "Set box password", placeholder: "password", text: $boxPassword)
+                        PickerView(label: "Select storage duration", selection: $storageDuration, items: [
                             ("5_minutes", "5 minutes"),
                             ("1_days", "1 day"),
                             ("2_days", "2 days"),

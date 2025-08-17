@@ -21,11 +21,11 @@ struct OnboardingSubscribeView: View {
             HStack {
                 VStack(alignment: .leading, spacing: 30) {
                     VStack(alignment: .leading, spacing: 5) {
-                        Text("Start with sharing!")
+                        Text("Start sharing!")
                             .fontDesign(.serif)
                             .font(.largeTitle)
                             .fontWeight(.bold)
-                        Text("For just **€2.99**/mo, enjoy a neat **250GB** upload limit each month. Upgrade options will be available soon.\n\nGet access to your space in the cloud with the possibility to upload up to **250GB** of files each month.")
+                        Text("For just **€2.99**/month, enjoy a **250GB** upload limit, ensuring your files are always ready to share. Upgrade options will be available soon, offering even more flexibility.\n\nSecure your personal cloud space and effortlessly upload up to **250GB** of files each month.")
                             .foregroundStyle(.secondary)
                             .font(.title3)
                     }
