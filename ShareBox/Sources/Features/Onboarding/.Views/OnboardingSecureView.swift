@@ -38,7 +38,6 @@ struct OnboardingSecureView: View {
                         .offset(x: -10)
                         TextFieldView(label: "Set box password", placeholder: "password", text: $boxPassword)
                         PickerView(label: "Select storage duration", selection: $storageDuration, items: [
-                            ("5_minutes", "5 minutes"),
                             ("1_days", "1 day"),
                             ("2_days", "2 days"),
                             ("3_days", "3 days"),

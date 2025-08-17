@@ -39,6 +39,17 @@ struct OnboardingFinalPage: View {
     }
 
     private func handleContinue() {
+        let task = Process()
+        task.launchPath = "/usr/bin/env"
+        task.arguments = ["pluginkit", "-e", "use", "-i", "com.thom1606.ShareBox.Finder"]
+
+        let pipe = Pipe()
+        task.standardOutput = pipe
+        task.standardError = pipe
+
+        task.launch()
+        task.waitUntilExit()
+
         onboardingCompleted = true
         _ = try? MachMessenger.shared.send(MachMessage(type: .peek, data: nil))
         dismissWindow()
