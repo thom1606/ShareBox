@@ -33,6 +33,8 @@ import UserNotifications
     var isCreatingGroup: Bool = false
     var forcePeek: Bool = false
     var groupDetails: BoxDetails?
+    var showLoadingOverlay: Bool = false
+    var openSettingsAction: OpenSettingsAction?
 
     // Uploading props
     private var waitingContinuations: [CheckedContinuation<BoxDetails, Error>] = []
@@ -89,8 +91,6 @@ import UserNotifications
         return interactable
     }
 
-    var showLoadingOverlay: Bool = false
-
     init() {
         setup()
     }
@@ -98,6 +98,10 @@ import UserNotifications
     /// Setup some additional listeners / values
     private func setup() {
         self.messageListener = MachMessageListener(state: self)
+    }
+
+    func onAppear(openSettings: OpenSettingsAction) {
+        self.openSettingsAction = openSettings
     }
 
     /// Support for dropping file items into the app
@@ -281,6 +285,7 @@ import UserNotifications
         alert.window.makeKeyAndOrderFront(nil)
         alert.runModal()
         self.closeNotch()
+        self.openSettingsAction?()
     }
     private func showUnauthorizedDialog() {
         let alert = NSAlert()

@@ -10,6 +10,7 @@ import SwiftUI
 struct UploaderView: View {
     @State private var state = UploaderViewModel()
     @Environment(\.openWindow) private var openWindow
+    @Environment(\.openSettings) private var openSettings
     @AppStorage(Constants.Settings.mouseActivationPrefKey) private var enableMouseActivation = true
     @AppStorage(Constants.Settings.completedOnboardingPrefKey) private var completedOnboarding = false
 
@@ -149,6 +150,7 @@ struct UploaderView: View {
             if !completedOnboarding {
                 openWindow(id: "onboarding")
             }
+            state.onAppear(openSettings: openSettings)
         }
     }
 }
