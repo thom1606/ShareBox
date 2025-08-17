@@ -7,9 +7,11 @@
 
 import SwiftUI
 
-struct UploadView: View {
+struct UploaderView: View {
     @State private var state = UploaderViewModel()
+    @Environment(\.openWindow) private var openWindow
     @AppStorage(Constants.Settings.mouseActivationPrefKey) private var enableMouseActivation = true
+    @AppStorage(Constants.Settings.completedOnboardingPrefKey) private var completedOnboarding = false
 
     private var dragAndDropHandler: some View {
         Color.black.opacity(0.001)
@@ -103,7 +105,10 @@ struct UploadView: View {
             // We will add some initial vertical padding for the content
             .padding(.vertical, 40)
             .onHover { isOver in
-                if isOver { state.isContentHovered = isOver } else {
+                if isOver {
+                    state.isContentHovered = isOver
+                    state.forcePeek = false
+                } else {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: { state.isContentHovered = false })
                 }
             }
@@ -140,10 +145,15 @@ struct UploadView: View {
         .background(WindowAccessor { window in
             state.mouseListener.startTrackingMouse(window: window)
         })
+        .onAppear {
+            if !completedOnboarding {
+                openWindow(id: "onboarding")
+            }
+        }
     }
 }
 
 #Preview {
-    UploadView()
+    UploaderView()
         .frame(width: 100, height: 800)
 }

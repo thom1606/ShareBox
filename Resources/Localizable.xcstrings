@@ -1,6 +1,9 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "" : {
+
+    },
     "%lld files, expires on %@" : {
       "localizations" : {
         "en" : {
@@ -32,6 +35,9 @@
     "7 days" : {
 
     },
+    "A little bit more secure" : {
+
+    },
     "About" : {
 
     },
@@ -53,6 +59,9 @@
     "Behaviour" : {
 
     },
+    "Box password" : {
+
+    },
     "Box Password" : {
 
     },
@@ -66,6 +75,12 @@
 
     },
     "Contact Support" : {
+
+    },
+    "Continue" : {
+
+    },
+    "Create an account" : {
 
     },
     "Determine the duration of time a Box will be accessible after being shared." : {
@@ -86,11 +101,23 @@
     "Feedback" : {
 
     },
+    "For just **€2.99**/mo, enjoy a neat **250GB** upload limit each month. Upgrade options will be available soon.\n\nGet access to your space in the cloud with the possibility to upload up to **250GB** of files each month." : {
+
+    },
     "General" : {
+
+    },
+    "Get status notifications" : {
+
+    },
+    "Go ahead and move your mouse to the left edge of your screen to start with ShareBox. You can also right click on a file or folder in Finder and select **Upload to ShareBox**." : {
 
     },
     "Hey! I want to share some files with you. You can download them from my ShareBox: %@" : {
       "comment" : "Clipboard message"
+    },
+    "I'm ready!" : {
+
     },
     "Include files which are normally hidden in Finder. Be aware that this may cause sensitive files to be shared unintentionally." : {
 
@@ -98,7 +125,19 @@
     "Include hidden files" : {
 
     },
+    "Keep icon in Dock" : {
+
+    },
     "Keep in Dock" : {
+
+    },
+    "Let's go!" : {
+
+    },
+    "Let's make everything feel right for you. Your preferences are just a click away." : {
+
+    },
+    "Let's set you up with an easier, more efficient way of sharing files." : {
 
     },
     "Link Copied!" : {
@@ -143,7 +182,16 @@
     "Request notification access" : {
 
     },
+    "Security is important for everyone, that’s why you have some options to better protect your files." : {
+
+    },
+    "Select" : {
+
+    },
     "Send notifcation after upload" : {
+
+    },
+    "Setup your experience" : {
 
     },
     "ShareBox Settings" : {
@@ -161,6 +209,12 @@
     "Sign out" : {
 
     },
+    "Sign up" : {
+
+    },
+    "Sign up using your **Apple ID** to get your own space in the ShareBox cloud." : {
+
+    },
     "Something went wrong internally, please try again." : {
 
     },
@@ -168,6 +222,15 @@
 
     },
     "Start at login" : {
+
+    },
+    "Start at Login" : {
+
+    },
+    "Start setup" : {
+
+    },
+    "Start with sharing!" : {
 
     },
     "Storage duration" : {
@@ -215,6 +278,9 @@
 
     },
     "Visit Website" : {
+
+    },
+    "Welcome to ShareBox" : {
 
     },
     "When enabled, a notification is send after all your files have been uploaded." : {

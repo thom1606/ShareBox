@@ -13,6 +13,7 @@ enum ShareBoxError: Error {
     case fileNotFound
     case fileNotUploaded
     case noGroupCreated
+    case failed
 }
 
 enum FileError: String, Error {

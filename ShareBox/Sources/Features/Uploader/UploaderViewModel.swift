@@ -31,6 +31,7 @@ import UserNotifications
     var showErrorOverlay: Bool = false
     var droppedItems: [FilePath] = []
     var isCreatingGroup: Bool = false
+    var forcePeek: Bool = false
     var groupDetails: BoxDetails?
 
     // Uploading props
@@ -60,9 +61,10 @@ import UserNotifications
         if groupDetails == nil {
             if !droppedItems.isEmpty { return .visible }
         }
-            if isCreatingGroup { return .visible }
+        if isCreatingGroup { return .visible }
         if showErrorOverlay { return .visible }
         if !droppedItems.isEmpty { return .peeking }
+        if forcePeek { return .peeking }
         return .hidden
     }
 
@@ -95,9 +97,7 @@ import UserNotifications
 
     /// Setup some additional listeners / values
     private func setup() {
-        self.messageListener = MachMessageListener(onUpload: { paths in
-            self.addNewFiles(paths: paths)
-        })
+        self.messageListener = MachMessageListener(state: self)
     }
 
     /// Support for dropping file items into the app
@@ -139,7 +139,7 @@ import UserNotifications
     }
 
     /// Add new files to the uploader
-    private func addNewFiles(paths: [FilePath]) {
+    func addNewFiles(paths: [FilePath]) {
         if paths.isEmpty { return }
         // Filter out all the duplicates
         let nonDuplicatePaths = paths.filter { path in !self.droppedItems.contains(where: { $0.absolute == path.absolute }) }

@@ -46,3 +46,9 @@ struct SharedGroup: Codable, Identifiable {
     var expiresAt: String
     var url: String
 }
+
+extension String {
+    subscript(offset: Int) -> Character {
+        self[index(startIndex, offsetBy: offset)]
+    }
+}

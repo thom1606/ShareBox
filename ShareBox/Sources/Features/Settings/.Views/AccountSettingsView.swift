@@ -186,12 +186,12 @@ private struct BillingResponse: Codable {
     var url: String
 }
 
-private struct SubscribeResponse: Codable {
+struct SubscribeResponse: Codable {
     var url: String
     var sessionId: String
 }
 
-private struct UserDataResponse: Codable {
+struct UserDataResponse: Codable {
     var user: User
     var subscription: Subscription?
 

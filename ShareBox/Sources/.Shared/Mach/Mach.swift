@@ -49,58 +49,6 @@ class MachMessenger {
     }
 }
 
-class MachMessageListener {
-    private var localPort: CFMessagePort?
-    private var runLoopSource: CFRunLoopSource?
-
-    public var onUpload: ([FilePath]) -> Void
-
-    init(onUpload: @escaping ([FilePath]) -> Void) {
-        self.onUpload = onUpload
-
-        var context = CFMessagePortContext(
-            version: 0,
-            info: UnsafeMutableRawPointer(Unmanaged.passUnretained(self).toOpaque()),
-            retain: nil,
-            release: nil,
-            copyDescription: nil
-        )
-        localPort = CFMessagePortCreateLocal(nil, Constants.Mach.portName as CFString, { (_, _, data, info) -> Unmanaged<CFData>? in
-            guard let data = data else { return nil }
-            let receivedData = data as Data
-            do {
-                let decoder = JSONDecoder()
-                let machMessage = try decoder.decode(MachMessage.self, from: receivedData)
-
-                if let info = info {
-                    let listener = Unmanaged<MachMessageListener>.fromOpaque(info).takeUnretainedValue()
-                    switch machMessage.type {
-                    case .fileUploadRequest:
-                        generalLogger.debug("Received file upload request...")
-                        let res = try decoder.decode(MachFileUploadBody.self, from: machMessage.data!)
-                        listener.onUpload(res.items)
-                    }
-                }
-            } catch {
-                generalLogger.error("Failed to decode MachMessage: \(error)")
-            }
-
-            return Unmanaged.passRetained(data)
-        }, &context, nil)
-
-        if let localPort = localPort {
-            runLoopSource = CFMessagePortCreateRunLoopSource(nil, localPort, 0)
-            CFRunLoopAddSource(CFRunLoopGetCurrent(), runLoopSource, .commonModes)
-        }
-    }
-
-    deinit {
-        if let runLoopSource = runLoopSource {
-            CFRunLoopRemoveSource(CFRunLoopGetCurrent(), runLoopSource, .commonModes)
-        }
-    }
-}
-
 class MachMessage: Codable {
     var type: MessageType
     var data: Data?
@@ -112,6 +60,7 @@ class MachMessage: Codable {
 
     enum MessageType: String, Codable {
         case fileUploadRequest
+        case peek
     }
 }
 

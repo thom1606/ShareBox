@@ -37,7 +37,7 @@ struct ShareBoxApp: App {
     
     var body: some Scene {
         Window("Uploader", id: "uploader") {
-            UploadView()
+            UploaderView()
         }
         .windowResizability(.contentSize)
         .commands {
@@ -45,6 +45,10 @@ struct ShareBoxApp: App {
                 // Disable the "New Window" menu item
             }
         }
+        Window("Onboarding", id: "onboarding") {
+            OnboardingView()
+        }
+        .windowResizability(.contentSize)
         Settings {
             SettingsView()
                 .navigationTitle("ShareBox Settings")
