@@ -163,39 +163,44 @@ class UploadBatch {
             return
         }
 
-        let fileDetails = path.details()
-        // Create the request for the file upload
-        var request = URLRequest(url: URL(string: urlString)!)
-        request.httpMethod = "PUT"
-        // Set Content-Type header to the file's MIME type
-        request.setValue(fileDetails.type, forHTTPHeaderField: "Content-Type")
-        // Set Content-Length header
-        request.setValue("\(fileDetails.size)", forHTTPHeaderField: "Content-Length")
+        do {
+            let fileData = try Data(contentsOf: URL(string: path.absolute)!)
+            let fileDetails = path.details()
+            // Create the request for the file upload
+            var request = URLRequest(url: URL(string: urlString)!)
+            request.httpMethod = "PUT"
+            // Set Content-Type header to the file's MIME type
+            request.setValue(fileDetails.type, forHTTPHeaderField: "Content-Type")
+            // Set Content-Length header
+            request.setValue("\(fileDetails.size)", forHTTPHeaderField: "Content-Length")
 
-        // Start updating the progress
-        onProgress(path.absolute, .init(status: .uploading))
+            // Start updating the progress
+            onProgress(path.absolute, .init(status: .uploading))
 
-        let uploadTask = URLSession.shared.uploadTask(with: request, fromFile: URL(filePath: path.absolute)) { [onProgress] _, response, error in
-            Task { @MainActor in
-                if let error = error {
-                    dataLogger.error("Upload failed with some internal error: \(error.localizedDescription)")
-                    onProgress(path.absolute, .init(status: .failed, uploadProgress: 100, errors: [.s3Failed]))
-                } else if let httpResponse = response as? HTTPURLResponse, !(200...299).contains(httpResponse.statusCode) {
-                    dataLogger.error("Upload failed, got an invalid status code back from S3: \(httpResponse.statusCode)")
-                    onProgress(path.absolute, .init(status: .failed, uploadProgress: 100, errors: [.s3Failed]))
-                } else {
-                    // Everything should have gone to plan and the file should have been uploaded
-                    onProgress(path.absolute, .init(status: .completed, uploadProgress: 100))
+            let uploadTask = URLSession.shared.uploadTask(with: request, from: fileData) { [onProgress] _, response, error in
+                Task { @MainActor in
+                    if let error = error {
+                        dataLogger.error("Upload failed with some internal error: \(error.localizedDescription)")
+                        onProgress(path.absolute, .init(status: .failed, uploadProgress: 100, errors: [.s3Failed]))
+                    } else if let httpResponse = response as? HTTPURLResponse, !(200...299).contains(httpResponse.statusCode) {
+                        dataLogger.error("Upload failed, got an invalid status code back from S3: \(httpResponse.statusCode)")
+                        onProgress(path.absolute, .init(status: .failed, uploadProgress: 100, errors: [.s3Failed]))
+                    } else {
+                        // Everything should have gone to plan and the file should have been uploaded
+                        onProgress(path.absolute, .init(status: .completed, uploadProgress: 100))
+                    }
                 }
             }
+            progressCancellables[path.absolute] = uploadTask.progress.publisher(for: \.fractionCompleted)
+                .receive(on: DispatchQueue.main).sink { [onProgress] fraction in
+                    DispatchQueue.main.async {
+                        onProgress(path.absolute, .init(status: .uploading, uploadProgress: fraction * 100))
+                    }
+                }
+            uploadTask.resume()
+        } catch {
+            onProgress(path.absolute, .init(status: .failed, uploadProgress: 100, errors: [.s3Failed]))
         }
-        progressCancellables[path.absolute] = uploadTask.progress.publisher(for: \.fractionCompleted)
-            .receive(on: DispatchQueue.main).sink { [onProgress] fraction in
-                DispatchQueue.main.async {
-                    onProgress(path.absolute, .init(status: .uploading, uploadProgress: fraction * 100))
-                }
-            }
-        uploadTask.resume()
     }
 
     /// Get files within the given folder path and convert them to FilePath's
