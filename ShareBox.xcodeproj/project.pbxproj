@@ -10,6 +10,7 @@
 		8426D9CA2E49ED41008F6EB1 /* ShareBox.Finder.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 8426D9C22E49ED41008F6EB1 /* ShareBox.Finder.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		8477DA562E4C9F2300162F53 /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = 8477DA552E4C9F2300162F53 /* .swiftlint.yml */; };
 		8477DA582E4C9F2300162F53 /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = 8477DA552E4C9F2300162F53 /* .swiftlint.yml */; };
+		847BE91A2E532218001577F8 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 847BE9192E532218001577F8 /* Sparkle */; };
 		8494E4342E49FE61003065BD /* Debug.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 8494E4332E49FE61003065BD /* Debug.xcconfig */; };
 		8494E4362E49FE61003065BD /* Debug.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 8494E4332E49FE61003065BD /* Debug.xcconfig */; };
 		8494E4382E49FE6B003065BD /* Release.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 8494E4372E49FE6B003065BD /* Release.xcconfig */; };
@@ -110,6 +111,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				84A4FE522E521B0100428485 /* ThomKit in Frameworks */,
+				847BE91A2E532218001577F8 /* Sparkle in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -185,6 +187,7 @@
 			name = ShareBox;
 			packageProductDependencies = (
 				84A4FE512E521B0100428485 /* ThomKit */,
+				847BE9192E532218001577F8 /* Sparkle */,
 			);
 			productName = ShareBox;
 			productReference = 8426D9462E49DD65008F6EB1 /* ShareBox.app */;
@@ -241,6 +244,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				84A4FE502E521B0100428485 /* XCRemoteSwiftPackageReference "ThomKit" */,
+				847BE9182E532218001577F8 /* XCRemoteSwiftPackageReference "Sparkle" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 8426D9472E49DD65008F6EB1 /* Products */;
@@ -457,7 +461,7 @@
 				CODE_SIGN_ENTITLEMENTS = ShareBox/ShareBox.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_ASSET_PATHS = "\"ShareBox/Preview Content\"";
 				DEVELOPMENT_TEAM = U6WA8YA735;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -492,7 +496,7 @@
 				CODE_SIGN_ENTITLEMENTS = ShareBox/ShareBox.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_ASSET_PATHS = "\"ShareBox/Preview Content\"";
 				DEVELOPMENT_TEAM = U6WA8YA735;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -526,7 +530,7 @@
 				CODE_SIGN_ENTITLEMENTS = ShareBox.Finder/ShareBox_Finder.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_TEAM = U6WA8YA735;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
@@ -557,7 +561,7 @@
 				CODE_SIGN_ENTITLEMENTS = ShareBox.Finder/ShareBox_Finder.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_TEAM = U6WA8YA735;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
@@ -614,6 +618,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		847BE9182E532218001577F8 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.7.1;
+			};
+		};
 		84A4FE502E521B0100428485 /* XCRemoteSwiftPackageReference "ThomKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/thom1606/ThomKit";
@@ -625,6 +637,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		847BE9192E532218001577F8 /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 847BE9182E532218001577F8 /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
+		};
 		84A4FE512E521B0100428485 /* ThomKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 84A4FE502E521B0100428485 /* XCRemoteSwiftPackageReference "ThomKit" */;

@@ -7,6 +7,7 @@
 
 import SwiftUI
 import UserNotifications
+import Sparkle
 
 @main
 struct ShareBoxApp: App {
@@ -14,15 +15,18 @@ struct ShareBoxApp: App {
     
     // Properties
     @AppStorage(Constants.Settings.keepInDockPrefKey) private var keepInDock = false
+    private let updaterController: SPUStandardUpdaterController
 
     init() {
+        updaterController = SPUStandardUpdaterController(startingUpdater: true, updaterDelegate: nil, userDriverDelegate: nil)
+
         #if RELEASE
         if isAnotherInstanceRunning() {
             NSApp.terminate(nil)
         }
         #endif
         UNUserNotificationCenter.current().delegate = NotificationDelegate.shared
-        
+
         if keepInDock {
             NSApplication.shared.setActivationPolicy(.regular)
         } else {
@@ -43,6 +47,9 @@ struct ShareBoxApp: App {
         .commands {
             CommandGroup(replacing: .newItem) {
                 // Disable the "New Window" menu item
+            }
+            CommandGroup(after: .appInfo) {
+                CheckForUpdatesView(updater: updaterController.updater)
             }
         }
         Window("Onboarding", id: "onboarding") {
