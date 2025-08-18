@@ -208,7 +208,7 @@ class UploadBatch {
         var files: [FilePath] = []
         let fileManager = FileManager.default
         var options: FileManager.DirectoryEnumerationOptions = []
-        if !userDefaults.bool(forKey: Constants.Settings.hiddenFilesPrefKey) {
+        if !UserDefaults.standard.bool(forKey: Constants.Settings.hiddenFilesPrefKey) {
             options = [.skipsHiddenFiles]
         }
         let contents = try? fileManager.contentsOfDirectory(at: url, includingPropertiesForKeys: nil, options: options)
@@ -233,8 +233,8 @@ class UploadBatch {
 
         // Start creating the group
         do {
-            let password = userDefaults.string(forKey: Constants.Settings.passwordPrefKey)
-            let storageDuration = userDefaults.string(forKey: Constants.Settings.storagePrefKey) ?? "3_days"
+            let password = UserDefaults.standard.string(forKey: Constants.Settings.passwordPrefKey)
+            let storageDuration = UserDefaults.standard.string(forKey: Constants.Settings.storagePrefKey) ?? "3_days"
 
             let createdGroupResponse: BoxDetails = try await apiService.post(endpoint: "/api/groups", parameters: [
                 "password": password,

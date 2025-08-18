@@ -7,8 +7,6 @@
 
 import SwiftUI
 
-let userDefaults = UserDefaults(suiteName: "group.com.thom1606.ShareBox")!
-
 final class Constants {
     final class Settings {
         static let storagePrefKey = "STORAGE_DURATION"
