@@ -168,19 +168,21 @@ struct ItemPreview: View {
                         .padding(.bottom, 8)
                         .foregroundStyle(.secondary)
                         VStack(alignment: .leading) {
-                            //                                ForEach(Array(errors.keys) as [String], id: \.self) { key in
-                            //                                    if item.isFolder {
-                            //                                        VStack(alignment: .leading, spacing: 0) {
-                            //                                            Text(key)
-                            //                                                .foregroundStyle(.primary)
-                            ////                                            ForEach(errors[key]!, id: \.self) { error in
-                            ////                                                Text(error.rawValue)
-                            ////                                            }
-                            //                                        }
-                            //                                    } else {
-                            //                                        Text(errors[key]!)
-                            //                                    }
-                            //                                }
+                            ForEach(errors.map { $0.key }, id: \.self) { key in
+                                if item.isFolder {
+                                    VStack(alignment: .leading, spacing: 0) {
+                                        Text(key)
+                                           .foregroundStyle(.primary)
+                                        ForEach(errors[key]!, id: \.self) { fileError in
+                                            Text(fileError.rawValue)
+                                        }
+                                    }
+                                } else {
+                                    ForEach(errors[key]!, id: \.self) { fileError in
+                                        Text(fileError.rawValue)
+                                    }
+                                }
+                            }
                         }
                         .font(.body)
                         .foregroundStyle(.tertiary)
