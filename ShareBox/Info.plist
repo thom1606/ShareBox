@@ -11,7 +11,7 @@
 	<key>SUEnableDownloaderService</key>
 	<true/>
 	<key>SUFeedURL</key>
-	<string>https://thom1606.github.io/ShareBox/appcast.xml</string>
+	<string>https://raw.githubusercontent.com/thom1606/ShareBox/refs/heads/main/Builds/appcast.xml</string>
 	<key>SUPublicEDKey</key>
     <string>8jnb+oJxxlzxCefWv7iPQni/4WDGvw/zTSPHm9+5HiE=</string>
 	<key>CFBundleURLTypes</key>

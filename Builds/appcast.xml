@@ -4,11 +4,11 @@
         <title>ShareBox</title>
         <item>
             <title>1.0.0</title>
-            <pubDate>Mon, 18 Aug 2025 11:12:30 +0200</pubDate>
-            <sparkle:version>6</sparkle:version>
+            <pubDate>Mon, 18 Aug 2025 11:40:45 +0200</pubDate>
+            <sparkle:version>7</sparkle:version>
             <sparkle:shortVersionString>1.0.0</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/thom1606/ShareBox/releases/download/v1.0.0/ShareBox.zip" length="2754427" type="application/octet-stream" sparkle:edSignature="FO+DF+kP//d1hjz7tmISK1XpOqhYJpmm5qPB4G6EOJ7JTUjmOf2XsUkZTIgAYjnNG6OoZyyIPRjtbZ3ZVCFKCw=="/>
+            <enclosure url="https://github.com/thom1606/ShareBox/releases/download/v1.0.0/ShareBox.zip" length="2754395" type="application/octet-stream" sparkle:edSignature="xDetPcgmTsSujftAougQaV36gl/Ujdc9nc/HZ601Po3RxicTXKWjlerDW+gRWq/4itkuRjr+oexfogtRNs23AQ=="/>
         </item>
     </channel>
 </rss>
