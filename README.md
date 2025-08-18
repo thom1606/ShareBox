@@ -48,6 +48,6 @@ ShareBox is still in active development, but it's already useful for quick and e
 
 1. Multi-part upload. This will allow for much larger files to be uploaded (only the 250 GB cap from the subscription should become the limit).
 2. ~~Drag & drop files to create new boxes.~~
-3. Adding files to the box that is currently being created (so you can select more files from different folders, etc.).
+3. ~~Adding files to the box that is currently being created (so you can select more files from different folders, etc.).~~
 4. File previews for the download page (starting with images).
 5. Pay-as-you-go subscription option. For users who need more than 250 GB per month, I want to help by giving the option to pay per GB after the initial 250 GB has been reached.
