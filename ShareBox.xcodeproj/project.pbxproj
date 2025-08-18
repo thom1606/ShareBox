@@ -69,7 +69,6 @@
 				Sources/.Shared/Types.swift,
 				Sources/.Shared/Utilities/Environment.swift,
 				Sources/.Shared/Utilities/Errors.swift,
-				Sources/.Shared/Utilities/Files.swift,
 				Sources/.Shared/Utilities/Logs.swift,
 				Sources/.Shared/Utilities/Utilties.swift,
 				Sources/.Shared/Utilities/WindowAccessor.swift,
@@ -461,7 +460,7 @@
 				CODE_SIGN_ENTITLEMENTS = ShareBox/ShareBox.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_ASSET_PATHS = "\"ShareBox/Preview Content\"";
 				DEVELOPMENT_TEAM = U6WA8YA735;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -496,7 +495,7 @@
 				CODE_SIGN_ENTITLEMENTS = ShareBox/ShareBox.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_ASSET_PATHS = "\"ShareBox/Preview Content\"";
 				DEVELOPMENT_TEAM = U6WA8YA735;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -530,7 +529,7 @@
 				CODE_SIGN_ENTITLEMENTS = ShareBox.Finder/ShareBox_Finder.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_TEAM = U6WA8YA735;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
@@ -561,7 +560,7 @@
 				CODE_SIGN_ENTITLEMENTS = ShareBox.Finder/ShareBox_Finder.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_TEAM = U6WA8YA735;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
