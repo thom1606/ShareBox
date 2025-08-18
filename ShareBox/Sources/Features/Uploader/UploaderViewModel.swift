@@ -70,6 +70,15 @@ import UserNotifications
         return .hidden
     }
 
+    var uiMovable: Bool {
+        var result = true
+        if uiState == .visible || uiState == .peeking {
+            result = false
+        }
+        if !canInteract { result = false }
+        return result
+    }
+
     var hasOngoingUpload: Bool {
         var hasOpenStandingProgress = false
         for item in uploadProgress.values where item.status != .completed && item.status != .failed {
@@ -85,9 +94,6 @@ import UserNotifications
     var canInteract: Bool {
         var interactable = true
         if isCreatingGroup { interactable = false }
-
-        // Updat mouse listener based on interactable
-        mouseListener.paused = !interactable
         return interactable
     }
 

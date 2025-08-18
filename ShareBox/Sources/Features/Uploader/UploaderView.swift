@@ -15,18 +15,28 @@ struct UploaderView: View {
     @AppStorage(Constants.Settings.completedOnboardingPrefKey) private var completedOnboarding = false
 
     private var dragAndDropHandler: some View {
-        Color.black.opacity(0.001)
-            // We add a small space for the drag and drop to activate from.
-            // And we enlarge it when the UI is opened so dropping files is active over the whole width and height.
-            .frame(width: state.uiState == .hidden || state.uiState == .peeking ? 13 : Constants.Uploader.windowWidth)
-            .onDrop(of: [.fileURL], isTargeted: $state.isLiveDropTarget, perform: state.onItemsDrop)
-            .onHover { isOver in
-                if !enableMouseActivation { return }
-                if isOver { state.isDropzoneHovered = isOver } else {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: { state.isDropzoneHovered = false })
-                }
+        GeometryReader { geo in
+            VStack(spacing: 0) {
+                Spacer(minLength: 0)
+                Color.black.opacity(0.001)
+                    // We add a small space for the drag and drop to activate from.
+                    // And we enlarge it when the UI is opened so dropping files is active over the whole width and height.
+                    .frame(
+                        width: state.uiState == .hidden || state.uiState == .peeking ? 13 : Constants.Uploader.windowWidth,
+                        // To make the activation point for a hidden ui a little harder (so it doesn't get triggered as easily) we divide the height in half
+                        height: state.uiState == .hidden ? geo.size.height / 2 : geo.size.height
+                    )
+                    .onDrop(of: [.fileURL], isTargeted: $state.isLiveDropTarget, perform: state.onItemsDrop)
+                    .onHover { isOver in
+                        if !enableMouseActivation { return }
+                        if isOver { state.isDropzoneHovered = isOver } else {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: { state.isDropzoneHovered = false })
+                        }
+                    }
+                Spacer(minLength: 0)
             }
-            .allowsHitTesting(state.uiState == .hidden)
+        }
+        .allowsHitTesting(state.uiState == .hidden)
     }
 
     private var toolbar: some View {
@@ -151,6 +161,9 @@ struct UploaderView: View {
                 openWindow(id: "onboarding")
             }
             state.onAppear(openSettings: openSettings)
+        }
+        .onChange(of: state.uiMovable) {
+            state.mouseListener.paused = !state.uiMovable
         }
     }
 }

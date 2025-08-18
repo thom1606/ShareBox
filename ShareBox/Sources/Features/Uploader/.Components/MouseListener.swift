@@ -10,7 +10,21 @@ import SwiftUI
 class MouseListener {
     private var mouseMonitor: Any?
     private var window: NSWindow?
-    public var paused: Bool = false
+    private var timer: Timer?
+    private var timedPaused: Bool = false
+
+    public var paused: Bool = false {
+        didSet {
+            if paused {
+                self.timer?.invalidate()
+                timedPaused = true
+            } else {
+                self.timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
+                    self.timedPaused = false
+                }
+            }
+        }
+    }
 
     func startTrackingMouse(window: NSWindow) {
         self.window = window
@@ -22,7 +36,7 @@ class MouseListener {
 
     private func updateWindowPosition() {
         guard let window = window else { return }
-        if paused { return }
+        if timedPaused { return }
         let mouseLocation = NSEvent.mouseLocation
         if let screen = NSScreen.screens.first(where: { $0.frame.contains(mouseLocation) }) {
             let screenFrame = screen.visibleFrame
