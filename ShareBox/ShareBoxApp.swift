@@ -14,19 +14,23 @@ struct ShareBoxApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
     // Properties
-    @AppStorage(Constants.Settings.keepInDockPrefKey) private var keepInDock = false
     private let updaterController: SPUStandardUpdaterController
+    @AppStorage(Constants.Settings.keepInDockPrefKey) private var keepInDock = false
+    @State private var user = User()
 
     init() {
+        // Initialize variables
         updaterController = SPUStandardUpdaterController(startingUpdater: true, updaterDelegate: nil, userDriverDelegate: nil)
 
+        // For release we only allow up to 1 instance running at a time
         #if RELEASE
         if isAnotherInstanceRunning() {
             NSApp.terminate(nil)
         }
         #endif
-        UNUserNotificationCenter.current().delegate = NotificationDelegate.shared
 
+        // Setup local handlers
+        UNUserNotificationCenter.current().delegate = NotificationDelegate.shared
         if keepInDock {
             NSApplication.shared.setActivationPolicy(.regular)
         } else {
@@ -52,24 +56,23 @@ struct ShareBoxApp: App {
                 CheckForUpdatesView(updater: updaterController.updater)
             }
         }
+
         Window("Onboarding", id: "onboarding") {
             OnboardingView()
         }
         .windowResizability(.contentSize)
+
         Settings {
             SettingsView()
-                .navigationTitle("ShareBox Settings")
         }
         .defaultSize(width: 600, height: 600)
         .defaultPosition(.center)
-        Window("Onboarding", id: "onboarding") {
-            Text("Onboarding window")
-        }
     }
 }
 
 class AppDelegate: NSObject, NSApplicationDelegate {
-    func applicationDidFinishLaunching(_ notification: Notification) {
+    // Correct the UI for the main uploader window on startup
+    public func applicationDidFinishLaunching(_ notification: Notification) {
         if let window = NSApplication.shared.windows.first {
             window.styleMask.remove(.titled)
             window.isOpaque = false
@@ -79,32 +82,58 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             window.makeKeyAndOrderFront(nil)
         }
     }
+
+    // Shutdown warning when uploads are in progress
+    public func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
+        // Check if there are ongoing uploads
+        if let uploader = UploaderViewModel.shared, uploader.uploadState != .idle {
+            // Show alert preventing the shutdown
+            let alert = NSAlert()
+            alert.messageText = String(localized: "Upload in Progress")
+            alert.informativeText = String(localized: "You have files currently uploading. Closing the app now may interrupt these uploads. Are you sure you want to quit?")
+            alert.alertStyle = .warning
+            alert.addButton(withTitle: String(localized: "Quit Anyway"))
+            alert.addButton(withTitle: String(localized: "Cancel"))
+            alert.window.center()
+            alert.window.level = .floating
+            alert.window.makeKeyAndOrderFront(nil)
+            let response = alert.runModal()
+            // If the user wants to continue, cancel the termination
+            if response == .alertFirstButtonReturn {
+                return .terminateNow
+            } else {
+                return .terminateCancel
+            }
+        }
+        return .terminateNow
+    }
     
-    // Add this method to handle incoming URLs
-   func application(_ application: NSApplication, open urls: [URL]) {
-       for url in urls {
-           handleIncomingURL(url)
-       }
-   }
-   
-   private func handleIncomingURL(_ url: URL) {
-       if url.scheme == "sharebox" && url.host == "auth" {
-           // Parse the URL and extract tokens
-           if let components = URLComponents(url: url, resolvingAgainstBaseURL: true),
-              let queryItems = components.queryItems {
-               let refreshToken = queryItems.first(where: { $0.name == "refreshToken" })?.value
-               let accessToken = queryItems.first(where: { $0.name == "accessToken" })?.value
-               
-               if refreshToken != nil && accessToken != nil {
-                   Keychain.shared.saveToken(refreshToken!, key: "RefreshToken")
-                   Keychain.shared.saveToken(accessToken!, key: "AccessToken")
-                   
-                   Utilities.showNotification(title: String(localized: "Authenticated"), body: String(localized: "You have been authenticated successfully, enjoy sharing files!"))
-               }
-           }
-       } else if url.scheme == "sharebox" && url.host == "subscribed" {
-           NotificationCenter.default.post(name: .userDetailsChanged, object: nil, userInfo: [:])
-       }
+    // Listen for deeplinks coming in
+    public func application(_ application: NSApplication, open urls: [URL]) {
+        for url in urls {
+            handleIncomingURL(url)
+        }
+    }
+
+    // Handle each incoming URL and check their purpose
+    private func handleIncomingURL(_ url: URL) {
+        Task {
+            if url.scheme == "sharebox" && url.host == "auth" {
+                // Parse the URL and extract tokens
+                if let components = URLComponents(url: url, resolvingAgainstBaseURL: true),
+                   let queryItems = components.queryItems {
+                    let refreshToken = queryItems.first(where: { $0.name == "refreshToken" })?.value
+                    let accessToken = queryItems.first(where: { $0.name == "accessToken" })?.value
+                    
+                    // Only if both exist we override them
+                    if refreshToken != nil && accessToken != nil {
+                        User.shared?.saveTokens(accessToken: accessToken!, refreshToken: refreshToken!)
+                    }
+                }
+            } else if url.scheme == "sharebox" && url.host == "subscribed" {
+                await User.shared?.refresh()
+            }
+        }
    }
 }
 

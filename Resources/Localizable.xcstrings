@@ -29,6 +29,9 @@
     "5 days" : {
 
     },
+    "5 minutes" : {
+
+    },
     "7 days" : {
 
     },
@@ -36,9 +39,6 @@
 
     },
     "Account" : {
-
-    },
-    "All your files have been uploaded. Close this Box to copy the link to your clipboard." : {
 
     },
     "An unknown error occurred while uploading your files. Please try again later." : {
@@ -63,6 +63,9 @@
 
     },
     "Build version" : {
+
+    },
+    "Cancel" : {
 
     },
     "Check for Updates…" : {
@@ -119,6 +122,12 @@
     "Keep in Dock" : {
 
     },
+    "Keep notch open while uploading" : {
+
+    },
+    "Keep the notch open while uploads are happening, otherwise morph into a small notch to hover over." : {
+
+    },
     "Let's go!" : {
 
     },
@@ -143,10 +152,10 @@
     "No files or folders selected? Please try again after selecting items." : {
       "comment" : "If ShareBox ever gets triggered without files or folders selected."
     },
-    "Onboarding" : {
+    "No open boxes found." : {
 
     },
-    "Onboarding window" : {
+    "Onboarding" : {
 
     },
     "One or more files in your folder named \"%@\" have failed to upload and gave the following errors:" : {
@@ -165,6 +174,9 @@
 
     },
     "Protect your boxes by letting users enter a password to access them." : {
+
+    },
+    "Quit Anyway" : {
 
     },
     "Receive status notifications" : {
@@ -192,12 +204,6 @@
 
     },
     "Set up your experience" : {
-
-    },
-    "ShareBox Settings" : {
-
-    },
-    "ShareBox Uploaded" : {
 
     },
     "Sign in" : {
@@ -260,6 +266,9 @@
     "Upload Failed" : {
 
     },
+    "Upload in Progress" : {
+
+    },
     "Upload to ShareBox" : {
       "comment" : "Finder Context Menu Label",
       "localizations" : {
@@ -296,6 +305,9 @@
 
     },
     "You have been authenticated successfully, enjoy sharing files!" : {
+
+    },
+    "You have files currently uploading. Closing the app now may interrupt these uploads. Are you sure you want to quit?" : {
 
     },
     "You have reached the maximum number of boxes you can create at this time. Please wait for some boxes to expire before creating more." : {

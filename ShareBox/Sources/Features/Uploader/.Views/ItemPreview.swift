@@ -1,6 +1,6 @@
 //
 //  ItemPreview.swift
-//  ShareBox.Helper
+//  ShareBox
 //
 //  Created by Thom van den Broek on 11/08/2025.
 //
@@ -49,12 +49,12 @@ struct ItemPreview: View {
         }
     }
 
-    // Errors mapped to [File name: [error list]]
-    private var errors: [String: [FileError]] {
+    // Errors mapped to [absolute path: [error list]]
+    private var errors: [String: [PlatformError]] {
         if let itemError = state.uploadProgress[item.absolute], !itemError.errors.isEmpty {
             return [item.absolute: itemError.errors]
         } else if item.isFolder {
-            var res: [String: [FileError]] = [:]
+            var res: [String: [PlatformError]] = [:]
             for key in state.uploadProgress.keys where key.hasPrefix(item.absolute) && !state.uploadProgress[key]!.errors.isEmpty {
                 res[URL(fileURLWithPath: key).lastPathComponent] = state.uploadProgress[key]!.errors
             }
@@ -64,8 +64,9 @@ struct ItemPreview: View {
     }
 
     private var isCompleted: Bool {
-        if state.groupDetails == nil { return false }
-        if state.isCreatingGroup { return false }
+        if case .preparingGroup = state.uploadState {
+            return false
+        }
 
         if item.isFolder {
             var hasIncomplete = false

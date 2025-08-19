@@ -12,6 +12,7 @@ import UserNotifications
 struct GeneralSettingsView: View {
     @AppStorage(Constants.Settings.keepInDockPrefKey) private var keepInDock = false
     @AppStorage(Constants.Settings.mouseActivationPrefKey) private var enableMouseActivation = true
+    @AppStorage(Constants.Settings.keepNotchOpenWhileUPloadingPrefKey) private var keepNotchOpen = true
     @AppStorage(Constants.Settings.hiddenFilesPrefKey) private var includeHiddenFiles = false
     @AppStorage(Constants.Settings.uploadNotificationsPrefKey) private var showUploadNotifications = true
     @AppStorage(Constants.Settings.passwordPrefKey) private var boxPassword = ""
@@ -83,6 +84,14 @@ struct GeneralSettingsView: View {
                     VStack(alignment: .leading) {
                         Text("Enable mouse activation")
                         Text("When enabled, moving your mouse to the screen edge will active the ShareBox Uploader.")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                    }
+                }
+                Toggle(isOn: $keepNotchOpen) {
+                    VStack(alignment: .leading) {
+                        Text("Keep notch open while uploading")
+                        Text("Keep the notch open while uploads are happening, otherwise morph into a small notch to hover over.")
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                     }

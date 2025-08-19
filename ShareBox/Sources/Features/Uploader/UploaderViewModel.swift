@@ -10,118 +10,120 @@ import Combine
 import UserNotifications
 
 @Observable class UploaderViewModel {
-    enum UIState {
+    public static var shared: UploaderViewModel?
+
+    enum UIState: Equatable {
         case hidden
         case peeking
         case visible
     }
+
+    // Files
+    private(set) var droppedItems: [FilePath] = []
+    private(set) var uploadProgress: [String: FilePathProgress] = [:]
+
+    // Preferences
     var mouseListener = MouseListener()
-    var messageListener: MachMessageListener?
-    // Active Drag & Drop state indicator
-    var isLiveDropTarget: Bool = false {
-        didSet {
-            if self.isLiveDropTarget { self.isDropTarget = self.isLiveDropTarget } else {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: { self.isDropTarget = false })
+    var keepNotchOpen: Bool = false
+    var userInteractable: Bool = false
+    var forceVisible: Bool = false
+    var forcePreviewVisible: Bool = false
+
+    // Computed
+    var isDropTarget: Bool = false
+    public var uiState: UIState {
+        // User activated states
+        if forcePreviewVisible { return .visible }
+        if forceVisible { return .visible }
+        if isDropTarget { return .visible }
+        if isUserHovering && userInteractable { return .visible }
+
+        // Progress based states
+        if case .preparingGroup = uploadState { return .visible }
+        if case .error = uploadState { return .visible }
+        if case .completed = uploadState { return .visible }
+
+        var canFullyClose = true
+        if case .uploading = uploadState { canFullyClose = false }
+        return canFullyClose ? .hidden : (keepNotchOpen ? .visible : .peeking)
+    }
+    private(set) var uploadState: UploadState = .idle
+    public var uiMovable: Bool {
+        var result = true
+        if uiState == .visible || uiState == .peeking {
+            result = false
+        }
+        if !userInteractable { result = false }
+        return result
+    }
+    public var hasActiveOverlay: Bool {
+        if case .error = uploadState { return true }
+        if isDropTarget { return true }
+        if case .preparingGroup = uploadState { return true }
+        return false
+    }
+
+    // Internal
+    private var closeOverlayWorkItem: DispatchWorkItem?
+    private var isUserHovering: Bool = false
+    private let uploader = UploadService()
+
+    // MARK: - Public Methods
+    init() {
+        UploaderViewModel.shared = self
+
+        Task {
+            for await newState in await uploader.stateStream() {
+                await MainActor.run {
+                    self.uploadState = newState
+                    if case .error(let error) = newState {
+                        // Wait a second for the UI to change to the error state
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
+                            guard let self = self else { return }
+                            switch error {
+                            case .unauthorized:
+                                self.showUnauthorizedDialog()
+                            case .groupLimitReached:
+                                self.showGroupLimiDialog()
+                            case .noSubscription:
+                                self.showMissingSubscriptionDialog()
+                            default:
+                                self.showUnknownErrorDialog()
+                            }
+                        }
+                    }
+                }
             }
         }
-    }
-    var isDropTarget: Bool = false
-    var isDropzoneHovered: Bool = false
-    var isContentHovered: Bool = false
-    var showErrorOverlay: Bool = false
-    var droppedItems: [FilePath] = []
-    var isCreatingGroup: Bool = false
-    var forcePeek: Bool = false
-    var groupDetails: BoxDetails?
-    var showLoadingOverlay: Bool = false
-    var openSettingsAction: OpenSettingsAction?
 
-    // Uploading props
-    private var waitingContinuations: [CheckedContinuation<BoxDetails, Error>] = []
-    // Track each file their status, progress and possible error
-    var uploadProgress: [String: FilePathProgress] = [:] {
-        didSet {
-            if groupDetails == nil || uploadProgress.isEmpty { return }
-            // After the batch is done, we check if there are any other open files, if not, the upload is complete and we show the success notification
-            var hasOpenStandingProgress = false
-            for item in uploadProgress.values where item.status != .completed && item.status != .failed {
-                hasOpenStandingProgress = true
-            }
-            if !hasOpenStandingProgress {
-                let boolString = UserDefaults.standard.string(forKey: Constants.Settings.uploadNotificationsPrefKey)
-                if boolString == "1" || boolString == nil {
-                    Utilities.showNotification(title: String(localized: "ShareBox Uploaded"), body: String(localized: "All your files have been uploaded. Close this Box to copy the link to your clipboard."))
+        Task {
+            for await newProgress in await uploader.progressStream() {
+                await MainActor.run {
+                    self.uploadProgress = newProgress
                 }
             }
         }
     }
 
-    // Computed Values
-    var uiState: UIState {
-        if isDropTarget { return .visible }
-        if isDropzoneHovered || isContentHovered { return .visible }
-        if groupDetails == nil {
-            if !droppedItems.isEmpty { return .visible }
+    public func onAppear() {
+        // Wait for the whole UI to settle in before any user interactions are available
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            self.userInteractable = true
         }
-        if isCreatingGroup { return .visible }
-        if showErrorOverlay { return .visible }
-        if !droppedItems.isEmpty { return .peeking }
-        if forcePeek { return .peeking }
-        return .hidden
     }
 
-    var uiMovable: Bool {
-        var result = true
-        if uiState == .visible || uiState == .peeking {
-            result = false
-        }
-        if !canInteract { result = false }
-        return result
-    }
-
-    var hasOngoingUpload: Bool {
-        var hasOpenStandingProgress = false
-        for item in uploadProgress.values where item.status != .completed && item.status != .failed {
-            hasOpenStandingProgress = true
-        }
-        return hasOpenStandingProgress
-    }
-
-    var hasActiveOverlay: Bool {
-        isLiveDropTarget || showErrorOverlay || showLoadingOverlay
-    }
-
-    var canInteract: Bool {
-        var interactable = true
-        if isCreatingGroup { interactable = false }
-        return interactable
-    }
-
-    init() {
-        setup()
-    }
-
-    /// Setup some additional listeners / values
-    private func setup() {
-        self.messageListener = MachMessageListener(state: self)
-    }
-
-    func onAppear(openSettings: OpenSettingsAction) {
-        self.openSettingsAction = openSettings
-    }
-
-    /// Support for dropping file items into the app
-    func onItemsDrop(providers: [NSItemProvider]) -> Bool {
-        if !self.canInteract { return false }
-        if self.groupDetails == nil { self.showLoadingOverlay = true }
-        // Make sure the UI stays open for the time we check if the files are valid
+    public func onItemsDrop(providers: [NSItemProvider]) -> Bool {
+        if self.uploadState == .preparingGroup { return false }
+        if !self.userInteractable { return false }
         var hasItemWithURL = false
         var finalPaths: [FilePath] = []
 
         let group = DispatchGroup()
 
+        // Keep the UI forced open for the small split second it takes to proces these url's, after that the normal uploader progress will take over.
+        self.forceVisible = true
+
         for provider in providers where provider.hasItemConformingToTypeIdentifier("public.file-url") {
-            // If even one of the drops works, we will return true for the drag & drop result
             hasItemWithURL = true
             group.enter()
 
@@ -140,121 +142,67 @@ import UserNotifications
             }
         }
 
-        // Called after all loadItem calls finish
         group.notify(queue: .main) {
-            self.addNewFiles(paths: finalPaths)
-            self.isDropTarget = self.isLiveDropTarget
+            Task {
+                // Everything is done processing, let the uploader take over the UI again
+                self.forceVisible = false
+                await self.appendFiles(finalPaths)
+            }
         }
         return hasItemWithURL
     }
 
-    /// Add new files to the uploader
-    func addNewFiles(paths: [FilePath]) {
-        if paths.isEmpty { return }
-        // Filter out all the duplicates
-        let nonDuplicatePaths = paths.filter { path in !self.droppedItems.contains(where: { $0.absolute == path.absolute }) }
-        if self.groupDetails == nil { self.showLoadingOverlay = true }
-        // Append the new files to the array
-        self.droppedItems.append(contentsOf: nonDuplicatePaths)
-        Task { @MainActor in
-            // Start of by notarizing the current batch so we don't lose track of what is already being handled.
-            for path in nonDuplicatePaths where !path.isFolder {
-                self.uploadProgress[path.absolute] = .init(status: .notarized)
-            }
-
-            // Wait for the group to be created
-            guard let group = try? await ensureGroup() else {
-                // Group creation failed, we will remove these files from the known upload
-                self.droppedItems.removeAll(where: nonDuplicatePaths.contains)
-                for path in nonDuplicatePaths {
-                    self.uploadProgress.removeValue(forKey: path.absolute)
-                }
+    /// Handle user hover interactions
+    public func onHover(isOver: Bool) {
+        if isOver {
+            // If the UI is currently not user interactable, we won't listen
+            if !self.userInteractable {
                 return
             }
-            self.showLoadingOverlay = false
-            let batch = UploadBatch(groupId: group.groupId, paths: nonDuplicatePaths, onProgress: { path, fileProgress in
-                self.uploadProgress[path] = fileProgress
-            })
-            // Start the file upload
-            await batch.start()
+            // Cancel any pending close
+            closeOverlayWorkItem?.cancel()
+            closeOverlayWorkItem = nil
+            // Show overlay immediately
+            self.isUserHovering = true
+        } else {
+            self.forcePreviewVisible = false
+            // Schedule closing after 0.5 seconds
+            let workItem = DispatchWorkItem { [weak self] in
+                self?.isUserHovering = false
+            }
+            closeOverlayWorkItem = workItem
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, execute: workItem)
         }
     }
 
-    /// Ensure a group is created before any file batcher are to be uploaded
-    func ensureGroup() async throws -> BoxDetails {
-        if let details = groupDetails {
-            return details
-        }
-        return try await withCheckedThrowingContinuation { continuation in
-            waitingContinuations.append(continuation)
-            // Make sure only one instance can create a group
-            guard !self.isCreatingGroup else { return }
-            self.isCreatingGroup = true
-            self.showLoadingOverlay = true
-
-            Task {
-                try? await Task.sleep(for: .seconds(1))
-                await UploadBatch.createGroup { result in
-                    switch result {
-                    case .success(let details):
-                        self.groupDetails = details
-                        self.isCreatingGroup = false
-                        self.showLoadingOverlay = false
-                        // Resume all waiting tasks
-                        self.waitingContinuations.forEach { $0.resume(returning: details) }
-                        self.waitingContinuations.removeAll()
-                    case .failure(let error):
-                        // If the group could not be created, we should show errors regarding the issue and make sure the rest of the file upload progress is cancelled for the batches currently in cirulation
-                        self.isCreatingGroup = false
-                        self.showErrorOverlay = true
-                        self.showLoadingOverlay = false
-                        self.waitingContinuations.forEach { $0.resume(throwing: ShareBoxError.noGroupCreated) }
-                        self.waitingContinuations.removeAll()
-
-                        dataLogger.error("Group creation failed: \(error.localizedDescription)")
-                        // Show alerts to the user which best depict the current failure
-                        Task {
-                            // Toggle the error overlay
-                            try? await Task.sleep(for: .seconds(1))
-                            await MainActor.run {
-                                if let apiError = error as? APIError, case .unauthorized = apiError {
-                                    self.showUnauthorizedDialog()
-                                } else if let error = error as? APIError, case .serverError(_, let errorResponse) = error {
-                                    if errorResponse.error == "GROUP_LIMIT_REACHED" {
-                                        self.showGroupLimiDialog()
-                                    } else if errorResponse.error == "SUBSCRIPTION_NOT_FOUND" {
-                                        self.showMissingSubscriptionDialog()
-                                    } else {
-                                        self.showUnknownErrorDialog()
-                                    }
-                                } else {
-                                    self.showUnknownErrorDialog()
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+    public func appendFiles(_ paths: [FilePath]) async {
+        // Filter out all the duplicates
+        let nonDuplicatePaths = paths.filter { path in !self.droppedItems.contains(where: { $0.absolute == path.absolute }) }
+        self.droppedItems.append(contentsOf: nonDuplicatePaths)
+        try? await self.uploader.append(paths)
     }
 
-    /// Close out the notch and group upload progress
-    func closeNotch(reset: Bool = false, notify: Bool = false) {
-        // Toggle off options which could be witholding the UI without any user interaction
-        self.showErrorOverlay = false
-        self.showLoadingOverlay = false
-        if reset {
-            if notify {
-                let pasteboard = NSPasteboard.general
-                pasteboard.clearContents()
-                pasteboard.setString(String(localized: "Hey! I want to share some files with you. You can download them from my ShareBox: \(groupDetails!.url)", comment: "Clipboard message"), forType: .string)
-
-                Utilities.showNotification(title: String(localized: "Link Copied!"), body: String(localized: "The ShareBox link is copied to your clipboard!"))
+    /// Notify the user that the group is being closed and the details are copied to the clipboard
+    public func gracefullyClose() {
+        Task {
+            guard let groupUrlString = await uploader.groupDetails?.url else {
+                return
             }
+            let pasteboard = NSPasteboard.general
+            pasteboard.clearContents()
+            pasteboard.setString(String(localized: "Hey! I want to share some files with you. You can download them from my ShareBox: \(groupUrlString)", comment: "Clipboard message"), forType: .string)
 
-            self.droppedItems.removeAll()
-            self.uploadProgress.removeAll()
-            self.groupDetails = nil
+            Utilities.showNotification(title: String(localized: "Link Copied!"), body: String(localized: "The ShareBox link is copied to your clipboard!"))
+        }
+        self.reset()
+    }
+
+    // MARK: - Private Methods
+    private func reset() {
+        self.droppedItems.removeAll()
+        self.forceVisible = false
+        Task {
+            await self.uploader.reset()
         }
     }
 
@@ -268,7 +216,7 @@ import UserNotifications
         alert.window.level = .floating
         alert.window.makeKeyAndOrderFront(nil)
         alert.runModal()
-        self.closeNotch()
+        self.reset()
     }
     private func showGroupLimiDialog() {
         let alert = NSAlert()
@@ -279,7 +227,7 @@ import UserNotifications
         alert.window.level = .floating
         alert.window.makeKeyAndOrderFront(nil)
         alert.runModal()
-        self.closeNotch()
+        self.reset()
     }
     private func showMissingSubscriptionDialog() {
         let alert = NSAlert()
@@ -290,8 +238,8 @@ import UserNotifications
         alert.window.level = .floating
         alert.window.makeKeyAndOrderFront(nil)
         alert.runModal()
-        self.closeNotch()
-        self.openSettingsAction?()
+        self.reset()
+//        self.openSettingsAction?()
     }
     private func showUnauthorizedDialog() {
         let alert = NSAlert()
@@ -302,7 +250,7 @@ import UserNotifications
         alert.window.level = .floating
         alert.window.makeKeyAndOrderFront(nil)
         alert.runModal()
-        self.closeNotch()
+        self.reset()
         // open web url to sign in
         if let domainString = (Bundle.main.object(forInfoDictionaryKey: "BASE_URL") as? String) {
             NSWorkspace.shared.open(URL(string: "\(domainString)/auth/sign-in")!)

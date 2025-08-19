@@ -47,8 +47,7 @@ struct SharedGroup: Codable, Identifiable {
     var url: String
 }
 
-extension String {
-    subscript(offset: Int) -> Character {
-        self[index(startIndex, offsetBy: offset)]
-    }
+struct BoxDetails: Codable {
+    var groupId: String
+    var url: String
 }

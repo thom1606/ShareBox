@@ -15,6 +15,7 @@ final class Constants {
         static let uploadNotificationsPrefKey = "SHOW_UPLOAD_NOTIFICATIONS"
         static let mouseActivationPrefKey = "MOUSE_ACTIVATION"
         static let keepInDockPrefKey = "KEEP_IN_DOCK"
+        static let keepNotchOpenWhileUPloadingPrefKey = "KEEP_OPEN_WHILE_UPLOADING"
         static let completedOnboardingPrefKey = "COMPLETED_ONBOARDING"
     }
     final class User {

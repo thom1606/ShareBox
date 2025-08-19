@@ -36,9 +36,11 @@ class MachMessageListener {
                     case .fileUploadRequest:
                         generalLogger.debug("Received file upload request...")
                         let res = try decoder.decode(MachFileUploadBody.self, from: machMessage.data!)
-                        listener.state.addNewFiles(paths: res.items)
+                        Task {
+                            await listener.state.appendFiles(res.items)
+                        }
                     case .peek:
-                        listener.state.forcePeek = true
+                        listener.state.forcePreviewVisible = true
                     }
                 }
             } catch {

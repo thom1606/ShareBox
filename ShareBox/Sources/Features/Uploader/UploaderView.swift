@@ -12,7 +12,10 @@ struct UploaderView: View {
     @Environment(\.openWindow) private var openWindow
     @Environment(\.openSettings) private var openSettings
     @AppStorage(Constants.Settings.mouseActivationPrefKey) private var enableMouseActivation = true
+    @AppStorage(Constants.Settings.keepNotchOpenWhileUPloadingPrefKey) private var keepNotchOpen = true
     @AppStorage(Constants.Settings.completedOnboardingPrefKey) private var completedOnboarding = false
+
+    @State private var hasAppeared = false
 
     private var dragAndDropHandler: some View {
         GeometryReader { geo in
@@ -26,13 +29,11 @@ struct UploaderView: View {
                         // To make the activation point for a hidden ui a little harder (so it doesn't get triggered as easily) we divide the height in half
                         height: state.uiState == .hidden ? geo.size.height / 2 : geo.size.height
                     )
-                    .onDrop(of: [.fileURL], isTargeted: $state.isLiveDropTarget, perform: state.onItemsDrop)
-                    .onHover { isOver in
+                    .onDrop(of: [.fileURL], isTargeted: $state.isDropTarget, perform: state.onItemsDrop)
+                    .onHover(perform: { isOver in
                         if !enableMouseActivation { return }
-                        if isOver { state.isDropzoneHovered = isOver } else {
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: { state.isDropzoneHovered = false })
-                        }
-                    }
+                        state.onHover(isOver: isOver)
+                    })
                 Spacer(minLength: 0)
             }
         }
@@ -50,9 +51,29 @@ struct UploaderView: View {
     private var overlays: some View {
         ZStack(alignment: .center) {
             // Drop File Overlay
-            OverlayView(systemName: "document.badge.plus", active: state.isLiveDropTarget)
-            OverlayView(systemName: "xmark.seal", color: .red, active: state.showErrorOverlay)
-            LoadingOverlayView(active: state.showLoadingOverlay)
+            OverlayView(systemName: "document.badge.plus", active: state.isDropTarget)
+            // Error Overlay
+            OverlayView(systemName: "xmark.seal", color: .red, active: {
+                if case .error = state.uploadState { return true }
+                return false
+            }())
+            // Loading (Group creation) Overlay
+            LoadingOverlayView(active: state.uploadState == .preparingGroup)
+        }
+    }
+
+    private var emptyBody: some View {
+        HStack(spacing: 0) {
+            Spacer(minLength: 0)
+            VStack(spacing: 8) {
+                Image(systemName: "questionmark.folder")
+                    .font(.largeTitle)
+                    .foregroundStyle(.white)
+                Text("Start adding files")
+                    .foregroundStyle(.white.opacity(0.7))
+                    .multilineTextAlignment(.center)
+            }
+            Spacer(minLength: 0)
         }
     }
 
@@ -82,19 +103,9 @@ struct UploaderView: View {
 
             ZStack(alignment: .leading) {
                 Color.clear
+
                 if state.droppedItems.isEmpty {
-                    HStack(spacing: 0) {
-                        Spacer(minLength: 0)
-                        VStack(spacing: 8) {
-                            Image(systemName: "questionmark.folder")
-                                .font(.largeTitle)
-                                .foregroundStyle(.white)
-                            Text("Start adding files")
-                                .foregroundStyle(.white.opacity(0.7))
-                                .multilineTextAlignment(.center)
-                        }
-                        Spacer(minLength: 0)
-                    }
+                    emptyBody
                 }
                 fileList
 
@@ -115,22 +126,10 @@ struct UploaderView: View {
             .padding(.horizontal, 10)
             // We will add some initial vertical padding for the content
             .padding(.vertical, 40)
-            .onHover { isOver in
-                if isOver {
-                    state.isContentHovered = isOver
-                    state.forcePeek = false
-                } else {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: { state.isContentHovered = false })
-                }
-            }
-            // And after that we will add some additional padding which the hover will be placed within
+            .onHover(perform: state.onHover)
             .padding(.vertical, 50)
             .offset(x: state.uiState == .peeking || state.uiState == .hidden ? -115 : 0)
             .animation(.spring(duration: 0.3), value: state.uiState)
-            .mask(
-                NotchShape(pulloutPercentage: state.uiState == .visible ? 1 : 0)
-                    .fill(.white)
-            )
         }
         .offset(x: state.uiState == .hidden ? -23 : 0)
         .animation(.spring(duration: 0.3), value: state.uiState)
@@ -143,7 +142,6 @@ struct UploaderView: View {
 
                 // Height Bound Wrapper
                 ZStack(alignment: .leading) {
-                    Color.clear
                     // Main Content of the notch
                     mainBody
                     // Drag & Drop Handler
@@ -157,10 +155,16 @@ struct UploaderView: View {
             state.mouseListener.startTrackingMouse(window: window)
         })
         .onAppear {
+            if hasAppeared { return }
+            self.hasAppeared = true
             if !completedOnboarding {
                 openWindow(id: "onboarding")
             }
-            state.onAppear(openSettings: openSettings)
+            state.onAppear()
+            state.keepNotchOpen = keepNotchOpen
+        }
+        .onChange(of: keepNotchOpen) {
+            state.keepNotchOpen = keepNotchOpen
         }
         .onChange(of: state.uiMovable) {
             state.mouseListener.paused = !state.uiMovable

@@ -4,16 +4,6 @@
 <dict>
 	<key>BASE_URL</key>
 	<string>$(BASE_URL)</string>
-	<key>UPLOAD_S3</key>
-	<string>$(UPLOAD_S3)</string>
-	<key>SUEnableInstallerLauncherService</key>
-	<true/>
-	<key>SUEnableDownloaderService</key>
-	<true/>
-	<key>SUFeedURL</key>
-	<string>https://raw.githubusercontent.com/thom1606/ShareBox/refs/heads/main/Builds/appcast.xml</string>
-	<key>SUPublicEDKey</key>
-    <string>8jnb+oJxxlzxCefWv7iPQni/4WDGvw/zTSPHm9+5HiE=</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -25,5 +15,19 @@
 			</array>
 		</dict>
 	</array>
+	<key>NSSupportsAutomaticTermination</key>
+	<false/>
+	<key>NSSupportsSuddenTermination</key>
+	<false/>
+	<key>SUEnableDownloaderService</key>
+	<true/>
+	<key>SUEnableInstallerLauncherService</key>
+	<true/>
+	<key>SUFeedURL</key>
+	<string>https://raw.githubusercontent.com/thom1606/ShareBox/refs/heads/main/Builds/appcast.xml</string>
+	<key>SUPublicEDKey</key>
+	<string>8jnb+oJxxlzxCefWv7iPQni/4WDGvw/zTSPHm9+5HiE=</string>
+	<key>UPLOAD_S3</key>
+	<string>$(UPLOAD_S3)</string>
 </dict>
 </plist>
