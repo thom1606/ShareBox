@@ -25,8 +25,16 @@ struct BoxesSettingsView: View {
         Form {
             Section(header: Text("Open Boxes")) {
                 if self.loaded {
-                    ForEach(groups) { group in
-                        GroupRowView(group: group)
+                    if groups.isEmpty {
+                        HStack {
+                            Spacer()
+                            Text("No open boxes found.")
+                            Spacer()
+                        }
+                    } else {
+                        ForEach(groups) { group in
+                            GroupRowView(group: group)
+                        }
                     }
                 } else {
                     HStack {
