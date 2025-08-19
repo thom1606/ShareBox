@@ -14,7 +14,7 @@ class UploadBatch {
     private var progressCancellables: [String: AnyCancellable] = [:]
     private var onProgress: (String, FilePathProgress) -> Void
 
-    let apiService = ApiService()
+    private let apiService = ApiService()
 
     init(groupId: String, paths: [FilePath], onProgress: @escaping (String, FilePathProgress) -> Void) {
         self.groupId = groupId
@@ -27,7 +27,7 @@ class UploadBatch {
     }
 
     /// Start the upload of this batch to the correct bucket
-    public func start() async {
+    public func start() async { // swiftlint:disable:this cyclomatic_complexity
         let finalPaths = self.createFinalPathList()
 
         // Make sure all files / folders are mapped, if not, no files could be found within folders
@@ -43,7 +43,22 @@ class UploadBatch {
                     dataLogger.error("Created S3 url for file \"\(key)\" but it doesn't exist locally.")
                     continue
                 }
-                await self.uploadFile(currentFile, urlStrings: addFilesResponse.files[key]!)
+                let item = addFilesResponse.files[key]!
+
+                let shouldPutOnS3String: String = (Bundle.main.object(forInfoDictionaryKey: "UPLOAD_S3") as? String ?? "true")
+                if let shouldPutOnS3 = Bool(shouldPutOnS3String), !shouldPutOnS3 {
+                    await MainActor.run {
+                        dataLogger.debug("Skipping upload to S3 as it is disabled by environment, simulating it instead...")
+                        self.simulateFile(currentFile)
+                    }
+                    return
+                }
+
+                if item.type == "multipart" {
+                    await self.uploadMultiPartFile(currentFile, item: item)
+                } else {
+                    await self.uploadSinglePartFile(currentFile, item: item)
+                }
             }
 
             // For the files failed to register, we will show an error
@@ -62,6 +77,8 @@ class UploadBatch {
                     foundError = .limitReached
                 case "SUBSCRIPTION_NOT_FOUND":
                     foundError = .noSubscription
+                case "GROUP_NOT_FOUND":
+                    foundError = .groupNotFound
                 default:
                     break
                 }
@@ -97,8 +114,7 @@ class UploadBatch {
     }
 
     private func registerBatch(_ finalPaths: [FilePath]) async throws -> AddFilesResponse {
-        return try await self.apiService.post(endpoint: "/api/groups/files/add", parameters: [
-            "groupId": self.groupId,
+        return try await self.apiService.post(endpoint: "/api/groups/\(self.groupId)/files/add", parameters: [
             "files": finalPaths.map { item in
                 let details = item.details()
                 return [
@@ -145,84 +161,139 @@ class UploadBatch {
         }
     }
 
+    // For single part uploads (less than 5GB)
     @MainActor
-    private func uploadFile(_ path: FilePath, urlStrings: [String]) async {
-        let shouldPutOnS3String: String = (Bundle.main.object(forInfoDictionaryKey: "UPLOAD_S3") as? String ?? "true")
-        if let shouldPutOnS3 = Bool(shouldPutOnS3String), !shouldPutOnS3 {
-            dataLogger.debug("Skipping upload to S3 as it is disabled by environment, simulating it instead...")
-            self.onProgress(path.absolute, .init(status: .uploading, uploadProgress: 10))
-            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                self.onProgress(path.absolute, .init(status: .uploading, uploadProgress: 50))
-                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                    self.onProgress(path.absolute, .init(status: .uploading, uploadProgress: 100))
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                        self.onProgress(path.absolute, .init(status: .completed, uploadProgress: 100))
+    private func uploadSinglePartFile(_ path: FilePath, item: AddFilesResponse.Item) async {
+        do {
+            let fileData = try Data(contentsOf: URL(string: path.absolute)!)
+            let fileDetails = path.details()
+
+            // Create the request for the file upload
+            var request = URLRequest(url: URL(string: item.urls[0])!)
+            request.httpMethod = "PUT"
+            // Set Content-Type header to the file's MIME type
+            request.setValue(fileDetails.type, forHTTPHeaderField: "Content-Type")
+            // Set Content-Length header
+            request.setValue("\(fileDetails.size)", forHTTPHeaderField: "Content-Length")
+
+            // Start updating the progress
+            self.onProgress(path.absolute, .init(status: .uploading))
+            let uploadTask = URLSession.shared.uploadTask(with: request, from: fileData) { [onProgress, handleComplete] _, response, error in
+                Task { @MainActor in
+                    if let error = error {
+                        dataLogger.error("Upload failed with some internal error: \(error.localizedDescription)")
+                        onProgress(path.absolute, .init(status: .failed, uploadProgress: 100, errors: [.s3Failed]))
+                    } else if let httpResponse = response as? HTTPURLResponse, !(200...299).contains(httpResponse.statusCode) {
+                        dataLogger.error("Upload failed, got an invalid status code back from S3: \(httpResponse.statusCode)")
+                        onProgress(path.absolute, .init(status: .failed, uploadProgress: 100, errors: [.s3Failed]))
+                    } else {
+                        // Everything should have gone to plan and the file should have been uploaded
+                        Task {
+                            await handleComplete(.init(id: item.id))
+                            onProgress(path.absolute, .init(status: .completed, uploadProgress: 100))
+                        }
                     }
                 }
             }
-            return
-        }
 
-        if urlStrings.count == 1 {
-            // For single part uploads (less than 5GB)
-            do {
-                let fileData = try Data(contentsOf: URL(string: path.absolute)!)
-                let fileDetails = path.details()
-                // Create the request for the file upload
-                var request = URLRequest(url: URL(string: urlStrings[0])!)
-                request.httpMethod = "PUT"
-                // Set Content-Type header to the file's MIME type
-                request.setValue(fileDetails.type, forHTTPHeaderField: "Content-Type")
-                // Set Content-Length header
-                request.setValue("\(fileDetails.size)", forHTTPHeaderField: "Content-Length")
-
-                // Start updating the progress
-                self.onProgress(path.absolute, .init(status: .uploading))
-
-                self.uploadData(fileData, file: fileDetails, remoteURL: URL(string: urlStrings[0])!) { progress in
-                    self.onProgress(path.absolute, progress)
+            progressCancellables[path.absolute] = uploadTask.progress.publisher(for: \.fractionCompleted)
+                .receive(on: DispatchQueue.main).sink { [onProgress] fraction in
+                    DispatchQueue.main.async {
+                        onProgress(path.absolute, .init(status: .uploading, uploadProgress: fraction * 100))
+                    }
                 }
-            } catch {
-                self.onProgress(path.absolute, .init(status: .failed, uploadProgress: 100, errors: [.s3Failed]))
+            uploadTask.resume()
+        } catch {
+            self.onProgress(path.absolute, .init(status: .failed, uploadProgress: 100, errors: [.s3Failed]))
+        }
+    }
+
+    // For multi part file uploads (bigger than 5GB)
+    @MainActor
+    private func uploadMultiPartFile(_ path: FilePath, item: AddFilesResponse.Item) async {
+        do {
+            guard let partSize = item.partSize else {
+                throw ShareBoxError.failed
+            }
+
+            let fileDetails = path.details()
+            let handle = try FileHandle(forReadingFrom: URL(filePath: path.absolute.replacingOccurrences(of: "file://", with: "")))
+            defer { try? handle.close() }
+
+            var etags: [String] = []
+            for (index, urlString) in item.urls.enumerated() {
+                guard let url = URL(string: urlString) else { continue }
+                let offset = index * partSize
+                let length = min(partSize, Int(fileDetails.size) - offset)
+                if length <= 0 { break }
+
+                try handle.seek(toOffset: UInt64(offset))
+                let data = try handle.read(upToCount: length) ?? Data()
+
+                var request = URLRequest(url: url)
+                request.httpMethod = "PUT"
+                request.httpBody = data
+
+                // Give each part 3 tries to upload, otherwise the whole upload fails
+                var tries = 0
+                var newETag: String?
+                while newETag == nil && tries < 3 {
+                    do {
+                        newETag = try await self.uploadPart(request: request)
+                    } catch {
+                        tries += 1
+                    }
+                }
+                if newETag == nil {
+                    throw URLError(.badServerResponse)
+                }
+                etags.append(newETag!)
+
+                // Update the progress for the file
+                let progress = Double(offset + length) / Double(fileDetails.size)
+                self.onProgress(path.absolute, .init(status: .uploading, uploadProgress: progress * 100))
+            }
+
+            // Complete the upload
+            await self.handleComplete(item: .init(id: item.id, uploadId: item.uploadId, etags: etags))
+            self.onProgress(path.absolute, .init(status: .completed, uploadProgress: 100))
+        } catch {
+            generalLogger.error("Failed to upload multipart file: \(error.localizedDescription)")
+            self.onProgress(path.absolute, .init(status: .failed, uploadProgress: 100, errors: [.s3Failed]))
+        }
+    }
+
+    @MainActor
+    private func simulateFile(_ path: FilePath) {
+        dataLogger.debug("Skipping upload to S3 as it is disabled by environment, simulating it instead...")
+        self.onProgress(path.absolute, .init(status: .uploading, uploadProgress: 10))
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+            self.onProgress(path.absolute, .init(status: .uploading, uploadProgress: 50))
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                self.onProgress(path.absolute, .init(status: .uploading, uploadProgress: 100))
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    self.onProgress(path.absolute, .init(status: .completed, uploadProgress: 100))
+                }
             }
         }
     }
 
-    private func uploadData(_ data: Data, file: DetailedFile, remoteURL: URL, onUploadProgress: @escaping (FilePathProgress) -> Void) {
-        // Create the request for the file upload
-        var request = URLRequest(url: remoteURL)
-        request.httpMethod = "PUT"
-        // Set Content-Type header to the file's MIME type
-        request.setValue(file.type, forHTTPHeaderField: "Content-Type")
-        // Set Content-Length header
-        request.setValue("\(file.size)", forHTTPHeaderField: "Content-Length")
-
-        // Start updating the progress
-        onUploadProgress(.init(status: .uploading))
-        let uploadTask = URLSession.shared.uploadTask(with: request, from: data) { _, response, error in
-            Task { @MainActor in
-                if let error = error {
-                    dataLogger.error("Upload failed with some internal error: \(error.localizedDescription)")
-                    onUploadProgress(.init(status: .failed, uploadProgress: 100, errors: [.s3Failed]))
-                } else if let httpResponse = response as? HTTPURLResponse, !(200...299).contains(httpResponse.statusCode) {
-                    dataLogger.error("Upload failed, got an invalid status code back from S3: \(httpResponse.statusCode)")
-                    onUploadProgress(.init(status: .failed, uploadProgress: 100, errors: [.s3Failed]))
-                } else {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                        // Everything should have gone to plan and the file should have been uploaded
-                        onUploadProgress(.init(status: .completed, uploadProgress: 100))                        
-                    }
-                }
-            }
+    private func uploadPart(request: URLRequest) async throws -> String {
+        let (responseData, response) = try await URLSession.shared.data(for: request)
+        guard let httpResponse = response as? HTTPURLResponse,
+              httpResponse.statusCode == 200,
+              let etag = httpResponse.allHeaderFields["Etag"] as? String else {
+            throw URLError(.badServerResponse)
         }
+        return etag
+    }
 
-        progressCancellables[file.paths.absolute] = uploadTask.progress.publisher(for: \.fractionCompleted)
-            .receive(on: DispatchQueue.main).sink { fraction in
-                DispatchQueue.main.async {
-                   onUploadProgress(.init(status: .uploading, uploadProgress: fraction * 100))
-                }
-            }
-        uploadTask.resume()
+    private func handleComplete(item: CompleteItem) async {
+        _ = try? await apiService.post(endpoint: "/api/groups/\(self.groupId)/files/complete", parameters: [
+            "id": item.id,
+            "uploadId": item.uploadId,
+            "etags": item.etags
+        ]) as ApiService.BasicSuccessResponse
     }
 
     /// Get files within the given folder path and convert them to FilePath's
@@ -289,6 +360,20 @@ struct BoxDetails: Codable {
 }
 
 private struct AddFilesResponse: Codable {
-    var files: [String: [String]]
+    var files: [String: Item]
     var failed: [String: String]
+
+    struct Item: Codable {
+        var urls: [String]
+        var id: String
+        var partSize: Int?
+        var uploadId: String?
+        var type: String
+    }
+}
+
+private struct CompleteItem: Codable {
+    var id: String
+    var uploadId: String?
+    var etags: [String]?
 }
