@@ -12,9 +12,9 @@ import UserNotifications
 struct OnboardingSubscribeView: View {
     private let api = ApiService()
     @Binding var pageSelection: Int
+    var user: User
 
     @State private var isLoading: Bool = false
-    @State private var hasErrored: Bool = false
 
     var body: some View {
         OnboardingPage(continueText: "Subscribe", isLoading: isLoading, onContinue: handleContinue) {
@@ -40,13 +40,15 @@ struct OnboardingSubscribeView: View {
             }
             .padding(.leading, 32)
             .padding(.top, 48)
+            .onChange(of: user.subscriptionData) {
+                if (user.subscriptionData?.status ?? .inactive) == .active {
+                    self.pageSelection += 1
+                }
+            }
         }
-        .onAppear(perform: handleAppear)
-        .onDisappear(perform: handleDisappear)
     }
 
     private func handleContinue() {
-        self.hasErrored = false
         self.isLoading = true
         Task {
             do {
@@ -55,41 +57,12 @@ struct OnboardingSubscribeView: View {
             } catch {
                 DispatchQueue.main.async {
                     self.isLoading = false
-                    withAnimation { self.hasErrored = true }
                 }
             }
         }
     }
-
-    private func handleAppear() {
-        NotificationCenter.default.addObserver(forName: .userDetailsChanged, object: nil, queue: .main) { _ in
-            Task {
-                await fetchUserDetails()
-            }
-        }
-    }
-
-    private func handleDisappear() {
-        NotificationCenter.default.removeObserver(self, name: .userDetailsChanged, object: nil)
-    }
-
-    private func fetchUserDetails() async {
-        do {
-            let userData: UserDataResponse = try await api.get(endpoint: "/api/auth/user")
-            if userData.subscription?.status == "active" {
-                self.pageSelection += 1
-            } else {
-                throw PlatformError.unknown
-            }
-        } catch {
-            withAnimation {
-                self.hasErrored = true
-            }
-        }
-        self.isLoading = false
-    }
 }
 
 #Preview {
-    OnboardingSubscribeView(pageSelection: .constant(0))
+    OnboardingSubscribeView(pageSelection: .constant(0), user: .init())
 }

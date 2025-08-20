@@ -14,13 +14,18 @@ import Foundation
     private(set) var userData: UserData?
     private(set) var subscriptionData: SubscriptionData?
     private(set) var authenticated: Bool = false
+    private var updateTask: Task<Void, Never>?
 
     private let api = ApiService()
 
     init() {
         User.shared = self
+        setup()
+    }
+
+    private func setup() {
         // Check if user is authenticated
-        if Keychain.shared.fetchToken(key: "AccessToken") != nil && Keychain.shared.fetchToken(key: "RefreshToken") != nil {
+        if Keychain.shared.fetchToken(key: "RefreshToken") != nil {
             self.authenticated = true
             Task {
                 await self.refresh()
@@ -34,7 +39,9 @@ import Foundation
     public func saveTokens(accessToken: String, refreshToken: String, notify: Bool = true) {
         Keychain.shared.saveToken(refreshToken, key: "RefreshToken")
         Keychain.shared.saveToken(accessToken, key: "AccessToken")
-
+        Task {
+            await self.refresh()
+        }
         // Update user that tokens have been updated
         if notify {
             Utilities.showNotification(title: String(localized: "Authenticated"), body: String(localized: "You have been authenticated successfully, enjoy sharing files!"))
@@ -58,6 +65,25 @@ import Foundation
         }
     }
 
+    /// Update some settings creted by the user
+    public func updateSettings(password: String, storageDuration: String) {
+        if !self.authenticated { return }
+        // Cancel any existing task
+        updateTask?.cancel()
+        // Create new debounced task
+        updateTask = Task {
+            try? await Task.sleep(nanoseconds: 1_000_000_000) // 1 second delay
+            if !Task.isCancelled {
+                Task {
+                    try? await api.post(endpoint: "/api/auth/user", parameters: [
+                        "groupStorageDuration": storageDuration,
+                        "groupsPassword": password
+                    ]) as ApiService.BasicSuccessResponse
+                }
+            }
+        }
+    }
+
     /// Sign out and remove all user details
     public func signOut() {
         Task {
@@ -71,13 +97,13 @@ import Foundation
     }
 }
 
-struct UserData: Codable {
+struct UserData: Codable, Equatable {
     var id: String
     var fullName: String
     var email: String
 }
 
-struct SubscriptionData: Codable {
+struct SubscriptionData: Codable, Equatable {
     var status: Status
 
     enum Status: String, Codable {

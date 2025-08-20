@@ -12,6 +12,7 @@ import Sparkle
 
 struct GeneralSettingsView: View {
     private let updater: SPUUpdater
+    var user: User
 
     @AppStorage(Constants.Settings.keepInDockPrefKey) private var keepInDock = false
     @AppStorage(Constants.Settings.mouseActivationPrefKey) private var enableMouseActivation = true
@@ -24,8 +25,9 @@ struct GeneralSettingsView: View {
     @State private var startAtLogin: Bool
     @State private var isNotificationAuthorized = false
 
-    init(updater: SPUUpdater) {
+    init(updater: SPUUpdater, user: User) {
         self.updater = updater
+        self.user = user
         self._startAtLogin = State(initialValue: SMAppService.mainApp.status == .enabled)
     }
 
@@ -119,6 +121,9 @@ struct GeneralSettingsView: View {
                 }
                 VStack(alignment: .leading) {
                     TextField("Box Password", text: $boxPassword)
+                        .onChange(of: boxPassword) {
+                            user.updateSettings(password: boxPassword, storageDuration: storageDuration)
+                        }
                     Text("Protect your boxes by letting users enter a password to access them.")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
@@ -141,6 +146,9 @@ struct GeneralSettingsView: View {
                         Text("5 days").tag("5_days")
                         Text("7 days").tag("7_days")
                     }
+                    .onChange(of: storageDuration) {
+                        user.updateSettings(password: boxPassword, storageDuration: storageDuration)
+                    }
                     Spacer()
                 }
             }
@@ -156,5 +164,5 @@ struct GeneralSettingsView: View {
 #Preview {
     let mockUpdater = SPUStandardUpdaterController(startingUpdater: false, updaterDelegate: nil, userDriverDelegate: nil).updater
 
-    GeneralSettingsView(updater: mockUpdater)
+    GeneralSettingsView(updater: mockUpdater, user: .init())
 }

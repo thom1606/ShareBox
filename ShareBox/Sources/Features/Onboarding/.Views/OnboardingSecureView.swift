@@ -37,6 +37,10 @@ struct OnboardingSecureView: View {
                         }
                         .offset(x: -10)
                         TextFieldView(label: "Set box password", placeholder: "password", text: $boxPassword)
+                        // If the user is seeing the onboarding while being signed in, we need to make sure these values are synced to the backend
+                        .onChange(of: boxPassword) {
+                            user.updateSettings(password: boxPassword, storageDuration: storageDuration)
+                        }
                         PickerView(label: "Select storage duration", selection: $storageDuration, items: [
                             ("1_days", "1 day"),
                             ("2_days", "2 days"),
@@ -44,6 +48,10 @@ struct OnboardingSecureView: View {
                             ("5_days", "5 days"),
                             ("7_days", "7 days")
                         ])
+                        // If the user is seeing the onboarding while being signed in, we need to make sure these values are synced to the backend
+                        .onChange(of: storageDuration) {
+                            user.updateSettings(password: boxPassword, storageDuration: storageDuration)
+                        }
                     }
                     .font(.title3)
                 }

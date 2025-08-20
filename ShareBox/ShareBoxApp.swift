@@ -128,6 +128,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                     // Only if both exist we override them
                     if refreshToken != nil && accessToken != nil {
                         User.shared?.saveTokens(accessToken: accessToken!, refreshToken: refreshToken!)
+                        Task {
+                            await User.shared?.refresh()                            
+                        }
                     }
                 }
             } else if url.scheme == "sharebox" && url.host == "subscribed" {

@@ -19,7 +19,7 @@ struct SettingsView: View {
         ZStack {
             Color.clear
             TabView {
-                GeneralSettingsView(updater: updater)
+                GeneralSettingsView(updater: updater, user: user)
                     .tabItem {
                         Label("Preferences", systemImage: "gear")
                     }
