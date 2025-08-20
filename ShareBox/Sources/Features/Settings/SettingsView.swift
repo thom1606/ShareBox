@@ -6,8 +6,10 @@
 //
 
 import SwiftUI
+import Sparkle
 
 struct SettingsView: View {
+    var updater: SPUUpdater
     var user: User
 
     // Properties
@@ -17,7 +19,7 @@ struct SettingsView: View {
         ZStack {
             Color.clear
             TabView {
-                GeneralSettingsView()
+                GeneralSettingsView(updater: updater)
                     .tabItem {
                         Label("Preferences", systemImage: "gear")
                     }
@@ -47,5 +49,7 @@ struct SettingsView: View {
 }
 
 #Preview {
-    SettingsView(user: .init())
+    let mockUpdater = SPUStandardUpdaterController(startingUpdater: false, updaterDelegate: nil, userDriverDelegate: nil).updater
+
+    SettingsView(updater: mockUpdater, user: .init())
 }

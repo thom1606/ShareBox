@@ -8,8 +8,11 @@
 import SwiftUI
 import ServiceManagement
 import UserNotifications
+import Sparkle
 
 struct GeneralSettingsView: View {
+    private let updater: SPUUpdater
+
     @AppStorage(Constants.Settings.keepInDockPrefKey) private var keepInDock = false
     @AppStorage(Constants.Settings.mouseActivationPrefKey) private var enableMouseActivation = true
     @AppStorage(Constants.Settings.keepNotchOpenWhileUPloadingPrefKey) private var keepNotchOpen = true
@@ -21,7 +24,8 @@ struct GeneralSettingsView: View {
     @State private var startAtLogin: Bool
     @State private var isNotificationAuthorized = false
 
-    init() {
+    init(updater: SPUUpdater) {
+        self.updater = updater
         self._startAtLogin = State(initialValue: SMAppService.mainApp.status == .enabled)
     }
 
@@ -77,6 +81,15 @@ struct GeneralSettingsView: View {
                                 .foregroundColor(.secondary)
                         }
                     }
+                }
+                HStack {
+                    Text("Check for updates")
+                    Spacer()
+                    Button(action: { updater.checkForUpdates() }, label: {
+                        ZStack {
+                            Text("Check")
+                        }
+                    })
                 }
             }
             Section(header: Text("Behaviour")) {
@@ -141,5 +154,7 @@ struct GeneralSettingsView: View {
 }
 
 #Preview {
-    GeneralSettingsView()
+    let mockUpdater = SPUStandardUpdaterController(startingUpdater: false, updaterDelegate: nil, userDriverDelegate: nil).updater
+
+    GeneralSettingsView(updater: mockUpdater)
 }

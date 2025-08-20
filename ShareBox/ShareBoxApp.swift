@@ -21,7 +21,7 @@ struct ShareBoxApp: App {
     init() {
         // Initialize variables
         updaterController = SPUStandardUpdaterController(startingUpdater: true, updaterDelegate: nil, userDriverDelegate: nil)
-
+        
         // For release we only allow up to 1 instance running at a time
         #if RELEASE
         if isAnotherInstanceRunning() {
@@ -63,7 +63,7 @@ struct ShareBoxApp: App {
         .windowResizability(.contentSize)
 
         Settings {
-            SettingsView(user: user)
+            SettingsView(updater: updaterController.updater, user: user)
         }
         .defaultSize(width: 600, height: 600)
         .defaultPosition(.center)
