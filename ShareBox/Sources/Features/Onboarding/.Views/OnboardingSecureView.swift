@@ -9,7 +9,7 @@ import SwiftUI
 
 struct OnboardingSecureView: View {
     @Binding var pageSelection: Int
-    var userData: UserDataResponse?
+    var user: User
 
     @AppStorage(Constants.Settings.hiddenFilesPrefKey) private var includeHiddenFiles = false
     @AppStorage(Constants.Settings.passwordPrefKey) private var boxPassword = ""
@@ -61,8 +61,8 @@ struct OnboardingSecureView: View {
     }
 
     private func handleContinue() {
-        if userData != nil {
-            if userData?.subscription?.status == "active" {
+        if user.authenticated {
+            if (user.subscriptionData?.status ?? .inactive) == .active {
                 pageSelection += 3
             } else {
                 pageSelection += 2
@@ -74,5 +74,5 @@ struct OnboardingSecureView: View {
 }
 
 #Preview {
-    OnboardingSecureView(pageSelection: .constant(0))
+    OnboardingSecureView(pageSelection: .constant(0), user: .init())
 }

@@ -18,9 +18,6 @@ final class Constants {
         static let keepNotchOpenWhileUPloadingPrefKey = "KEEP_OPEN_WHILE_UPLOADING"
         static let completedOnboardingPrefKey = "COMPLETED_ONBOARDING"
     }
-    final class User {
-        static let subscriptionStatusKey = "SUBSCRIPTION_STATUS"
-    }
     final class Uploader {
         static let windowWidth: CGFloat = 120
     }

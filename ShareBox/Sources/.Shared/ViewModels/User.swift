@@ -10,18 +10,23 @@ import Foundation
 @Observable class User {
     public static var shared: User?
 
-    public var userData: UserData?
-    public var subscriptionData: SubscriptionData?
-    public var authenticated: Bool = false
+    private(set) var isLoading: Bool = true
+    private(set) var userData: UserData?
+    private(set) var subscriptionData: SubscriptionData?
+    private(set) var authenticated: Bool = false
 
     private let api = ApiService()
 
     init() {
         User.shared = self
-
         // Check if user is authenticated
         if Keychain.shared.fetchToken(key: "AccessToken") != nil && Keychain.shared.fetchToken(key: "RefreshToken") != nil {
             self.authenticated = true
+            Task {
+                await self.refresh()
+            }
+        } else {
+            self.isLoading = false
         }
     }
 
@@ -43,11 +48,25 @@ import Foundation
             self.authenticated = true
             self.userData = res.user
             self.subscriptionData = res.subscription
+            self.isLoading = false
         } catch {
+            self.isLoading = false
             if let apiError = error as? APIError, case .unauthorized = apiError {
                 // Failed to authenticate
                 self.authenticated = false
             }
+        }
+    }
+
+    /// Sign out and remove all user details
+    public func signOut() {
+        Task {
+            _ = try? await api.get(endpoint: "/api/auth/sign-out") as ApiService.BasicSuccessResponse
+            Keychain.shared.deleteToken(key: "AccessToken")
+            Keychain.shared.deleteToken(key: "RefreshToken")
+            self.userData = nil
+            self.subscriptionData = nil
+            self.authenticated = false
         }
     }
 }
@@ -63,6 +82,7 @@ struct SubscriptionData: Codable {
 
     enum Status: String, Codable {
         case active
+        case inactive
     }
 }
 

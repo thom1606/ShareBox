@@ -79,7 +79,7 @@ struct OnboardingSubscribeView: View {
             if userData.subscription?.status == "active" {
                 self.pageSelection += 1
             } else {
-                throw ShareBoxError.failed
+                throw PlatformError.unknown
             }
         } catch {
             withAnimation {

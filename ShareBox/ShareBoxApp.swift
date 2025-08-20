@@ -58,12 +58,12 @@ struct ShareBoxApp: App {
         }
 
         Window("Onboarding", id: "onboarding") {
-            OnboardingView()
+            OnboardingView(user: user)
         }
         .windowResizability(.contentSize)
 
         Settings {
-            SettingsView()
+            SettingsView(user: user)
         }
         .defaultSize(width: 600, height: 600)
         .defaultPosition(.center)
@@ -124,7 +124,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                    let queryItems = components.queryItems {
                     let refreshToken = queryItems.first(where: { $0.name == "refreshToken" })?.value
                     let accessToken = queryItems.first(where: { $0.name == "accessToken" })?.value
-                    
+
                     // Only if both exist we override them
                     if refreshToken != nil && accessToken != nil {
                         User.shared?.saveTokens(accessToken: accessToken!, refreshToken: refreshToken!)

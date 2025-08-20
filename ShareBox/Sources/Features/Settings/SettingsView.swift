@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct SettingsView: View {
+    var user: User
+
     // Properties
     @AppStorage(Constants.Settings.keepInDockPrefKey) private var keepInDock = false
 
@@ -19,7 +21,7 @@ struct SettingsView: View {
                     .tabItem {
                         Label("Preferences", systemImage: "gear")
                     }
-                AccountSettingsView()
+                AccountSettingsView(user: user)
                     .tabItem {
                         Label("Account", systemImage: "person.circle")
                     }
@@ -45,5 +47,5 @@ struct SettingsView: View {
 }
 
 #Preview {
-    SettingsView()
+    SettingsView(user: .init())
 }

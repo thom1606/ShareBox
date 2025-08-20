@@ -9,21 +9,21 @@ import SwiftUI
 import ThomKit
 
 struct OnboardingView: View {
+    var user: User
+
     private let api = ApiService()
     // Properties
     @AppStorage(Constants.Settings.keepInDockPrefKey) private var keepInDock = false
     @State private var selection = 0
-    @State private var userData: UserDataResponse?
-    @State private var hasLoadedUserData = false
 
     var body: some View {
         FrostedWindow {
             PagingView(selection: $selection, pageCount: 6) {
-                OnboardingWelcomeView(pageSelection: $selection, isLoading: !hasLoadedUserData)
+                OnboardingWelcomeView(pageSelection: $selection, isLoading: user.isLoading)
                     .tag(0)
                 OnboardingExperienceView(pageSelection: $selection)
                     .tag(1)
-                OnboardingSecureView(pageSelection: $selection, userData: userData)
+                OnboardingSecureView(pageSelection: $selection, user: user)
                     .tag(2)
                 OnboardingSignInView(pageSelection: $selection)
                     .tag(3)
@@ -39,10 +39,6 @@ struct OnboardingView: View {
         })
         .onAppear {
             NSApplication.shared.setActivationPolicy(.regular)
-            Task {
-                self.userData = try? await api.get(endpoint: "/api/auth/user")
-                self.hasLoadedUserData = true
-            }
         }
         .onDisappear {
             if !keepInDock {
@@ -53,5 +49,5 @@ struct OnboardingView: View {
 }
 
 #Preview {
-    OnboardingView()
+    OnboardingView(user: .init())
 }

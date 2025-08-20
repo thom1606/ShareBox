@@ -16,7 +16,6 @@ class Keychain {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrAccount as String: key,
-//            kSecAttrAccessGroup as String: "group.com.thom1606.ShareBox",
             kSecValueData as String: data
         ]
         // Remove old item if exists

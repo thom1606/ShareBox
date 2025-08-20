@@ -22,7 +22,7 @@ class MachMessenger {
                 try self.setup()
                 return try self.send(message)
             } catch {
-                throw ShareBoxError.appNotRunning
+                throw PlatformError.appNotRunning
             }
         }
 
@@ -43,7 +43,7 @@ class MachMessenger {
         guard let remotePort = CFMessagePortCreateRemote(nil, Constants.Mach.portName as CFString) else {
             generalLogger.error("Failed to connect to the ShareBox Uploader")
             self.remote = nil
-            throw ShareBoxError.appNotRunning
+            throw PlatformError.appNotRunning
         }
         self.remote = remotePort
     }

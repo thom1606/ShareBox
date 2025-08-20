@@ -8,29 +8,11 @@
 import SwiftUI
 
 struct AccountSettingsView: View {
+    var user: User
+
     private let api = ApiService()
-    @AppStorage(Constants.User.subscriptionStatusKey) private var subscriptionStatus = "inactive"
     @State private var loadingBilling = false
     @State private var loadingSubscribe = false
-    @State private var loadedUser = false
-    @State private var userDetails: UserDataResponse?
-    @State private var authenticated = false
-
-    private func fetchUserDetails() async {
-        do {
-            let userData: UserDataResponse = try await api.get(endpoint: "/api/auth/user")
-            self.authenticated = true
-            self.userDetails = userData
-            self.loadedUser = true
-            self.subscriptionStatus = userData.subscription?.status ?? "inactive"
-        } catch {
-            if let apiError = error as? APIError, case .unauthorized = apiError {
-                // Failed to authenticate
-                self.authenticated = false
-                self.loadedUser = true
-            }
-        }
-    }
 
     private func openBilling() {
         if self.loadingBilling { return }
@@ -75,26 +57,17 @@ struct AccountSettingsView: View {
         }
     }
 
-    private func handleSignOut() {
-        Task {
-            _ = try? await api.get(endpoint: "/api/auth/sign-out") as ApiService.BasicSuccessResponse
-            Keychain.shared.deleteToken(key: "AccessToken")
-            Keychain.shared.deleteToken(key: "RefreshToken")
-            self.userDetails = nil
-        }
-    }
-
     var body: some View {
         Form {
             Section(header: Text("User Details")) {
-                if !self.loadedUser {
+                if user.isLoading {
                     HStack {
                         Spacer()
                         ProgressView()
                             .controlSize(.small)
                         Spacer()
                     }
-                } else if self.userDetails == nil {
+                } else if !user.authenticated || user.userData == nil {
                     HStack {
                         Text("Sign in to ShareBox")
                         Spacer()
@@ -106,24 +79,24 @@ struct AccountSettingsView: View {
                     HStack {
                         Text("Name")
                         Spacer()
-                        Text(self.userDetails!.user.fullName)
+                        Text(user.userData?.fullName ?? "?")
                     }
                     HStack {
                         Text("Email")
                         Spacer()
-                        Text(self.userDetails!.user.email)
+                        Text(user.userData?.email ?? "?")
                     }
                     HStack {
                         Spacer()
-                        Button(action: handleSignOut, label: {
+                        Button(action: user.signOut, label: {
                             Text("Sign out")
                         })
                     }
                 }
             }
-            if self.userDetails != nil {
+            if user.authenticated {
                 Section(header: Text("Subscription")) {
-                    if subscriptionStatus != "active" {
+                    if (user.subscriptionData?.status ?? .inactive) != .active {
                         HStack {
                             Text("Subscribe to ShareBox")
                             Spacer()
@@ -156,29 +129,6 @@ struct AccountSettingsView: View {
         }
         .formStyle(.grouped)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
-        .onAppear {
-            NotificationCenter.default.addObserver(forName: .keychainItemChanged, object: nil, queue: .main) { notification in
-                if let userInfo = notification.userInfo, let key = userInfo["key"] as? String {
-                    if key == "AccessToken" || key == "RefreshToken" {
-                        Task {
-                            await fetchUserDetails()
-                        }
-                    }
-                }
-            }
-            NotificationCenter.default.addObserver(forName: .userDetailsChanged, object: nil, queue: .main) { _ in
-                Task {
-                    await fetchUserDetails()
-                }
-            }
-        }
-        .onDisappear {
-            NotificationCenter.default.removeObserver(self, name: .keychainItemChanged, object: nil)
-            NotificationCenter.default.removeObserver(self, name: .userDetailsChanged, object: nil)
-        }
-        .task {
-            await fetchUserDetails()
-        }
     }
 }
 
@@ -207,5 +157,5 @@ struct UserDataResponse: Codable {
 }
 
 #Preview {
-    AccountSettingsView()
+    AccountSettingsView(user: .init())
 }

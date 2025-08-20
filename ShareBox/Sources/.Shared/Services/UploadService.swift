@@ -227,7 +227,7 @@ actor UploadService {
     private func uploadMultiPartFile(_ path: FilePath, in group: BoxDetails, item: AddFilesResponse.Item) async {
         do {
             guard let partSize = item.partSize else {
-                throw ShareBoxError.failed
+                throw PlatformError.fileSizeZero
             }
 
             let fileDetails = path.details()
