@@ -5,13 +5,14 @@
 //  Created by Thom van den Broek on 19/08/2025.
 //
 
-import Foundation
+import SwiftUI
 
 @Observable class User {
     public static var shared: User?
 
     private(set) var isLoading: Bool = true
     private(set) var userData: UserData?
+    private(set) var settingsData: SettingsData?
     private(set) var subscriptionData: SubscriptionData?
     private(set) var authenticated: Bool = false
     private var updateTask: Task<Void, Never>?
@@ -35,6 +36,12 @@ import Foundation
         }
     }
 
+    public func login() {
+        if let domainString = (Bundle.main.object(forInfoDictionaryKey: "BASE_URL") as? String) {
+            NSWorkspace.shared.open(URL(string: "\(domainString)/auth/sign-in")!)
+        }
+    }
+
     /// Update the refresh and acces token in keychain, with the option to notify the user about it (defaults to true)
     public func saveTokens(accessToken: String, refreshToken: String, notify: Bool = true) {
         Keychain.shared.saveToken(refreshToken, key: "RefreshToken")
@@ -54,7 +61,11 @@ import Foundation
             let res: UserFetchResponse = try await api.get(endpoint: "/api/auth/user")
             self.authenticated = true
             self.userData = res.user
+            self.settingsData = res.settings
             self.subscriptionData = res.subscription
+            UserDefaults.standard.set(res.settings.groupsPassword, forKey: Constants.Settings.passwordPrefKey)
+            UserDefaults.standard.set(res.settings.groupStorageDuration, forKey: Constants.Settings.storagePrefKey)
+
             self.isLoading = false
         } catch {
             self.isLoading = false
@@ -75,10 +86,14 @@ import Foundation
             try? await Task.sleep(nanoseconds: 1_000_000_000) // 1 second delay
             if !Task.isCancelled {
                 Task {
-                    try? await api.post(endpoint: "/api/auth/user", parameters: [
-                        "groupStorageDuration": storageDuration,
-                        "groupsPassword": password
-                    ]) as ApiService.BasicSuccessResponse
+                    do {
+                        _ = try await api.post(endpoint: "/api/auth/user", parameters: [
+                            "groupStorageDuration": storageDuration,
+                            "groupsPassword": password
+                        ]) as ApiService.BasicSuccessResponse
+                        UserDefaults.standard.set(password, forKey: Constants.Settings.passwordPrefKey)
+                        UserDefaults.standard.set(storageDuration, forKey: Constants.Settings.storagePrefKey)
+                    } catch {}
                 }
             }
         }
@@ -112,8 +127,14 @@ struct SubscriptionData: Codable, Equatable {
     }
 }
 
+struct SettingsData: Codable, Equatable {
+    var groupStorageDuration: String
+    var groupsPassword: String
+}
+
 private struct UserFetchResponse: Codable {
     var user: UserData
+    var settings: SettingsData
     var subscription: SubscriptionData?
 
     struct Subscription: Codable {

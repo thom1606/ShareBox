@@ -69,14 +69,16 @@ struct OnboardingSecureView: View {
     }
 
     private func handleContinue() {
+        // Make sure the user is signed in to change the settings
         if user.authenticated {
             if (user.subscriptionData?.status ?? .inactive) == .active {
-                pageSelection += 3
-            } else {
                 pageSelection += 2
+            } else {
+                pageSelection += 1
             }
         } else {
-            pageSelection += 1
+            Utilities.showNotification(title: "Not authenticated", body: "You are not signed in. Please sign in to continue.")
+            user.login()
         }
     }
 }

@@ -19,13 +19,13 @@ struct OnboardingView: View {
     var body: some View {
         FrostedWindow {
             PagingView(selection: $selection, pageCount: 6) {
-                OnboardingWelcomeView(pageSelection: $selection, isLoading: user.isLoading)
+                OnboardingWelcomeView(pageSelection: $selection, user: user, isLoading: user.isLoading)
                     .tag(0)
-                OnboardingExperienceView(pageSelection: $selection)
-                    .tag(1)
-                OnboardingSecureView(pageSelection: $selection, user: user)
-                    .tag(2)
                 OnboardingSignInView(pageSelection: $selection, user: user)
+                    .tag(1)
+                OnboardingExperienceView(pageSelection: $selection)
+                    .tag(2)
+                OnboardingSecureView(pageSelection: $selection, user: user)
                     .tag(3)
                 OnboardingSubscribeView(pageSelection: $selection, user: user)
                     .tag(4)

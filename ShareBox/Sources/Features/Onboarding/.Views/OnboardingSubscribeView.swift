@@ -41,8 +41,10 @@ struct OnboardingSubscribeView: View {
             .padding(.leading, 32)
             .padding(.top, 48)
             .onChange(of: user.subscriptionData) {
-                if (user.subscriptionData?.status ?? .inactive) == .active {
-                    self.pageSelection += 1
+                if pageSelection == 4 {
+                    if (user.subscriptionData?.status ?? .inactive) == .active {
+                        self.pageSelection += 1
+                    }
                 }
             }
         }

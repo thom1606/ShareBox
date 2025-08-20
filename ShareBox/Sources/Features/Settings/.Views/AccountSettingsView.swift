@@ -48,13 +48,6 @@ struct AccountSettingsView: View {
                 }
             }
         }
-
-    }
-
-    private func handleSignIn() {
-        if let domainString = (Bundle.main.object(forInfoDictionaryKey: "BASE_URL") as? String) {
-            NSWorkspace.shared.open(URL(string: "\(domainString)/auth/sign-in")!)
-        }
     }
 
     var body: some View {
@@ -71,7 +64,7 @@ struct AccountSettingsView: View {
                     HStack {
                         Text("Sign in to ShareBox")
                         Spacer()
-                        Button(action: handleSignIn, label: {
+                        Button(action: user.login, label: {
                             Text("Sign in")
                         })
                     }

@@ -9,6 +9,7 @@ import SwiftUI
 
 struct OnboardingWelcomeView: View {
     @Binding var pageSelection: Int
+    var user: User
     var isLoading: Bool
 
     let finalTitleText = String(localized: "Welcome to ShareBox")
@@ -47,10 +48,14 @@ struct OnboardingWelcomeView: View {
     }
 
     private func handleContinue() {
-        pageSelection += 1
+        if user.authenticated {
+            pageSelection += 2
+        } else {
+            pageSelection += 1            
+        }
     }
 }
 
 #Preview {
-    OnboardingWelcomeView(pageSelection: .constant(0), isLoading: true)
+    OnboardingWelcomeView(pageSelection: .constant(0), user: .init(), isLoading: true)
 }

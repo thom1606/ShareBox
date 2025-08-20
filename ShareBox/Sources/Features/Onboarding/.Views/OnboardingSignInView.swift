@@ -41,20 +41,14 @@ struct OnboardingSignInView: View {
         .onChange(of: user.authenticated) {
             if user.authenticated {
                 self.isLoading = false
-                if (user.subscriptionData?.status ?? .inactive) == .active {
-                    self.pageSelection += 2
-                } else {
-                    self.pageSelection += 1
-                }
+                self.pageSelection += 1
             }
         }
     }
 
     private func handleContinue() {
         self.isLoading = true
-        if let domainString = (Bundle.main.object(forInfoDictionaryKey: "BASE_URL") as? String) {
-            NSWorkspace.shared.open(URL(string: "\(domainString)/auth/sign-in")!)
-        }
+        self.user.login()
     }
 }
 
