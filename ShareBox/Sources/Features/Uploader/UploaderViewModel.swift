@@ -92,6 +92,12 @@ import UserNotifications
                             }
                         }
                     }
+                    if case .completed = newState {
+                        let boolString = UserDefaults.standard.string(forKey: Constants.Settings.uploadNotificationsPrefKey)
+                        if boolString == "1" || boolString == nil {
+                            Utilities.showNotification(title: String(localized: "ShareBox Uploaded"), body: String(localized: "All your files have been uploaded. Close this Box to copy the link to your clipboard."))
+                        }
+                    }
                 }
             }
         }

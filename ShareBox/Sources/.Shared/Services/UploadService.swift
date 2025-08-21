@@ -47,17 +47,13 @@ actor UploadService {
     public func append(_ files: [FilePath]) async throws {
         guard !files.isEmpty else { return }
 
-        print("handling new batch of files....")
-
         // If group is already created → upload immediately
         if let group = groupDetails {
-            print("Group exists, starting upload directly")
             return await startUpload(files, in: group)
         }
 
         // If group is being created → stash the files
         if state == .preparingGroup {
-            print("Group doens't yet exist, but something is creating it")
             pendingFiles.append(contentsOf: files)
             return
         }
@@ -143,6 +139,7 @@ actor UploadService {
                 if let shouldPutOnS3 = Bool(shouldPutOnS3String), !shouldPutOnS3 {
                     dataLogger.debug("Skipping upload to S3 as it is disabled by environment, simulating it instead...")
                     await self.simulateFile(currentFile, in: group, item: item)
+                    self.state = .completed
                     return
                 }
 

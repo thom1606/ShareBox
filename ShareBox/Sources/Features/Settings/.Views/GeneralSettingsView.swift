@@ -16,7 +16,7 @@ struct GeneralSettingsView: View {
 
     @AppStorage(Constants.Settings.keepInDockPrefKey) private var keepInDock = false
     @AppStorage(Constants.Settings.mouseActivationPrefKey) private var enableMouseActivation = true
-    @AppStorage(Constants.Settings.keepNotchOpenWhileUPloadingPrefKey) private var keepNotchOpen = true
+    @AppStorage(Constants.Settings.keepNotchOpenWhileUploadingPrefKey) private var keepNotchOpen = true
     @AppStorage(Constants.Settings.hiddenFilesPrefKey) private var includeHiddenFiles = false
     @AppStorage(Constants.Settings.uploadNotificationsPrefKey) private var showUploadNotifications = true
     @AppStorage(Constants.Settings.passwordPrefKey) private var boxPassword = ""

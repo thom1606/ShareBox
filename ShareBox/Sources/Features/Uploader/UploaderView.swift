@@ -12,7 +12,7 @@ struct UploaderView: View {
     @Environment(\.openWindow) private var openWindow
     @Environment(\.openSettings) private var openSettings
     @AppStorage(Constants.Settings.mouseActivationPrefKey) private var enableMouseActivation = true
-    @AppStorage(Constants.Settings.keepNotchOpenWhileUPloadingPrefKey) private var keepNotchOpen = true
+    @AppStorage(Constants.Settings.keepNotchOpenWhileUploadingPrefKey) private var keepNotchOpen = true
     @AppStorage(Constants.Settings.completedOnboardingPrefKey) private var completedOnboarding = false
 
     @State private var hasAppeared = false

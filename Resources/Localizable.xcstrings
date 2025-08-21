@@ -41,6 +41,9 @@
     "Account" : {
 
     },
+    "All your files have been uploaded. Close this Box to copy the link to your clipboard." : {
+
+    },
     "An unknown error occurred while uploading your files. Please try again later." : {
 
     },
@@ -210,6 +213,9 @@
 
     },
     "Set up your experience" : {
+
+    },
+    "ShareBox Uploaded" : {
 
     },
     "Sign in" : {
