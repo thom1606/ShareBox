@@ -21,6 +21,7 @@ struct GeneralSettingsView: View {
     @AppStorage(Constants.Settings.uploadNotificationsPrefKey) private var showUploadNotifications = true
     @AppStorage(Constants.Settings.passwordPrefKey) private var boxPassword = ""
     @AppStorage(Constants.Settings.storagePrefKey) private var storageDuration = "3_days"
+    @AppStorage(Constants.Settings.overMonthlyLimitStoragePrefKey) private var overMonthlyLimitStorage = false
 
     @State private var startAtLogin: Bool
     @State private var isNotificationAuthorized = false
@@ -122,7 +123,7 @@ struct GeneralSettingsView: View {
                 VStack(alignment: .leading) {
                     TextField("Box Password", text: $boxPassword)
                         .onChange(of: boxPassword) {
-                            user.updateSettings(password: boxPassword, storageDuration: storageDuration)
+                            user.updateSettings(password: boxPassword, storageDuration: storageDuration, overMonthlyLimitStorage: overMonthlyLimitStorage)
                         }
                     Text("Protect your boxes by letting users enter a password to access them.")
                         .font(.subheadline)
@@ -147,7 +148,7 @@ struct GeneralSettingsView: View {
                         Text("7 days").tag("7_days")
                     }
                     .onChange(of: storageDuration) {
-                        user.updateSettings(password: boxPassword, storageDuration: storageDuration)
+                        user.updateSettings(password: boxPassword, storageDuration: storageDuration, overMonthlyLimitStorage: overMonthlyLimitStorage)
                     }
                     Spacer()
                 }

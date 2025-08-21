@@ -13,9 +13,12 @@ struct OnboardingSubscribeView: View {
     private let api = ApiService()
     @Binding var pageSelection: Int
     var user: User
-
+    
+    @AppStorage(Constants.Settings.passwordPrefKey) private var boxPassword = ""
+    @AppStorage(Constants.Settings.storagePrefKey) private var storageDuration = "3_days"
+    @AppStorage(Constants.Settings.overMonthlyLimitStoragePrefKey) private var overMonthlyLimitStorage = false
     @State private var isLoading: Bool = false
-
+    
     var body: some View {
         OnboardingPage(continueText: "Subscribe", isLoading: isLoading, onContinue: handleContinue) {
             HStack {
@@ -25,9 +28,26 @@ struct OnboardingSubscribeView: View {
                             .fontDesign(.serif)
                             .font(.largeTitle)
                             .fontWeight(.bold)
-                        Text("For just **€2.99**/month, enjoy a **250GB** upload limit, ensuring your files are always ready to share. Upgrade options will be available soon, offering even more flexibility.\n\nSecure your personal cloud space and effortlessly upload up to **250GB** of files each month.")
+                        Text("For just **€2.99**/month, enjoy a **250GB** upload limit, ensuring your files are always ready to share.\n\nSecure your personal cloud space and effortlessly upload up to **250GB** of files each month.")
                             .foregroundStyle(.secondary)
                             .font(.title3)
+                    }
+                    VStack(alignment: .leading, spacing: 15) {
+                        HStack {
+                            Toggle("", isOn: $overMonthlyLimitStorage)
+                                .toggleStyle(.switch)
+                                .controlSize(.mini)
+                                .onChange(of: overMonthlyLimitStorage) {
+                                    user.updateSettings(password: boxPassword, storageDuration: storageDuration, overMonthlyLimitStorage: overMonthlyLimitStorage)
+                                }
+                            VStack(alignment: .leading) {
+                                Text("Pay-as-you-go storage")
+                                Text("Allow to spend €0.03/GB for uploads past the 250GB monthly limit.")
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                        .offset(x: -10)
                     }
                 }
                 .frame(width: 350)

@@ -44,6 +44,9 @@
     "All your files have been uploaded. Close this Box to copy the link to your clipboard." : {
 
     },
+    "Allow to spend €0.03/GB for uploads past the 250GB monthly limit." : {
+
+    },
     "An unknown error occurred while uploading your files. Please try again later." : {
 
     },
@@ -110,7 +113,7 @@
     "Feedback" : {
 
     },
-    "For just **€2.99**/month, enjoy a **250GB** upload limit, ensuring your files are always ready to share. Upgrade options will be available soon, offering even more flexibility.\n\nSecure your personal cloud space and effortlessly upload up to **250GB** of files each month." : {
+    "For just **€2.99**/month, enjoy a **250GB** upload limit, ensuring your files are always ready to share.\n\nSecure your personal cloud space and effortlessly upload up to **250GB** of files each month." : {
 
     },
     "General" : {
@@ -177,6 +180,9 @@
 
     },
     "Open Boxes" : {
+
+    },
+    "Pay-as-you-go storage" : {
 
     },
     "Preferences" : {

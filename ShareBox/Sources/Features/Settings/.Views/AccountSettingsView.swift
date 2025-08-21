@@ -13,6 +13,9 @@ struct AccountSettingsView: View {
     private let api = ApiService()
     @State private var loadingBilling = false
     @State private var loadingSubscribe = false
+    @AppStorage(Constants.Settings.passwordPrefKey) private var boxPassword = ""
+    @AppStorage(Constants.Settings.storagePrefKey) private var storageDuration = "3_days"
+    @AppStorage(Constants.Settings.overMonthlyLimitStoragePrefKey) private var overMonthlyLimitStorage = false
 
     private func openBilling() {
         if self.loadingBilling { return }
@@ -102,6 +105,18 @@ struct AccountSettingsView: View {
                                         .opacity(loadingSubscribe ? 1 : 0)
                                 }
                             })
+                        }
+                    } else {
+                        Toggle(isOn: $overMonthlyLimitStorage) {
+                            VStack(alignment: .leading) {
+                                Text("Pay-as-you-go storage")
+                                Text("Allow to spend €0.03/GB for uploads past the 250GB monthly limit.")
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                        .onChange(of: overMonthlyLimitStorage) {
+                            user.updateSettings(password: boxPassword, storageDuration: storageDuration, overMonthlyLimitStorage: overMonthlyLimitStorage)
                         }
                     }
                     HStack {

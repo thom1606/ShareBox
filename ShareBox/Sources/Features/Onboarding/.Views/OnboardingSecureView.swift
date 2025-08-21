@@ -14,6 +14,7 @@ struct OnboardingSecureView: View {
     @AppStorage(Constants.Settings.hiddenFilesPrefKey) private var includeHiddenFiles = false
     @AppStorage(Constants.Settings.passwordPrefKey) private var boxPassword = ""
     @AppStorage(Constants.Settings.storagePrefKey) private var storageDuration = "3_days"
+    @AppStorage(Constants.Settings.overMonthlyLimitStoragePrefKey) private var overMonthlyLimitStorage = false
 
     var body: some View {
         OnboardingPage(onContinue: handleContinue) {
@@ -39,7 +40,7 @@ struct OnboardingSecureView: View {
                         TextFieldView(label: "Set box password", placeholder: "password", text: $boxPassword)
                         // If the user is seeing the onboarding while being signed in, we need to make sure these values are synced to the backend
                         .onChange(of: boxPassword) {
-                            user.updateSettings(password: boxPassword, storageDuration: storageDuration)
+                            user.updateSettings(password: boxPassword, storageDuration: storageDuration, overMonthlyLimitStorage: overMonthlyLimitStorage)
                         }
                         PickerView(label: "Select storage duration", selection: $storageDuration, items: [
                             ("1_days", "1 day"),
@@ -50,7 +51,7 @@ struct OnboardingSecureView: View {
                         ])
                         // If the user is seeing the onboarding while being signed in, we need to make sure these values are synced to the backend
                         .onChange(of: storageDuration) {
-                            user.updateSettings(password: boxPassword, storageDuration: storageDuration)
+                            user.updateSettings(password: boxPassword, storageDuration: storageDuration, overMonthlyLimitStorage: overMonthlyLimitStorage)
                         }
                     }
                     .font(.title3)

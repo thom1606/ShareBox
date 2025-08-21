@@ -65,7 +65,7 @@ import SwiftUI
             self.subscriptionData = res.subscription
             UserDefaults.standard.set(res.settings.groupsPassword, forKey: Constants.Settings.passwordPrefKey)
             UserDefaults.standard.set(res.settings.groupStorageDuration, forKey: Constants.Settings.storagePrefKey)
-
+            UserDefaults.standard.set(res.settings.overMonthlyLimitStorage, forKey: Constants.Settings.overMonthlyLimitStoragePrefKey)
             self.isLoading = false
         } catch {
             self.isLoading = false
@@ -77,7 +77,7 @@ import SwiftUI
     }
 
     /// Update some settings creted by the user
-    public func updateSettings(password: String, storageDuration: String) {
+    public func updateSettings(password: String, storageDuration: String, overMonthlyLimitStorage: Bool) {
         if !self.authenticated { return }
         // Cancel any existing task
         updateTask?.cancel()
@@ -89,7 +89,8 @@ import SwiftUI
                     do {
                         _ = try await api.post(endpoint: "/api/auth/user", parameters: [
                             "groupStorageDuration": storageDuration,
-                            "groupsPassword": password
+                            "groupsPassword": password,
+                            "overMonthlyLimitStorage": overMonthlyLimitStorage
                         ]) as ApiService.BasicSuccessResponse
                         UserDefaults.standard.set(password, forKey: Constants.Settings.passwordPrefKey)
                         UserDefaults.standard.set(storageDuration, forKey: Constants.Settings.storagePrefKey)
@@ -130,6 +131,7 @@ struct SubscriptionData: Codable, Equatable {
 struct SettingsData: Codable, Equatable {
     var groupStorageDuration: String
     var groupsPassword: String
+    var overMonthlyLimitStorage: Bool
 }
 
 private struct UserFetchResponse: Codable {
