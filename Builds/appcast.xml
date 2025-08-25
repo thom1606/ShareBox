@@ -10,21 +10,5 @@
             <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
             <enclosure url="https://github.com/thom1606/ShareBox/releases/download/v1.1.1/ShareBox.zip" length="2793677" type="application/octet-stream" sparkle:edSignature="mRNAZcg0r7V9aALjvYlmNW0Qtx4nraC3Rw65QTOlt3fu4+JT3uLYfES2y/LxfkRHznlz1NTqKwt5JJphMSMZAQ=="/>
         </item>
-        <item>
-            <title>1.1.0</title>
-            <pubDate>Thu, 21 Aug 2025 13:20:00 +0200</pubDate>
-            <sparkle:version>10</sparkle:version>
-            <sparkle:shortVersionString>1.1.0</sparkle:shortVersionString>
-            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/thom1606/ShareBox/releases/download/v1.1.0/ShareBox.zip" length="2788363" type="application/octet-stream" sparkle:edSignature="fdqXagMHWnSmzx60Mg7P0ssRq2Bcg57TNGzLwls+cd2ihXpFEAwNIjDYafFe5xWHQiV31Xj7GjIxWv1xg5g3AA=="/>
-        </item>
-        <item>
-            <title>1.0.0</title>
-            <pubDate>Tue, 19 Aug 2025 13:57:16 +0200</pubDate>
-            <sparkle:version>9</sparkle:version>
-            <sparkle:shortVersionString>1.0.0</sparkle:shortVersionString>
-            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/thom1606/ShareBox/releases/download/v1.0.0/ShareBox.zip" length="2779081" type="application/octet-stream" sparkle:edSignature="mLw5ofL0s3eJUQTzZqrfpq71phqihMeX9PwjsTgA/n9+ptfsgPdu1NNIn5fNP9qHAlbYwsZnlgt/I9z8M2H/DA=="/>
-        </item>
     </channel>
 </rss>
