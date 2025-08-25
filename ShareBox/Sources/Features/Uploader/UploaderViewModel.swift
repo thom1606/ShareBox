@@ -11,6 +11,7 @@ import UserNotifications
 
 @Observable class UploaderViewModel {
     public static var shared: UploaderViewModel?
+    private var machListener: MachMessageListener?
 
     enum UIState: Equatable {
         case hidden
@@ -71,6 +72,7 @@ import UserNotifications
     // MARK: - Public Methods
     init() {
         UploaderViewModel.shared = self
+        self.machListener = MachMessageListener(state: self)
 
         Task {
             for await newState in await uploader.stateStream() {

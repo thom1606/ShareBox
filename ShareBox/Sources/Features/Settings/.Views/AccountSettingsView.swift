@@ -90,7 +90,7 @@ struct AccountSettingsView: View {
                     }
                 }
             }
-            if user.authenticated {
+            if user.authenticated && user.userData != nil {
                 Section(header: Text("Subscription")) {
                     if (user.subscriptionData?.status ?? .inactive) != .active {
                         HStack {

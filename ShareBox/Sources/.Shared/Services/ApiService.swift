@@ -123,6 +123,7 @@ class ApiService {
                 Keychain.shared.deleteToken(key: "AccessToken")
                 if endpoint == "/api/auth/token" {
                     Keychain.shared.deleteToken(key: "RefreshToken")
+                    User.shared?.signOut()
                     throw APIError.unauthorized
                 }
                 if let refreshToken = Keychain.shared.fetchToken(key: "RefreshToken") {
