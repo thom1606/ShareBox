@@ -13,12 +13,12 @@ struct OnboardingSubscribeView: View {
     private let api = ApiService()
     @Binding var pageSelection: Int
     var user: User
-    
+
     @AppStorage(Constants.Settings.passwordPrefKey) private var boxPassword = ""
     @AppStorage(Constants.Settings.storagePrefKey) private var storageDuration = "3_days"
     @AppStorage(Constants.Settings.overMonthlyLimitStoragePrefKey) private var overMonthlyLimitStorage = false
     @State private var isLoading: Bool = false
-    
+
     var body: some View {
         OnboardingPage(continueText: "Subscribe", isLoading: isLoading, onContinue: handleContinue) {
             HStack {

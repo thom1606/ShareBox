@@ -51,7 +51,7 @@ struct OnboardingWelcomeView: View {
         if user.authenticated {
             pageSelection += 2
         } else {
-            pageSelection += 1            
+            pageSelection += 1
         }
     }
 }
