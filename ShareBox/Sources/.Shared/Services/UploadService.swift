@@ -178,7 +178,7 @@ actor UploadService {
         self.state = .completed
     }
     /// For single part uploads (less than 5GB)
-    private func uploadSinglePartFile(_ path: FilePath, in group: BoxDetails, item: AddFilesResponse.Item) async {
+    private func uploadSinglePartFile(_ path: FilePath, in group: BoxDetails, item: AddFilesResponse.Item, tryCount: Int = 0) async {
         do {
             let fileData = try Data(contentsOf: URL(string: path.absolute)!)
             let fileDetails = path.details()
@@ -194,14 +194,22 @@ actor UploadService {
             // Start updating the progress
             self.uploadProgress[path.absolute] = .init(status: .uploading)
 
-            let uploadTask = URLSession.shared.uploadTask(with: request, from: fileData) { [updateProgress, handleComplete] _, response, error in
+            let uploadTask = URLSession.shared.uploadTask(with: request, from: fileData) { [updateProgress, handleComplete, uploadSinglePartFile] _, response, error in
                 Task {
                     if let error = error {
                         dataLogger.error("Upload failed with some internal error: \(error.localizedDescription)")
-                        updateProgress(path, .init(status: .failed, uploadProgress: 100, errors: [.s3Failed]))
+                        if tryCount < 3 {
+                            await uploadSinglePartFile(path, group, item, tryCount + 1)
+                        } else {
+                            updateProgress(path, .init(status: .failed, uploadProgress: 100, errors: [.s3Failed]))
+                        }
                     } else if let httpResponse = response as? HTTPURLResponse, !(200...299).contains(httpResponse.statusCode) {
                         dataLogger.error("Upload failed, got an invalid status code back from S3: \(httpResponse.statusCode)")
-                        updateProgress(path, .init(status: .failed, uploadProgress: 100, errors: [.s3Failed]))
+                        if tryCount < 3 {
+                            await uploadSinglePartFile(path, group, item, tryCount + 1)
+                        } else {
+                            updateProgress(path, .init(status: .failed, uploadProgress: 100, errors: [.s3Failed]))
+                        }
                     } else {
                         // Complete the upload
                         await handleComplete(group, .init(id: item.id))

@@ -130,7 +130,7 @@ struct SubscriptionData: Codable, Equatable {
 
 struct SettingsData: Codable, Equatable {
     var groupStorageDuration: String
-    var groupsPassword: String
+    var groupsPassword: String?
     var overMonthlyLimitStorage: Bool
 }
 

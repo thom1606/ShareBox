@@ -28,7 +28,7 @@ struct OnboardingSubscribeView: View {
                             .fontDesign(.serif)
                             .font(.largeTitle)
                             .fontWeight(.bold)
-                        Text("For just **€2.99**/month, enjoy a **250GB** upload limit, ensuring your files are always ready to share.\n\nSecure your personal cloud space and effortlessly upload up to **250GB** of files each month.")
+                        Text("For just **€3.99**/month, enjoy a **250GB** upload limit, ensuring your files are always ready to share.\n\nSecure your personal cloud space and effortlessly upload up to **250GB** of files each month.")
                             .foregroundStyle(.secondary)
                             .font(.title3)
                     }
