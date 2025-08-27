@@ -11,6 +11,7 @@ struct OnboardingPage<C: View>: View {
     var continueText: LocalizedStringKey = "Continue"
     var isLoading: Bool = false
     var hasErrored: Bool = false
+    var disabled: Bool = false
     var onContinue: () -> Void
     @ViewBuilder var content: () -> C
 
@@ -32,6 +33,7 @@ struct OnboardingPage<C: View>: View {
                     }
                 })
                 .buttonStyle(ContinueButtonStyle())
+                .disabled(disabled)
                 .shake(enabled: hasErrored)
             }
         }
@@ -42,6 +44,7 @@ struct OnboardingPage<C: View>: View {
 private struct ContinueButtonStyle: ButtonStyle {
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.isLoading) private var isLoading: Bool
+    @Environment(\.isEnabled) private var isEnabled: Bool
     @State private var isHovered = false
 
     func makeBody(configuration: Configuration) -> some View {
@@ -75,6 +78,7 @@ private struct ContinueButtonStyle: ButtonStyle {
         }
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .font(.body.weight(.semibold))
+        .opacity(isEnabled ? 1 : 0.4)
         .onHover { hovering in
             withAnimation {
                 isHovered = hovering

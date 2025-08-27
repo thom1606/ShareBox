@@ -12,9 +12,10 @@ struct OnboardingSignInView: View {
     var user: User
 
     @State private var isLoading: Bool = false
+    @State private var approvedTerms: Bool = false
 
     var body: some View {
-        OnboardingPage(continueText: "Sign up", isLoading: isLoading, onContinue: handleContinue) {
+        OnboardingPage(continueText: "Sign up", isLoading: isLoading, disabled: !approvedTerms, onContinue: handleContinue) {
             HStack {
                 VStack(alignment: .leading, spacing: 30) {
                     VStack(alignment: .leading, spacing: 5) {
@@ -25,6 +26,17 @@ struct OnboardingSignInView: View {
                         Text("Sign up using your **Apple ID** to secure your own space in the ShareBox cloud.")
                             .foregroundStyle(.secondary)
                             .font(.title3)
+                    }
+                    VStack(alignment: .leading, spacing: 15) {
+                        HStack {
+                            Toggle("", isOn: $approvedTerms)
+                                .toggleStyle(.switch)
+                                .controlSize(.mini)
+                            VStack(alignment: .leading) {
+                                Text("I have read and agree to the [Terms and Conditions](https://shareboxed.app/terms-and-conditions) and [Privacy Policy](https://shareboxed.app/privacy-policy).")
+                            }
+                        }
+                        .offset(x: -10)
                     }
                 }
                 .frame(width: 350)

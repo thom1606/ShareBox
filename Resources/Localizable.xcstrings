@@ -29,9 +29,6 @@
     "5 days" : {
 
     },
-    "5 minutes" : {
-
-    },
     "7 days" : {
 
     },
@@ -121,6 +118,9 @@
     },
     "Hey! I want to share some files with you. You can download them from my ShareBox: %@" : {
       "comment" : "Clipboard message"
+    },
+    "I have read and agree to the [Terms and Conditions](https://shareboxed.app/terms-and-conditions) and [Privacy Policy](https://shareboxed.app/privacy-policy)." : {
+
     },
     "Include files which are normally hidden in Finder. Be aware that this may cause sensitive files to be shared unintentionally." : {
 
