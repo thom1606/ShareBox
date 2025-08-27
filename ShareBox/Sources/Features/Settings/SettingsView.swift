@@ -27,7 +27,7 @@ struct SettingsView: View {
                     .tabItem {
                         Label("Account", systemImage: "person.circle")
                     }
-                BoxesSettingsView()
+                BoxesSettingsView(user: user)
                     .tabItem {
                         Label("Boxes", systemImage: "shippingbox.fill")
                     }

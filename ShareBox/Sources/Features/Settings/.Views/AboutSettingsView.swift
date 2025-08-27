@@ -28,11 +28,11 @@ struct AboutSettingsView: View {
 
             Section(header: Text("Developer")) {
                 Text("Developed by Thom van den Broek")
-                Link("Visit Website", destination: URL(string: "https://sharebox.thomvandenbroek.com")!)
+                Link("Visit Website", destination: URL(string: "https://shareboxed.app")!)
             }
 
             Section(header: Text("Support")) {
-                Link("Contact Support", destination: URL(string: "mailto:sharebox@thomvandenbroek.com")!)
+                Link("Contact Support", destination: URL(string: "mailto:support@shareboxed.app")!)
                 Link("Feedback", destination: URL(string: "https://github.com/thom1606/ShareBox/issues/new")!)
             }
         }

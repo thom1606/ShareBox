@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct BoxesSettingsView: View {
+    var user: User
+
     private let apiService = ApiService()
     @State private var groups: [SharedGroup] = []
     @State private var loaded: Bool = false
@@ -17,6 +19,7 @@ struct BoxesSettingsView: View {
             self.groups = try await apiService.get(endpoint: "/api/groups")
             self.loaded = true
         } catch {
+            self.loaded = true
             generalLogger.warning("Failed to fetch groups: \(error.localizedDescription)")
         }
     }
@@ -25,7 +28,13 @@ struct BoxesSettingsView: View {
         Form {
             Section(header: Text("Open Boxes")) {
                 if self.loaded {
-                    if groups.isEmpty {
+                    if !user.authenticated || user.userData == nil {
+                        HStack {
+                            Spacer()
+                            Text("You are not signed in to ShareBox.")
+                            Spacer()
+                        }
+                    } else if groups.isEmpty {
                         HStack {
                             Spacer()
                             Text("No open boxes found.")
@@ -55,5 +64,5 @@ struct BoxesSettingsView: View {
 }
 
 #Preview {
-    BoxesSettingsView()
+    BoxesSettingsView(user: .init())
 }

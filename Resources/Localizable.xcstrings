@@ -316,6 +316,9 @@
     "When enabled, moving your mouse to the screen edge will active the ShareBox Uploader." : {
 
     },
+    "You are not signed in to ShareBox." : {
+
+    },
     "You are not signed in. Please open ShareBox and sign in to upload files." : {
 
     },

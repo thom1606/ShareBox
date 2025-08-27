@@ -33,7 +33,7 @@ class ApiService {
 
     // MARK: - Initialization
 
-    init(baseURL: String = (Bundle.main.object(forInfoDictionaryKey: "BASE_URL") as? String ?? "https://sharebox.thomvandenbroek.com"), session: URLSession = .shared) {
+    init(baseURL: String = (Bundle.main.object(forInfoDictionaryKey: "BASE_URL") as? String ?? "https://shareboxed.app"), session: URLSession = .shared) {
         self.baseURL = baseURL
         self.session = session
     }
