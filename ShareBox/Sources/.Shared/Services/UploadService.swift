@@ -139,7 +139,6 @@ actor UploadService {
                 if let shouldPutOnS3 = Bool(shouldPutOnS3String), !shouldPutOnS3 {
                     dataLogger.debug("Skipping upload to S3 as it is disabled by environment, simulating it instead...")
                     await self.simulateFile(currentFile, in: group, item: item)
-                    self.state = .completed
                     return
                 }
 
@@ -174,8 +173,6 @@ actor UploadService {
                 self.uploadProgress[file.absolute] = .init(status: .failed, uploadProgress: 100, errors: [foundError])
             }
         }
-
-        self.state = .completed
     }
     /// For single part uploads (less than 5GB)
     private func uploadSinglePartFile(_ path: FilePath, in group: BoxDetails, item: AddFilesResponse.Item, tryCount: Int = 0) async {
@@ -304,6 +301,18 @@ actor UploadService {
             "uploadId": item.uploadId,
             "etags": item.etags
         ]) as ApiService.BasicSuccessResponse
+
+        Task {
+            try? await Task.sleep(for: .seconds(1))
+            // Find any file left not in the completed or failed state
+            var hasPendingFiles = false
+            if self.uploadProgress.values.contains(where: { $0.status != .completed && $0.status != .failed }) {
+                hasPendingFiles = true
+            }
+            if !hasPendingFiles {
+                self.state = .completed
+            }
+        }
     }
 
     /// Submit a request and read possible Etags
