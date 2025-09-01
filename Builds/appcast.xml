@@ -8,7 +8,7 @@
             <sparkle:version>15</sparkle:version>
             <sparkle:shortVersionString>1.1.2</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://raw.githubusercontent.com/thom1606/ShareBox/refs/heads/main/Builds/ShareBox.zip" length="2800397" type="application/octet-stream" sparkle:edSignature="8OnvtHIT4yFkQRTBXFlgOmSkVtH04RG3AxOL/0d1L15UYA2GaQJ3jNiaot+f/yVnTWDBgKPxsY4EPu4MLaT8DA=="/>
+            <enclosure url="https://github.com/thom1606/ShareBox/releases/download/v1.1.2/ShareBox.zip" length="2800397" type="application/octet-stream" sparkle:edSignature="8OnvtHIT4yFkQRTBXFlgOmSkVtH04RG3AxOL/0d1L15UYA2GaQJ3jNiaot+f/yVnTWDBgKPxsY4EPu4MLaT8DA=="/>
         </item>
     </channel>
 </rss>
