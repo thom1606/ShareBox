@@ -303,7 +303,7 @@ actor UploadService {
         ]) as ApiService.BasicSuccessResponse
 
         Task {
-            try? await Task.sleep(for: .seconds(1))
+            try? await Task.sleep(for: .seconds(0.2))
             // Find any file left not in the completed or failed state
             var hasPendingFiles = false
             if self.uploadProgress.values.contains(where: { $0.status != .completed && $0.status != .failed }) {
