@@ -9,6 +9,7 @@ import SwiftUI
 
 extension EnvironmentValues {
     @Entry var isLoading: Bool = false
+    @Entry var settingsTab: Binding<SettingsTab> = .constant(.preferences)
 }
 
 extension View {

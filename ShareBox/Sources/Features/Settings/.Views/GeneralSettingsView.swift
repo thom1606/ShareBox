@@ -14,7 +14,7 @@ struct GeneralSettingsView: View {
     private let updater: SPUUpdater
     var user: User
 
-    @AppStorage(Constants.Settings.keepInDockPrefKey) private var keepInDock = false
+    @AppStorage(Constants.Settings.keepInMenuBarPrefKey) private var keepInMenuBar = true
     @AppStorage(Constants.Settings.mouseActivationPrefKey) private var enableMouseActivation = true
     @AppStorage(Constants.Settings.keepNotchOpenWhileUploadingPrefKey) private var keepNotchOpen = true
     @AppStorage(Constants.Settings.hiddenFilesPrefKey) private var includeHiddenFiles = false
@@ -50,8 +50,8 @@ struct GeneralSettingsView: View {
     var body: some View {
         Form {
             Section(header: Text("General")) {
-                Toggle(isOn: $keepInDock) {
-                    Text("Keep in Dock")
+                Toggle(isOn: $keepInMenuBar) {
+                    Text("Show ShareBox in menu bar")
                 }
                 Toggle(isOn: $startAtLogin) {
                     Text("Start at login")

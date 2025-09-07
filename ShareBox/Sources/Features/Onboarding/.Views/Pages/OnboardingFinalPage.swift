@@ -12,7 +12,7 @@ struct OnboardingFinalPage: View {
     @Environment(\.dismissWindow) private var dismissWindow
 
     var body: some View {
-        OnboardingPage(continueText: "Let's go!", onContinue: handleContinue) {
+        InformationPage(continueText: "Let's go!", onContinue: handleContinue) {
             HStack {
                 VStack(alignment: .leading, spacing: 30) {
                     VStack(alignment: .leading, spacing: 5) {
@@ -20,7 +20,7 @@ struct OnboardingFinalPage: View {
                             .fontDesign(.serif)
                             .font(.largeTitle)
                             .fontWeight(.bold)
-                        Text("Move your mouse to the left edge of your screen to start using ShareBox. Alternatively, right-click on a file or folder in Finder and select **Upload to ShareBox**.")
+                        Text("Start dragging files to the left edge of your screen to start sharing files using **ShareBox**.")
                             .foregroundStyle(.secondary)
                             .font(.title3)
                     }

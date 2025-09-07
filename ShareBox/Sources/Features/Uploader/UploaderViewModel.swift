@@ -15,6 +15,7 @@ import UserNotifications
 
     enum UIState: Equatable {
         case hidden
+        case small
         case peeking
         case visible
     }
@@ -22,6 +23,20 @@ import UserNotifications
     // Files
     private(set) var droppedItems: [FilePath] = []
     private(set) var uploadProgress: [String: FilePathProgress] = [:]
+
+    // Uploaders
+    private let shareBoxUploader = ShareBoxUploader()
+    private let airdropUploader = AirdropUploader()
+    private let driveUploader = DriveUploader()
+
+    // Currently active uploader
+    private(set) var activeUploader: FileUploader? {
+        didSet {
+            if let uploader = activeUploader {
+                linkUploader(uploader)
+            }
+        }
+    }
 
     // Preferences
     var mouseListener = MouseListener()
@@ -31,18 +46,18 @@ import UserNotifications
     var forcePreviewVisible: Bool = false
 
     // Computed
-    var isDropTarget: Bool = false
+    public var dropTargets: [Bool] = [false, false, false] // Drop targets in these orders: [sharebox, airdrop, cloud drive]
     public var uiState: UIState {
-        // User activated states
-        if forcePreviewVisible { return .visible }
-        if forceVisible { return .visible }
-        if isDropTarget { return .visible }
-        if isUserHovering && userInteractable { return .visible }
-
         // Progress based states
         if case .preparingGroup = uploadState { return .visible }
         if case .error = uploadState { return .visible }
         if case .completed = uploadState { return .visible }
+
+        // User activated states
+        if (isUserHovering && userInteractable) || forceVisible || forcePreviewVisible || dropTargets.contains(true) {
+            if droppedItems.isEmpty && uploadState == .idle { return .small }
+            return .visible
+        }
 
         var canFullyClose = true
         if case .uploading = uploadState { canFullyClose = false }
@@ -57,25 +72,55 @@ import UserNotifications
         if !userInteractable { result = false }
         return result
     }
-    public var hasActiveOverlay: Bool {
-        if case .error = uploadState { return true }
-        if isDropTarget { return true }
-        if case .preparingGroup = uploadState { return true }
-        return false
-    }
 
     // Internal
+    private var uploader: FileUploader?
     private var closeOverlayWorkItem: DispatchWorkItem?
     private var isUserHovering: Bool = false
-    private let uploader = UploadService()
+    private(set) var openSettings: ((SettingsTab?) -> Void)?
 
     // MARK: - Public Methods
     init() {
         UploaderViewModel.shared = self
         self.machListener = MachMessageListener(state: self)
+    }
 
+    public func onAppear(openSettings: @escaping (SettingsTab?) -> Void) {
+        self.openSettings = openSettings
+        // Wait for the whole UI to settle in before any user interactions are available
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            self.userInteractable = true
+        }
+    }
+
+    // Method to activate a specific uploader by index
+    public func activateUploader(for index: UploaderId) {
+        switch index {
+        case .sharebox:
+            activeUploader = shareBoxUploader
+        case .airdrop:
+            activeUploader = airdropUploader
+        case .drive:
+            activeUploader = driveUploader
+        }
+    }
+
+    // Method to get uploader by index (for drop field validation)
+    public func getUploader(for index: UploaderId) -> FileUploader {
+        switch index {
+        case .sharebox:
+            return shareBoxUploader
+        case .airdrop:
+            return airdropUploader
+        case .drive:
+            return driveUploader
+        }
+    }
+
+    private func linkUploader(_ target: FileUploader) {
+        self.uploader = target
         Task {
-            for await newState in await uploader.stateStream() {
+            for await newState in uploader!.stateStream() {
                 await MainActor.run {
                     self.uploadState = newState
                     if case .error(let error) = newState {
@@ -94,70 +139,25 @@ import UserNotifications
                             }
                         }
                     }
-                    if case .completed = newState {
-                        let boolString = UserDefaults.standard.string(forKey: Constants.Settings.uploadNotificationsPrefKey)
-                        if boolString == "1" || boolString == nil {
-                            Utilities.showNotification(title: String(localized: "ShareBox Uploaded"), body: String(localized: "All your files have been uploaded. Close this Box to copy the link to your clipboard."))
-                        }
-                    }
                 }
             }
         }
 
         Task {
-            for await newProgress in await uploader.progressStream() {
+            for await newProgress in uploader!.progressStream() {
                 await MainActor.run {
                     self.uploadProgress = newProgress
                 }
             }
         }
-    }
 
-    public func onAppear() {
-        // Wait for the whole UI to settle in before any user interactions are available
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            self.userInteractable = true
-        }
-    }
-
-    public func onItemsDrop(providers: [NSItemProvider]) -> Bool {
-        if self.uploadState == .preparingGroup { return false }
-        if !self.userInteractable { return false }
-        var hasItemWithURL = false
-        var finalPaths: [FilePath] = []
-
-        let group = DispatchGroup()
-
-        // Keep the UI forced open for the small split second it takes to proces these url's, after that the normal uploader progress will take over.
-        self.forceVisible = true
-
-        for provider in providers where provider.hasItemConformingToTypeIdentifier("public.file-url") {
-            hasItemWithURL = true
-            group.enter()
-
-            provider.loadItem(forTypeIdentifier: "public.file-url", options: nil) { (item, _) in
-                defer { group.leave() }
-
-                var path: FilePath?
-                if let data = item as? Data, let url = URL(dataRepresentation: data, relativeTo: nil) {
-                    path = .init(relative: url.lastPathComponent, absolute: url.absoluteString, isFolder: url.hasDirectoryPath)
-                } else if let url = item as? URL {
-                    path = .init(relative: url.lastPathComponent, absolute: url.absoluteString, isFolder: url.hasDirectoryPath)
+        Task {
+            for await newItems in uploader!.filesStream() {
+                await MainActor.run {
+                    self.droppedItems = newItems
                 }
-
-                if path == nil { return }
-                finalPaths.append(path!)
             }
         }
-
-        group.notify(queue: .main) {
-            Task {
-                // Everything is done processing, let the uploader take over the UI again
-                self.forceVisible = false
-                await self.appendFiles(finalPaths)
-            }
-        }
-        return hasItemWithURL
     }
 
     /// Handle user hover interactions
@@ -183,35 +183,13 @@ import UserNotifications
         }
     }
 
-    public func appendFiles(_ paths: [FilePath]) async {
-        // Filter out all the duplicates
-        let nonDuplicatePaths = paths.filter { path in !self.droppedItems.contains(where: { $0.absolute == path.absolute }) }
-        self.droppedItems.append(contentsOf: nonDuplicatePaths)
-        try? await self.uploader.append(paths)
-    }
-
-    /// Notify the user that the group is being closed and the details are copied to the clipboard
-    public func gracefullyClose() {
-        Task {
-            guard let groupUrlString = await uploader.groupDetails?.url else {
-                return
-            }
-            let pasteboard = NSPasteboard.general
-            pasteboard.clearContents()
-            pasteboard.setString(String(localized: "Hey! I want to share some files with you. You can download them from my ShareBox: \(groupUrlString)", comment: "Clipboard message"), forType: .string)
-
-            Utilities.showNotification(title: String(localized: "Link Copied!"), body: String(localized: "The ShareBox link is copied to your clipboard!"))
-        }
-        self.reset()
-    }
-
     // MARK: - Private Methods
     private func reset() {
         self.droppedItems.removeAll()
         self.forceVisible = false
-        Task {
-            await self.uploader.reset()
-        }
+        self.shareBoxUploader.reset()
+        self.airdropUploader.reset()
+        self.driveUploader.reset()
     }
 
     // MARK: - Overlays
@@ -240,28 +218,25 @@ import UserNotifications
     private func showMissingSubscriptionDialog() {
         let alert = NSAlert()
         alert.messageText = String(localized: "Upload Failed")
-        alert.informativeText = String(localized: "You do not have an active subscription. Please upgrade to upload your files.")
+        alert.informativeText = String(localized: "You do not have an active subscription. Please upgrade to upload your files to ShareBox.")
         alert.alertStyle = .warning
         alert.window.center()
         alert.window.level = .floating
         alert.window.makeKeyAndOrderFront(nil)
         alert.runModal()
         self.reset()
-//        self.openSettingsAction?()
+        self.openSettings?(.account)
     }
     private func showUnauthorizedDialog() {
         let alert = NSAlert()
         alert.messageText = String(localized: "Unauthorized")
-        alert.informativeText = String(localized: "You are not signed in. Please open ShareBox and sign in to upload files.")
+        alert.informativeText = String(localized: "You are not signed in. Please Sign in to upload files to ShareBox.")
         alert.alertStyle = .warning
         alert.window.center()
         alert.window.level = .floating
         alert.window.makeKeyAndOrderFront(nil)
         alert.runModal()
         self.reset()
-        // open web url to sign in
-        if let domainString = (Bundle.main.object(forInfoDictionaryKey: "BASE_URL") as? String) {
-            NSWorkspace.shared.open(URL(string: "\(domainString)/auth/sign-in")!)
-        }
+        self.openSettings?(.account)
     }
 }

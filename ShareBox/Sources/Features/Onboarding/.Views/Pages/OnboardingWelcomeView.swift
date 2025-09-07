@@ -9,14 +9,13 @@ import SwiftUI
 
 struct OnboardingWelcomeView: View {
     @Binding var pageSelection: Int
-    var user: User
     var isLoading: Bool
 
     let finalTitleText = String(localized: "Welcome to ShareBox")
     @State private var titleText = ""
 
     var body: some View {
-        OnboardingPage(continueText: "Start setup", isLoading: isLoading, onContinue: handleContinue) {
+        InformationPage(continueText: "Start setup", isLoading: isLoading, onContinue: handleContinue) {
             VStack(spacing: 30) {
                 Image("Images/Logo")
                     .resizable()
@@ -48,14 +47,10 @@ struct OnboardingWelcomeView: View {
     }
 
     private func handleContinue() {
-        if user.authenticated {
-            pageSelection += 2
-        } else {
-            pageSelection += 1
-        }
+        pageSelection += 1
     }
 }
 
 #Preview {
-    OnboardingWelcomeView(pageSelection: .constant(0), user: .init(), isLoading: true)
+    OnboardingWelcomeView(pageSelection: .constant(0), isLoading: true)
 }

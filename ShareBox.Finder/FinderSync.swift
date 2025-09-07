@@ -29,7 +29,7 @@ class FinderSync: FIFinderSync {
         if menuKind == .toolbarItemMenu { return nil }
         // Produce a menu for the extension.
         let menu = NSMenu(title: "")
-        menu.addItem(withTitle: NSLocalizedString("Upload to ShareBox", comment: "Finder Context Menu Label"), action: #selector(handleFileSelection(_:)), keyEquivalent: "")
+        menu.addItem(withTitle: NSLocalizedString("Upload to ShareBox (Dev)", comment: "Finder Context Menu Label"), action: #selector(handleFileSelection(_:)), keyEquivalent: "")
         return menu
     }
 
@@ -53,11 +53,7 @@ class FinderSync: FIFinderSync {
         // Create request for Mach
         let req: MachFileUploadBody = .init(
             items: items.map {
-                .init(
-                    relative: $0.lastPathComponent,
-                    absolute: $0.absoluteString,
-                    isFolder: $0.hasDirectoryPath
-                )
+                $0.toFilePath()
             }
         )
 

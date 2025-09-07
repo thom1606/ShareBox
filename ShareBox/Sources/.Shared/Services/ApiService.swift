@@ -62,6 +62,14 @@ class ApiService {
         // Add headers
         headers?.forEach { request.addValue($0.value, forHTTPHeaderField: $0.key) }
 
+        let cfClientId = Bundle.main.object(forInfoDictionaryKey: "CF_ACCESS_CLIENT_ID")
+        let cfClientSecret = Bundle.main.object(forInfoDictionaryKey: "CF_ACCESS_CLIENT_SECRET")
+
+        if let clientId = cfClientId as? String, let clientSecret = cfClientSecret as? String {
+            request.addValue(clientId, forHTTPHeaderField: "CF-Access-Client-Id")
+            request.addValue(clientSecret, forHTTPHeaderField: "CF-Access-Client-Secret")
+        }
+
         // Handle multipart form data
         if let multipartData = multipartData {
             let boundary = "Boundary-\(UUID().uuidString)"

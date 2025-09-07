@@ -197,7 +197,7 @@ struct ItemPreview: View {
                 .frame(width: 50, height: 50)
             }
         }
-        .frame(width: 80)
+        .frame(maxWidth: .infinity)
     }
 }
 

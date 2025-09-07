@@ -1,21 +1,22 @@
 //
-//  OnboardingSignInView.swift
+//  SignInPage.swift
 //  ShareBox
 //
-//  Created by Thom van den Broek on 17/08/2025.
+//  Created by Thom van den Broek on 07/09/2025.
 //
 
 import SwiftUI
 
-struct OnboardingSignInView: View {
-    @Binding var pageSelection: Int
+struct SignInPage: View {
     var user: User
+    var cancelText: LocalizedStringKey = "Later"
+    var onCancel: () -> Void
+    var onContinue: () -> Void
 
-    @State private var isLoading: Bool = false
     @State private var approvedTerms: Bool = false
 
     var body: some View {
-        OnboardingPage(continueText: "Sign up", isLoading: isLoading, disabled: !approvedTerms, onContinue: handleContinue) {
+        InformationPage(cancelText: cancelText, onCancel: onCancel, continueText: "Sign up", disabled: !approvedTerms, onContinue: handleContinue) {
             HStack {
                 VStack(alignment: .leading, spacing: 30) {
                     VStack(alignment: .leading, spacing: 5) {
@@ -23,7 +24,7 @@ struct OnboardingSignInView: View {
                             .fontDesign(.serif)
                             .font(.largeTitle)
                             .fontWeight(.bold)
-                        Text("Sign up using your **Apple ID** to secure your own space in the ShareBox cloud.")
+                        Text("Sign up using your **Apple ID** to secure your own space in the ShareBox cloud and sync settings across multiple devices.")
                             .foregroundStyle(.secondary)
                             .font(.title3)
                     }
@@ -52,18 +53,12 @@ struct OnboardingSignInView: View {
         }
         .onChange(of: user.authenticated) {
             if user.authenticated {
-                self.isLoading = false
-                self.pageSelection += 1
+                onContinue()
             }
         }
     }
 
     private func handleContinue() {
-        self.isLoading = true
         self.user.login()
     }
-}
-
-#Preview {
-    OnboardingSignInView(pageSelection: .constant(0), user: .init())
 }

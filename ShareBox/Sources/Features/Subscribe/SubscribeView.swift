@@ -8,22 +8,24 @@
 import SwiftUI
 import ThomKit
 
-struct OnboardingView: View {
+struct SubscribeView: View {
     // Properties
     private let api = ApiService()
+    @Environment(User.self) private var user
     @State private var selection = 0
-    @Environment(User.self) var user
+    @State private var selectedPlan: Plan = .pro
 
     var body: some View {
         FrostedWindow {
             PagingView(selection: $selection) {
-                OnboardingWelcomeView(pageSelection: $selection, isLoading: user.isLoading)
+                SubscribePricingView(pageSelection: $selection, selectedPlan: $selectedPlan)
                     .tag(0)
-                OnboardingExperienceView(pageSelection: $selection, user: user)
+                SubscribeSignInView(pageSelection: $selection)
+                    .opacity(user.authenticated ? 0 : 1)
                     .tag(1)
-                OnboardingSignInView(pageSelection: $selection)
+                SubscribeConfirmView(pageSelection: $selection, selectedPlan: $selectedPlan)
                     .tag(2)
-                OnboardingFinalPage()
+                SubscribeFinalPage()
                     .tag(3)
             }
         }

@@ -15,8 +15,8 @@ struct ShareBoxApp: App {
     
     // Properties
     private let updaterController: SPUStandardUpdaterController
-    @AppStorage(Constants.Settings.keepInDockPrefKey) private var keepInDock = false
     @State private var user = User()
+    @State private var settingsTab: SettingsTab = .preferences
 
     init() {
         // Initialize variables
@@ -25,17 +25,16 @@ struct ShareBoxApp: App {
         // For release we only allow up to 1 instance running at a time
         #if RELEASE
         if isAnotherInstanceRunning() {
+            // Launch the settings view on the main instance via mach
+            let mach = MachMessenger.shared
+            try? mach.send(.init(type: .openSettings))
             NSApp.terminate(nil)
         }
         #endif
-
+        
         // Setup local handlers
         UNUserNotificationCenter.current().delegate = NotificationDelegate.shared
-        if keepInDock {
-            NSApplication.shared.setActivationPolicy(.regular)
-        } else {
-            NSApplication.shared.setActivationPolicy(.accessory)
-        }
+        NSApplication.shared.setActivationPolicy(.accessory)
     }
     
     private func isAnotherInstanceRunning() -> Bool {
@@ -46,6 +45,8 @@ struct ShareBoxApp: App {
     var body: some Scene {
         Window("Uploader", id: "uploader") {
             UploaderView()
+                .environment(\.settingsTab, $settingsTab)
+                .environment(user)
         }
         .windowResizability(.contentSize)
         .commands {
@@ -58,12 +59,21 @@ struct ShareBoxApp: App {
         }
 
         Window("Onboarding", id: "onboarding") {
-            OnboardingView(user: user)
+            OnboardingView()
+                .environment(user)
         }
         .windowResizability(.contentSize)
 
+        Window("Subscribe", id: "subscribe") {
+            SubscribeView()
+                .environment(user)
+        }
+        .windowResizability(.contentSize)
+
+        ShareBoxMenu(settingsTab: $settingsTab, updater: updaterController.updater)
+
         Settings {
-            SettingsView(updater: updaterController.updater, user: user)
+            SettingsView(selectedTab: $settingsTab, updater: updaterController.updater, user: user)
         }
         .defaultSize(width: 600, height: 600)
         .defaultPosition(.center)

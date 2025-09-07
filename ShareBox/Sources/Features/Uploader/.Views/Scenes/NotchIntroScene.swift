@@ -1,0 +1,59 @@
+//
+//  NotchIntroScene.swift
+//  ShareBox
+//
+//  Created by Thom van den Broek on 06/09/2025.
+//
+
+import SwiftUI
+
+struct NotchIntroScene: View {
+    @Environment(UploaderViewModel.self) private var uploader
+    @Environment(\.settingsTab) private var settingsTab
+    @Environment(\.openSettings) private var openSettings
+
+    @AppStorage(Constants.Settings.completedCloudDriveOnboardingPrefKey) private var completedCloudDriveOnboarding = false
+
+    private var showCloudStorageOption: Bool {
+        if uploader.uiState != .small { return false }
+        if !uploader.droppedItems.isEmpty {
+            completedCloudDriveOnboarding = true
+            return false
+        }
+        if !completedCloudDriveOnboarding { return true }
+        return false
+    }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            UploaderDropField(type: .sharebox, image: Image("Images/CloudLink"), isPlus: true)
+            UploaderDropField(type: .airdrop, image: Image("Images/Airdrop"))
+            Rectangle()
+                .fill(Color("Colors/TileBackground"))
+                .frame(width: 44, height: 2)
+                .padding(.vertical, 4)
+            UploaderButtonField(image: Image(systemName: "plus.circle"), onTap: {
+                completedCloudDriveOnboarding = true
+                settingsTab.wrappedValue = .drives
+                openSettings()
+            })
+            .popover(isPresented: .constant(showCloudStorageOption), attachmentAnchor: .point(.trailing), arrowEdge: .leading) {
+                VStack(alignment: .leading, spacing: 0) {
+                    Text("Got cloud storage?")
+                        .font(.headline)
+                    Text("Upload files straight to your personal drive of choice for later access.")
+                        .font(.body)
+                        .padding(.top, 3)
+                        .foregroundStyle(.secondary)
+                }
+                .frame(minWidth: 200, idealWidth: 200, maxWidth: 200)
+                .padding(10)
+            }
+//            UploaderDropField(type: .drive, image: Image(systemName: "plus.circle"))
+        }
+    }
+}
+
+#Preview {
+    NotchIntroScene()
+}

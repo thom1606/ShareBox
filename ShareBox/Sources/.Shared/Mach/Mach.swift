@@ -16,6 +16,7 @@ class MachMessenger {
         try? self.setup()
     }
 
+    @discardableResult
     public func send(_ message: MachMessage) throws -> Data? {
         guard let remote = remote else {
             do {
@@ -60,6 +61,7 @@ class MachMessage: Codable {
 
     enum MessageType: String, Codable {
         case fileUploadRequest
+        case openSettings
         case peek
     }
 }

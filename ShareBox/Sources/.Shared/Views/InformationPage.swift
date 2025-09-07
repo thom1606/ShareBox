@@ -1,13 +1,15 @@
 //
-//  OnboardingPage.swift
+//  InformationPage.swift
 //  ShareBox
 //
-//  Created by Thom van den Broek on 17/08/2025.
+//  Created by Thom van den Broek on 07/09/2025.
 //
 
 import SwiftUI
 
-struct OnboardingPage<C: View>: View {
+struct InformationPage<C: View>: View {
+    var cancelText: LocalizedStringKey = "Cancel"
+    var onCancel: (() -> Void)?
     var continueText: LocalizedStringKey = "Continue"
     var isLoading: Bool = false
     var hasErrored: Bool = false
@@ -23,21 +25,41 @@ struct OnboardingPage<C: View>: View {
             }
             HStack {
                 Spacer()
+                if onCancel != nil {
+                    Button(action: onCancel!, label: {
+                        Text(cancelText)
+                    })
+                    .buttonStyle(CancelButtonStyle())
+                    .disabled(isLoading)
+                }
                 Button(action: onContinue, label: {
-                    ZStack {
-                        Text(continueText)
-                            .opacity(isLoading ? 0 : 1)
-                        ProgressView()
-                            .controlSize(.small)
-                            .opacity(isLoading ? 1 : 0)
-                    }
+                    Text(continueText)
                 })
                 .buttonStyle(ContinueButtonStyle())
+                .environment(\.isLoading, isLoading)
                 .disabled(disabled)
                 .shake(enabled: hasErrored)
             }
         }
         .padding(16)
+    }
+}
+
+private struct CancelButtonStyle: ButtonStyle {
+    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.isEnabled) private var isEnabled: Bool
+    @State private var isHovered = false
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .padding(.vertical, 12)
+            .padding(.horizontal, 12)
+            .foregroundColor(isHovered ? .primary.opacity(0.6) : .primary)
+            .font(.body.weight(.medium))
+            .opacity(isEnabled ? 1 : 0.4)
+            .onHover { hovering in
+                isHovered = hovering
+            }
     }
 }
 
@@ -60,25 +82,20 @@ private struct ContinueButtonStyle: ButtonStyle {
         .padding(.vertical, 12)
         .padding(.horizontal, 24)
         .background(
-            Group {
-                if colorScheme == .light {
-                    Color.white
-                } else {
-                    Color.black
-                }
-            }.opacity(0.75)
+            Color("Colors/ButtonBackground")
         )
-        .foregroundColor(Color(NSColor.labelColor))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .foregroundColor(Color("Colors/ButtonLabel"))
         .overlay {
             if isHovered {
                 RoundedRectangle(cornerRadius: 8)
                     .fill(.clear)
-                    .stroke(Color(NSColor.secondaryLabelColor), style: .init(lineWidth: 3))
+                    .stroke(Color("Colors/ButtonLabel"), style: .init(lineWidth: 2))
             }
         }
-        .clipShape(RoundedRectangle(cornerRadius: 8))
         .font(.body.weight(.semibold))
         .opacity(isEnabled ? 1 : 0.4)
+        .animation(.spring, value: isEnabled)
         .onHover { hovering in
             withAnimation {
                 isHovered = hovering
@@ -88,7 +105,7 @@ private struct ContinueButtonStyle: ButtonStyle {
 }
 
 #Preview {
-    OnboardingPage(onContinue: {}, content: {
+    InformationPage(onContinue: {}, content: {
         ZStack {}
     })
 }

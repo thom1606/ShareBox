@@ -11,20 +11,22 @@ import UserNotifications
 
 struct OnboardingExperienceView: View {
     @Binding var pageSelection: Int
+    var user: User
 
-    @AppStorage(Constants.Settings.keepInDockPrefKey) private var keepInDock = false
+    @AppStorage(Constants.Settings.keepInMenuBarPrefKey) private var keepInMenuBar = true
     @State private var startAtLogin: Bool
     @State private var requestNotifications: Bool = false
     @State private var notificationStatus: UNAuthorizationStatus = .notDetermined
 
-    init(pageSelection: Binding<Int>) {
+    init(pageSelection: Binding<Int>, user: User) {
         self._pageSelection = pageSelection
+        self.user = user
         try? SMAppService.mainApp.register()
         self._startAtLogin = State(initialValue: SMAppService.mainApp.status == .enabled)
     }
 
     var body: some View {
-        OnboardingPage(onContinue: handleContinue) {
+        InformationPage(onContinue: handleContinue) {
             HStack {
                 VStack(alignment: .leading, spacing: 30) {
                     VStack(alignment: .leading, spacing: 5) {
@@ -68,10 +70,10 @@ struct OnboardingExperienceView: View {
                         }
                         .offset(x: -10)
                         HStack {
-                            Toggle("", isOn: $keepInDock)
+                            Toggle("", isOn: $keepInMenuBar)
                                 .toggleStyle(.switch)
                                 .controlSize(.mini)
-                            Text("Keep icon in Dock")
+                            Text("Show ShareBox in menu bar")
                         }
                         .offset(x: -10)
                     }
@@ -123,10 +125,17 @@ struct OnboardingExperienceView: View {
     }
 
     private func handleContinue() {
+        // Make sure the user is signed in to change the settings
+        if user.authenticated {
+            if (user.subscriptionData?.status ?? .inactive) == .active {
+                pageSelection += 2
+                return
+            }
+        }
         pageSelection += 1
     }
 }
 
 #Preview {
-    OnboardingExperienceView(pageSelection: .constant(0))
+    OnboardingExperienceView(pageSelection: .constant(0), user: .init())
 }

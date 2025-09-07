@@ -64,12 +64,12 @@
 		8426D9D12E49ED83008F6EB1 /* Exceptions for "ShareBox" folder in "ShareBox.Finder" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Sources/.Shared/Constants.swift,
+				Sources/.Shared/Extensions/URL.swift,
 				Sources/.Shared/Mach/Mach.swift,
-				Sources/.Shared/Types.swift,
-				Sources/.Shared/Utilities/Environment.swift,
+				Sources/.Shared/Utilities/Constants.swift,
 				Sources/.Shared/Utilities/Errors.swift,
 				Sources/.Shared/Utilities/Logs.swift,
+				Sources/.Shared/Utilities/Types.swift,
 				Sources/.Shared/Utilities/Utilties.swift,
 				Sources/.Shared/Utilities/WindowAccessor.swift,
 			);
@@ -457,7 +457,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = ShareBox/ShareBox.entitlements;
+				CODE_SIGN_ENTITLEMENTS = ShareBox/ShareBoxDebug.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 15;
@@ -479,7 +479,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 1.1.2;
 				OTHER_SWIFT_FLAGS = "";
-				PRODUCT_BUNDLE_IDENTIFIER = com.thom1606.ShareBox;
+				PRODUCT_BUNDLE_IDENTIFIER = com.thom1606.ShareBox.Dev;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -526,7 +526,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 8494E4332E49FE61003065BD /* Debug.xcconfig */;
 			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = ShareBox.Finder/ShareBox_Finder.entitlements;
+				CODE_SIGN_ENTITLEMENTS = ShareBox.Finder/ShareBox.FinderDebug.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 15;
@@ -545,7 +545,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 1.1.2;
-				PRODUCT_BUNDLE_IDENTIFIER = com.thom1606.ShareBox.Finder;
+				PRODUCT_BUNDLE_IDENTIFIER = com.thom1606.ShareBox.Dev.Finder;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;

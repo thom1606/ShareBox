@@ -14,6 +14,12 @@
         }
       }
     },
+    "€0.99/mo" : {
+
+    },
+    "€3.99/mo" : {
+
+    },
     "1 day" : {
 
     },
@@ -29,28 +35,49 @@
     "5 days" : {
 
     },
+    "5 minutes" : {
+
+    },
     "7 days" : {
+
+    },
+    "50GB of ShareBox uploads" : {
+
+    },
+    "250GB of ShareBox uploads" : {
 
     },
     "About" : {
 
     },
-    "Account" : {
+    "About ShareBox" : {
 
     },
-    "All your files have been uploaded. Close this Box to copy the link to your clipboard." : {
+    "Account" : {
 
     },
     "Allow to spend €0.03/GB for uploads past the 250GB monthly limit." : {
 
     },
+    "Almost ready!" : {
+
+    },
     "An unknown error occurred while uploading your files. Please try again later." : {
+
+    },
+    "Another upload in progress" : {
+
+    },
+    "Another upload progress outside of ShareBox is currently in progress. Please wait for it to complete before attempting to upload again." : {
 
     },
     "App Details" : {
 
     },
     "Authenticated" : {
+
+    },
+    "Back" : {
 
     },
     "Behaviour" : {
@@ -77,6 +104,9 @@
     "Check for updates" : {
 
     },
+    "Check for Updates" : {
+
+    },
     "Check for Updates…" : {
 
     },
@@ -84,6 +114,9 @@
 
     },
     "Continue" : {
+
+    },
+    "Coupon code" : {
 
     },
     "Create your account" : {
@@ -98,16 +131,22 @@
     "Developer" : {
 
     },
+    "Done" : {
+
+    },
+    "Drives" : {
+
+    },
     "Email" : {
 
     },
     "Enable mouse activation" : {
 
     },
-    "Enhance your security" : {
+    "Feedback" : {
 
     },
-    "Feedback" : {
+    "For just **€0.99**/month, enjoy a **50GB** upload limit, ensuring your files are always ready to share.\n\nSecure your personal cloud space and effortlessly upload up to **50GB** of files each month." : {
 
     },
     "For just **€3.99**/month, enjoy a **250GB** upload limit, ensuring your files are always ready to share.\n\nSecure your personal cloud space and effortlessly upload up to **250GB** of files each month." : {
@@ -116,10 +155,16 @@
     "General" : {
 
     },
-    "Hey! I want to share some files with you. You can download them from my ShareBox: %@" : {
-      "comment" : "Clipboard message"
+    "Get started with ShareBox. Useful if you just want to share some files without going all in." : {
+
+    },
+    "Got cloud storage?" : {
+
     },
     "I have read and agree to the [Terms and Conditions](https://shareboxed.app/terms-and-conditions) and [Privacy Policy](https://shareboxed.app/privacy-policy)." : {
+
+    },
+    "If you need access to more than 250GB of uploads each month. You can enable the pay-as-you-go option and pay €0.03/GB." : {
 
     },
     "Include files which are normally hidden in Finder. Be aware that this may cause sensitive files to be shared unintentionally." : {
@@ -128,16 +173,13 @@
     "Include hidden files" : {
 
     },
-    "Keep icon in Dock" : {
-
-    },
-    "Keep in Dock" : {
-
-    },
     "Keep notch open while uploading" : {
 
     },
     "Keep the notch open while uploads are happening, otherwise morph into a small notch to hover over." : {
+
+    },
+    "Later" : {
 
     },
     "Let's go!" : {
@@ -149,13 +191,7 @@
     "Let's set you up with an easier, more efficient way of sharing files." : {
 
     },
-    "Link Copied!" : {
-
-    },
     "Manage billing" : {
-
-    },
-    "Move your mouse to the left edge of your screen to start using ShareBox. Alternatively, right-click on a file or folder in Finder and select **Upload to ShareBox**." : {
 
     },
     "Name" : {
@@ -182,13 +218,31 @@
     "Open Boxes" : {
 
     },
+    "Pay-as-you-go" : {
+
+    },
+    "Pay-as-you-go option exceeding limit" : {
+
+    },
     "Pay-as-you-go storage" : {
+
+    },
+    "Perfect for power users who share a lot of (large) files with clients." : {
+
+    },
+    "Plus" : {
 
     },
     "Preferences" : {
 
     },
+    "Pro" : {
+
+    },
     "Protect your boxes by letting users enter a password to access them." : {
+
+    },
+    "Quit" : {
 
     },
     "Quit Anyway" : {
@@ -203,25 +257,25 @@
     "Request notification access" : {
 
     },
-    "Security is important for everyone, which is why you have options to better protect your files." : {
-
-    },
     "Select" : {
 
     },
-    "Select storage duration" : {
+    "Send Feedback..." : {
 
     },
     "Send notifcation after upload" : {
 
     },
-    "Set box password" : {
-
-    },
     "Set up your experience" : {
 
     },
-    "ShareBox Uploaded" : {
+    "Settings…" : {
+
+    },
+    "ShareBox" : {
+
+    },
+    "Show ShareBox in menu bar" : {
 
     },
     "Sign in" : {
@@ -236,13 +290,13 @@
     "Sign up" : {
 
     },
-    "Sign up using your **Apple ID** to secure your own space in the ShareBox cloud." : {
+    "Sign Up" : {
+
+    },
+    "Sign up using your **Apple ID** to secure your own space in the ShareBox cloud and sync settings across multiple devices." : {
 
     },
     "Something went wrong internally, please try again." : {
-
-    },
-    "Start adding files" : {
 
     },
     "Start at login" : {
@@ -251,10 +305,10 @@
     "Start at Login" : {
 
     },
-    "Start setup" : {
+    "Start dragging files to the left edge of your screen to start sharing files using **ShareBox**." : {
 
     },
-    "Start sharing!" : {
+    "Start setup" : {
 
     },
     "Storage duration" : {
@@ -272,10 +326,13 @@
     "Support" : {
 
     },
-    "The ShareBox link is copied to your clipboard!" : {
+    "Thank you for subscribing! You can now enjoy the full ShareBox experience." : {
 
     },
     "Unauthorized" : {
+
+    },
+    "Unlimited cloud drives" : {
 
     },
     "Upload failed" : {
@@ -284,11 +341,15 @@
     "Upload Failed" : {
 
     },
+    "Upload files straight to your personal drive of choice for later access." : {
+
+    },
     "Upload in Progress" : {
 
     },
     "Upload to ShareBox" : {
       "comment" : "Finder Context Menu Label",
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -298,11 +359,24 @@
         }
       }
     },
+    "Upload to ShareBox (Dev)" : {
+      "comment" : "Finder Context Menu Label"
+    },
     "Uploader" : {
 
     },
     "User Details" : {
 
+    },
+    "Version %@ (%@)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Version %1$@ (%2$@)"
+          }
+        }
+      }
     },
     "Visit Website" : {
 
@@ -319,10 +393,10 @@
     "You are not signed in to ShareBox." : {
 
     },
-    "You are not signed in. Please open ShareBox and sign in to upload files." : {
+    "You are not signed in. Please Sign in to upload files to ShareBox." : {
 
     },
-    "You do not have an active subscription. Please upgrade to upload your files." : {
+    "You do not have an active subscription. Please upgrade to upload your files to ShareBox." : {
 
     },
     "You have been authenticated successfully, enjoy sharing files!" : {

@@ -1,50 +1,78 @@
 //
-//  UploadManager.swift
+//  ShareBoxUploader.swift
 //  ShareBox
 //
-//  Created by Thom van den Broek on 19/08/2025.
+//  Created by Thom van den Broek on 06/09/2025.
 //
 
 import Foundation
-import Combine
 
 // swiftlint:disable:next type_body_length
-actor UploadService {
-    private(set) var state: UploadState = .idle {
-        didSet {
-            stateContinuation?.yield(state)
-        }
-    }
-    var uploadProgress: [String: FilePathProgress] = [:] {
-        didSet {
-            progressContinuation?.yield(uploadProgress)
-        }
-    }
-
+class ShareBoxUploader: FileUploader {
     private(set) var groupDetails: BoxDetails?
     private let apiService = ApiService()
     private var pendingFiles: [FilePath] = []
-    private var stateContinuation: AsyncStream<UploadState>.Continuation?
-    private var progressContinuation: AsyncStream<[String: FilePathProgress]>.Continuation?
-    private var progressCancellables: [String: AnyCancellable] = [:]
 
-    // MARK: - Streams
-    public func stateStream() -> AsyncStream<UploadState> {
-        AsyncStream { continuation in
-            self.stateContinuation = continuation
-            continuation.yield(state)
+    override func getId() -> UploaderId {
+        .sharebox
+    }
+
+    override func confirmDrop(paths: [FilePath]) {
+        Task {
+           await self.appendFiles(paths)
         }
     }
 
-    public func progressStream() -> AsyncStream<[String: FilePathProgress]> {
-        AsyncStream { continuation in
-            self.progressContinuation = continuation
-            continuation.yield(uploadProgress)
+    override func confirmDrop(providers: [NSItemProvider]) -> Bool {
+        var hasItemWithURL = false
+        var finalPaths: [FilePath] = []
+        let group = DispatchGroup()
+
+        for provider in providers where provider.hasItemConformingToTypeIdentifier("public.file-url") {
+            hasItemWithURL = true
+            group.enter()
+
+            provider.loadItem(forTypeIdentifier: "public.file-url", options: nil) { (item, _) in
+                defer { group.leave() }
+
+                var path: FilePath?
+                if let data = item as? Data, let url = URL(dataRepresentation: data, relativeTo: nil) {
+                    path = url.toFilePath()
+                } else if let url = item as? URL {
+                    path = url.toFilePath()
+                }
+
+                if path == nil { return }
+                finalPaths.append(path!)
+            }
         }
+
+        group.notify(queue: .main) {
+            Task {
+               await self.appendFiles(finalPaths)
+            }
+        }
+
+        return hasItemWithURL
     }
 
-    // MARK: - Public Methods
-    public func append(_ files: [FilePath]) async throws {
+    override func reset() {
+        groupDetails = nil
+        state = .idle
+        pendingFiles.removeAll()
+        self.uploadProgress.removeAll()
+    }
+
+    /// Filter out duplicates before appending anything
+    private func appendFiles(_ paths: [FilePath]) async {
+        // Filter out all the duplicates
+        let nonDuplicatePaths = paths.filter { path in !self.droppedFiles.contains(where: { $0.absolute == path.absolute }) }
+        self.droppedFiles.append(contentsOf: nonDuplicatePaths)
+        try? await self.processBatch(paths)
+    }
+
+    /// Start processing the given batch with the server
+    private func processBatch(_ files: [FilePath]) async throws {
         guard !files.isEmpty else { return }
 
         // If group is already created → upload immediately
@@ -60,6 +88,7 @@ actor UploadService {
 
         // Otherwise, create group first
         guard let group = try? await ensureGroup() else {
+            print("failed to create group")
             for path in files {
                 self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [.groupNotFound])
             }
@@ -72,13 +101,6 @@ actor UploadService {
             pendingFiles.removeAll()
             await startUpload(extra, in: group)
         }
-    }
-
-    public func reset() {
-        groupDetails = nil
-        state = .idle
-        pendingFiles.removeAll()
-        self.uploadProgress.removeAll()
     }
 
     // MARK: - Private Methods
@@ -174,6 +196,7 @@ actor UploadService {
             }
         }
     }
+
     /// For single part uploads (less than 5GB)
     private func uploadSinglePartFile(_ path: FilePath, in group: BoxDetails, item: AddFilesResponse.Item, tryCount: Int = 0) async {
         do {
@@ -355,10 +378,8 @@ actor UploadService {
             let startTime = DispatchTime.now()
 
             do {
-                let password = UserDefaults.standard.string(forKey: Constants.Settings.passwordPrefKey)
                 let storageDuration = UserDefaults.standard.string(forKey: Constants.Settings.storagePrefKey) ?? "3_days"
                 let createdGroupResponse: BoxDetails = try await apiService.post(endpoint: "/api/groups", parameters: [
-                    "password": password,
                     "expires_in": storageDuration
                 ])
 
@@ -421,28 +442,6 @@ actor UploadService {
             }
         }
         return files
-    }
-}
-
-enum UploadState: Equatable {
-    case idle
-    case preparingGroup
-    case uploading
-    case error(PlatformError)
-    case completed
-}
-
-struct FilePathProgress {
-    var status: Status
-    var uploadProgress: CGFloat = 0
-    var errors: [PlatformError] = []
-
-    enum Status {
-        case unknown
-        case notarized
-        case failed
-        case completed
-        case uploading
     }
 }
 
