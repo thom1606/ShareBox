@@ -104,9 +104,6 @@ private struct NSPicker: NSViewRepresentable {
             view.heightAnchor.constraint(equalToConstant: 52)
         ])
 
-        // let button = NSButton(title: "Select an item", target: context.coordinator, action: #selector(context.coordinator.buttonClicked))
-        // context.coordinator.button = button
-
         // Create popover menu
         let menu = NSMenu()
         for item in items {

@@ -23,9 +23,7 @@ struct SettingsView: View {
                         Label("Preferences", systemImage: "gear")
                     }
                     .tag(SettingsTab.preferences)
-                ZStack {
-                    Text("Drives")
-                }
+                DrivesSettingsView()
                 .tabItem {
                     Label("Drives", systemImage: "cloud.fill")
                 }
