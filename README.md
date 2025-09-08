@@ -6,7 +6,7 @@ Welcome to **ShareBox**! The easiest and quickest option for sharing files via t
 
 ## What does ShareBox do?
 
-ShareBox is a macOS application that gives you the simple option to upload any file from Finder to the cloud. Just right-click a file and select **Upload to ShareBox**. This creates a new box with those files. After all the files are uploaded, they will become available for **48 hours** (configurable for up to a week in the settings) at a uniquely generated URL created just for you!
+ShareBox is a macOS application that gives you the simple option to upload any file from Finder to the cloud. Just drag & drop or right-click a file and select **Upload to ShareBox**. This creates a new box with those files. After all the files are uploaded, they will become available for **48 hours** (configurable for up to a week in the settings) at a uniquely generated URL created just for you!
 
 After the 48-hour (or otherwise configured) timeframe, your files and all traces will be **permanently** deleted.
 
@@ -27,6 +27,7 @@ After the 48-hour (or otherwise configured) timeframe, your files and all traces
 - Choose how long your files should be available (24 hours, 48 hours, 3 days, 5 days, 7 days).
 - Files are protected by pre-signed URLs.
 - After a box expires, all traces are deleted.
+- **Airdrop** files easily.
 
 ![Download Preview](./assets/sharebox-box-preview.png)
 
@@ -51,3 +52,4 @@ ShareBox is still in active development, but it's already useful for quick and e
 4. File previews for the download page (starting with images).
 5. ~~Pay-as-you-go subscription option. For users who need more than 250 GB per month, I want to help by giving the option to pay per GB after the initial 250 GB has been reached.~~
 6. The ability to cancel an upload.
+7. Upload files to your favorite cloud drives.
