@@ -24,11 +24,10 @@ struct UploaderView: View {
         return -10
     }
 
-    private var notchMinWidth: CGFloat {
-        if state.uiState == .small { return 0 }
+    private var notchWidth: CGFloat {
         if state.uiState == .visible { return 130 }
         if state.uiState == .peeking { return 130 }
-        return 0
+        return 70
     }
 
     private var notchCornerRadius: CGFloat {
@@ -71,7 +70,7 @@ struct UploaderView: View {
                     }
                     .padding(.vertical, 4)
                     .padding(.leading, 10)
-                    .frame(minWidth: notchMinWidth)
+                    .frame(maxWidth: notchWidth)
                     .background(
                         UnevenRoundedRectangle(cornerRadii: .init(bottomTrailing: notchCornerRadius, topTrailing: notchCornerRadius))
                             .fill(.black)
@@ -101,7 +100,6 @@ struct UploaderView: View {
             if !completedOnboarding {
                 openWindow(id: "onboarding")
             }
-            openWindow(id: "subscribe")
             state.onAppear(openSettings: { view in
                 if view != nil {
                     settingsTab.wrappedValue = view!

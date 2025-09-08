@@ -23,9 +23,9 @@ struct SubscribeView: View {
                 SubscribeSignInView(pageSelection: $selection)
                     .opacity(user.authenticated ? 0 : 1)
                     .tag(1)
-                SubscribeConfirmView(pageSelection: $selection, selectedPlan: $selectedPlan)
+                SubscribeConfirmView(pageSelection: $selection, selectedPlan: selectedPlan)
                     .tag(2)
-                SubscribeFinalPage()
+                SubscribeFinalView()
                     .tag(3)
             }
         }

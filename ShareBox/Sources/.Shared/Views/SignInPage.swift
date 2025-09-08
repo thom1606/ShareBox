@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct SignInPage: View {
-    var user: User
+    @Environment(User.self) private var user
+
     var cancelText: LocalizedStringKey = "Later"
     var onCancel: () -> Void
     var onContinue: () -> Void

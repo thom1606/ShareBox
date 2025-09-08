@@ -5,7 +5,7 @@
 //  Created by Thom van den Broek on 06/09/2025.
 //
 
-import Foundation
+import SwiftUI
 
 // swiftlint:disable:next type_body_length
 class ShareBoxUploader: FileUploader {
@@ -56,11 +56,27 @@ class ShareBoxUploader: FileUploader {
         return hasItemWithURL
     }
 
+    override func complete() {
+        // Only show notification + group clipboard if there are actually succesfully uploaded files
+        if self.uploadProgress.values.contains(where: { $0.status == .completed }) {
+            guard let groupUrlString = self.groupDetails?.url else {
+                return
+            }
+            let pasteboard = NSPasteboard.general
+            pasteboard.clearContents()
+            pasteboard.setString(String(localized: "Hey! I want to share some files with you. You can download them from my ShareBox: \(groupUrlString)", comment: "Clipboard message"), forType: .string)
+
+            Utilities.showNotification(title: String(localized: "Link Copied!"), body: String(localized: "The ShareBox link is copied to your clipboard!"))
+        }
+        self.reset()
+    }
+
     override func reset() {
         groupDetails = nil
-        state = .idle
         pendingFiles.removeAll()
-        self.uploadProgress.removeAll()
+        uploadProgress.removeAll()
+        droppedFiles.removeAll()
+        state = .idle
     }
 
     /// Filter out duplicates before appending anything
@@ -88,7 +104,6 @@ class ShareBoxUploader: FileUploader {
 
         // Otherwise, create group first
         guard let group = try? await ensureGroup() else {
-            print("failed to create group")
             for path in files {
                 self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [.groupNotFound])
             }
@@ -214,21 +229,27 @@ class ShareBoxUploader: FileUploader {
             // Start updating the progress
             self.uploadProgress[path.absolute] = .init(status: .uploading)
 
-            let uploadTask = URLSession.shared.uploadTask(with: request, from: fileData) { [updateProgress, handleComplete, uploadSinglePartFile] _, response, error in
+            let uploadTask = URLSession.shared.uploadTask(with: request, from: fileData) { [updateProgress, handleComplete, uploadSinglePartFile, checkForCompleteState] _, response, error in
                 Task {
                     if let error = error {
                         dataLogger.error("Upload failed with some internal error: \(error.localizedDescription)")
                         if tryCount < 3 {
+                            try? await Task.sleep(for: .seconds(1))
                             await uploadSinglePartFile(path, group, item, tryCount + 1)
                         } else {
+                            try? await Task.sleep(for: .seconds(1))
                             updateProgress(path, .init(status: .failed, uploadProgress: 100, errors: [.s3Failed]))
+                            checkForCompleteState()
                         }
                     } else if let httpResponse = response as? HTTPURLResponse, !(200...299).contains(httpResponse.statusCode) {
                         dataLogger.error("Upload failed, got an invalid status code back from S3: \(httpResponse.statusCode)")
                         if tryCount < 3 {
+                            try? await Task.sleep(for: .seconds(1))
                             await uploadSinglePartFile(path, group, item, tryCount + 1)
                         } else {
+                            try? await Task.sleep(for: .seconds(1))
                             updateProgress(path, .init(status: .failed, uploadProgress: 100, errors: [.s3Failed]))
+                            checkForCompleteState()
                         }
                     } else {
                         // Complete the upload
@@ -238,6 +259,8 @@ class ShareBoxUploader: FileUploader {
                 }
             }
 
+            progressCancellables[path.absolute]?.cancel()
+            progressCancellables[path.absolute] = nil
             progressCancellables[path.absolute] = uploadTask.progress.publisher(for: \.fractionCompleted)
                 .receive(on: DispatchQueue.main).sink { [updateProgress] fraction in
                     updateProgress(path, .init(status: .uploading, uploadProgress: fraction * 100))
@@ -325,6 +348,11 @@ class ShareBoxUploader: FileUploader {
             "etags": item.etags
         ]) as ApiService.BasicSuccessResponse
 
+        checkForCompleteState()
+    }
+
+    /// Check with all files if there are any left, if not, we can continue to the complete state
+    private func checkForCompleteState() {
         Task {
             try? await Task.sleep(for: .seconds(0.2))
             // Find any file left not in the completed or failed state
@@ -350,7 +378,11 @@ class ShareBoxUploader: FileUploader {
     }
 
     private func updateProgress(path: FilePath, progress: FilePathProgress) {
-        uploadProgress[path.absolute] = progress
+        Task {
+            await MainActor.run {
+                uploadProgress[path.absolute] = progress
+            }
+        }
     }
 
     /// Wait for a group to be created, otherwise fail

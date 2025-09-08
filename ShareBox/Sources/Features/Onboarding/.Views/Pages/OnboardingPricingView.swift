@@ -1,13 +1,13 @@
 //
-//  SubscribePricingView.swift
+//  OnboardingPricingView.swift
 //  ShareBox
 //
-//  Created by Thom van den Broek on 07/09/2025.
+//  Created by Thom van den Broek on 08/09/2025.
 //
 
 import SwiftUI
 
-struct SubscribePricingView: View {
+struct OnboardingPricingView: View {
     @Environment(User.self) private var user
     @Environment(\.dismissWindow) private var dismissWindow
 
@@ -20,18 +20,14 @@ struct SubscribePricingView: View {
     }
 
     var body: some View {
-        PricingPage(pageSelection: $pageSelection, selectedPlan: $selectedPlan, onCancel: handleCancel, onContinue: handleSubscribe)
+        PricingPage(pageSelection: $pageSelection, selectedPlan: $selectedPlan, cancelText: "Later", onCancel: handleSkip, onContinue: handleSubscribe)
     }
 
-    private func handleCancel() {
-        dismissWindow()
+    private func handleSkip() {
+        pageSelection += 2
     }
 
     private func handleSubscribe() {
-        if user.authenticated {
-            pageSelection += 2
-        } else {
-            pageSelection += 1
-        }
+        pageSelection += 1
     }
 }

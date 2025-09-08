@@ -12,7 +12,6 @@ final class Constants {
         static let storagePrefKey = "STORAGE_DURATION"
         static let passwordPrefKey = "GROUPS_PASSWORD"
         static let hiddenFilesPrefKey = "INCLUDE_HIDDEN_FILES"
-        static let uploadNotificationsPrefKey = "SHOW_UPLOAD_NOTIFICATIONS"
         static let mouseActivationPrefKey = "MOUSE_ACTIVATION"
         static let keepInMenuBarPrefKey = "KEEP_IN_MENUBAR"
         static let keepNotchOpenWhileUploadingPrefKey = "KEEP_OPEN_WHILE_UPLOADING"

@@ -11,16 +11,15 @@ import UserNotifications
 
 struct OnboardingExperienceView: View {
     @Binding var pageSelection: Int
-    var user: User
 
+    @Environment(User.self) var user
     @AppStorage(Constants.Settings.keepInMenuBarPrefKey) private var keepInMenuBar = true
     @State private var startAtLogin: Bool
     @State private var requestNotifications: Bool = false
     @State private var notificationStatus: UNAuthorizationStatus = .notDetermined
 
-    init(pageSelection: Binding<Int>, user: User) {
+    init(pageSelection: Binding<Int>) {
         self._pageSelection = pageSelection
-        self.user = user
         try? SMAppService.mainApp.register()
         self._startAtLogin = State(initialValue: SMAppService.mainApp.status == .enabled)
     }
@@ -128,14 +127,16 @@ struct OnboardingExperienceView: View {
         // Make sure the user is signed in to change the settings
         if user.authenticated {
             if (user.subscriptionData?.status ?? .inactive) == .active {
-                pageSelection += 2
+                pageSelection += 4
                 return
             }
+            pageSelection += 2
+            return
         }
         pageSelection += 1
     }
 }
 
 #Preview {
-    OnboardingExperienceView(pageSelection: .constant(0), user: .init())
+    OnboardingExperienceView(pageSelection: .constant(0))
 }

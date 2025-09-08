@@ -15,8 +15,8 @@ struct OnboardingSignInView: View {
     @State private var approvedTerms: Bool = false
 
     var body: some View {
-        SignInPage(user: user, onCancel: {
-            self.pageSelection += 1
+        SignInPage(onCancel: {
+            self.pageSelection += 3
         }, onContinue: {
             self.pageSelection += 1
         })

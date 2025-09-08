@@ -65,6 +65,10 @@ class FileUploader {
         return false
     }
 
+    public func complete() {
+        print("Completed upload on generic FileUploader, not handled")
+    }
+
     public func reset() {}
 
     public func getId() -> UploaderId {
@@ -86,7 +90,7 @@ enum UploadState: Equatable {
     case completed
 }
 
-struct FilePathProgress {
+struct FilePathProgress: Equatable {
     var status: Status
     var uploadProgress: CGFloat = 0
     var errors: [PlatformError] = []

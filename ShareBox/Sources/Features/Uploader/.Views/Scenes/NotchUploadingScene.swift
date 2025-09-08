@@ -12,13 +12,6 @@ struct NotchUploadingScene: View {
 
     var geo: GeometryProxy
 
-    private var hasOpenStandingProgresses: Bool {
-        for item in uploader.uploadProgress.values where item.status != .completed && item.status != .failed {
-            return true
-        }
-        return false
-    }
-
     private var fileList: some View {
         ScrollView {
             VStack(spacing: 10) {
@@ -46,7 +39,8 @@ struct NotchUploadingScene: View {
                 }
             } else {
                 Group {
-                    let isDone = uploader.uploadState == .completed && !hasOpenStandingProgresses && !uploader.droppedItems.isEmpty
+                    let openStanding = uploader.uploadProgress.values.contains { $0.status != .completed && $0.status != .failed }
+                    let isDone = uploader.uploadState == .completed && !openStanding && !uploader.droppedItems.isEmpty
 
                     fileList
                         .padding(.bottom, isDone ? 36 : 0)
@@ -61,7 +55,7 @@ struct NotchUploadingScene: View {
                             .allowsHitTesting(false)
                         if isDone {
                             Button("Done") {
-                                print("pressed done")
+                                uploader.activeUploader?.complete()
                             }
                             .buttonStyle(NotchButton())
                         }

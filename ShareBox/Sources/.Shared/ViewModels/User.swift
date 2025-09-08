@@ -65,7 +65,7 @@ import SwiftUI
             self.subscriptionData = res.subscription
             UserDefaults.standard.set(res.settings.groupsPassword, forKey: Constants.Settings.passwordPrefKey)
             UserDefaults.standard.set(res.settings.groupStorageDuration, forKey: Constants.Settings.storagePrefKey)
-            UserDefaults.standard.set(res.settings.overMonthlyLimitStorage, forKey: Constants.Settings.overMonthlyLimitStoragePrefKey)
+            UserDefaults.standard.set(res.subscription?.overMonthlyLimitStorage ?? false, forKey: Constants.Settings.overMonthlyLimitStoragePrefKey)
             self.isLoading = false
         } catch {
             self.isLoading = false
@@ -121,6 +121,8 @@ struct UserData: Codable, Equatable {
 
 struct SubscriptionData: Codable, Equatable {
     var status: Status
+    var overMonthlyLimitStorage: Bool
+    var plan: String
 
     enum Status: String, Codable {
         case active
@@ -131,15 +133,10 @@ struct SubscriptionData: Codable, Equatable {
 struct SettingsData: Codable, Equatable {
     var groupStorageDuration: String
     var groupsPassword: String?
-    var overMonthlyLimitStorage: Bool
 }
 
 private struct UserFetchResponse: Codable {
     var user: UserData
     var settings: SettingsData
     var subscription: SubscriptionData?
-
-    struct Subscription: Codable {
-        var status: String
-    }
 }

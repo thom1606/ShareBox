@@ -10,6 +10,7 @@ import SwiftUI
 struct TextFieldView: View {
     var label: LocalizedStringKey
     var placeholder: String
+    var errored: Bool = false
     @Binding var text: String
 
     @FocusState private var isFocused
@@ -34,6 +35,7 @@ struct TextFieldView: View {
                             .stroke(Color(NSColor.secondaryLabelColor), style: .init(lineWidth: 3))
                     }
                 }
+                .shake(enabled: errored)
         }
     }
 }

@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct SubscribeFinalPage: View {
+struct SubscribeFinalView: View {
     @Environment(\.dismissWindow) private var dismissWindow
 
     var body: some View {

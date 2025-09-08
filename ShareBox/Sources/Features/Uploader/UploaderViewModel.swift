@@ -66,7 +66,7 @@ import UserNotifications
     private(set) var uploadState: UploadState = .idle
     public var uiMovable: Bool {
         var result = true
-        if uiState == .visible || uiState == .peeking {
+        if uiState == .visible || uiState == .peeking || uiState == .small {
             result = false
         }
         if !userInteractable { result = false }

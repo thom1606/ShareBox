@@ -13,7 +13,6 @@ struct SubscribeSignInView: View {
 
     var body: some View {
         SignInPage(
-            user: user,
             cancelText: "Back",
             onCancel: {
                 self.pageSelection -= 1

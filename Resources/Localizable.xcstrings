@@ -122,6 +122,9 @@
     "Create your account" : {
 
     },
+    "Current plan" : {
+
+    },
     "Determine the duration of time a Box will be accessible after being shared." : {
 
     },
@@ -161,6 +164,9 @@
     "Got cloud storage?" : {
 
     },
+    "Hey! I want to share some files with you. You can download them from my ShareBox: %@" : {
+      "comment" : "Clipboard message"
+    },
     "I have read and agree to the [Terms and Conditions](https://shareboxed.app/terms-and-conditions) and [Privacy Policy](https://shareboxed.app/privacy-policy)." : {
 
     },
@@ -171,6 +177,9 @@
 
     },
     "Include hidden files" : {
+
+    },
+    "Invalid coupon code provided. Please try again." : {
 
     },
     "Keep notch open while uploading" : {
@@ -189,6 +198,9 @@
 
     },
     "Let's set you up with an easier, more efficient way of sharing files." : {
+
+    },
+    "Link Copied!" : {
 
     },
     "Manage billing" : {
@@ -263,9 +275,6 @@
     "Send Feedback..." : {
 
     },
-    "Send notifcation after upload" : {
-
-    },
     "Set up your experience" : {
 
     },
@@ -294,6 +303,9 @@
 
     },
     "Sign up using your **Apple ID** to secure your own space in the ShareBox cloud and sync settings across multiple devices." : {
+
+    },
+    "Something went wrong" : {
 
     },
     "Something went wrong internally, please try again." : {
@@ -327,6 +339,9 @@
 
     },
     "Thank you for subscribing! You can now enjoy the full ShareBox experience." : {
+
+    },
+    "The ShareBox link is copied to your clipboard!" : {
 
     },
     "Unauthorized" : {
@@ -384,9 +399,6 @@
     "Welcome to ShareBox" : {
 
     },
-    "When enabled, a notification is send after all your files have been uploaded." : {
-
-    },
     "When enabled, moving your mouse to the screen edge will active the ShareBox Uploader." : {
 
     },
@@ -406,6 +418,9 @@
 
     },
     "You have reached the maximum number of boxes you can create at this time. Please wait for some boxes to expire before creating more." : {
+
+    },
+    "You reached a state which is not supported by the current version of the app. Please contact support@shareboxed.app for further assistance." : {
 
     },
     "You're ready!" : {
