@@ -56,11 +56,11 @@ class FileUploader {
     }
 
     // Overridable
-    public func confirmDrop(paths: [FilePath]) {
+    public func confirmDrop(paths _: [FilePath]) {
         print("Dropped files on generic FileUploader, not handled")
     }
 
-    public func confirmDrop(providers: [NSItemProvider]) -> Bool {
+    public func confirmDrop(providers _: [NSItemProvider]) -> Bool {
         print("Dropped files on generic FileUploader, not handled")
         return false
     }

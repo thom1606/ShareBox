@@ -120,7 +120,7 @@ private struct NSPicker: NSViewRepresentable {
         return view
     }
 
-    func updateNSView(_ nsView: NSView, context: Context) {
+    func updateNSView(_: NSView, context: Context) {
         // Update the selected item's title
         if let button = context.coordinator.button {
             let selectedItemTitle = items.first { $0.0 == selection.wrappedValue }?.1 ?? NSLocalizedString("Select", comment: "")

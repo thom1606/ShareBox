@@ -33,9 +33,9 @@ class FinderSync: FIFinderSync {
         return menu
     }
 
-    @IBAction func handleFileSelection(_ sender: AnyObject?) {
+    @IBAction func handleFileSelection(_: AnyObject?) {
         // Make sure we have all the required data to proceed
-        guard let items = FIFinderSyncController.default().selectedItemURLs(), let target = FIFinderSyncController.default().targetedURL() else {
+        guard let items = FIFinderSyncController.default().selectedItemURLs() else {
             Utilities.showNotification(
                 title: NSLocalizedString("Oops!", comment: ""),
                 body: NSLocalizedString("No files or folders selected? Please try again after selecting items.", comment: "If ShareBox ever gets triggered without files or folders selected.")
@@ -44,10 +44,10 @@ class FinderSync: FIFinderSync {
             return
         }
         // Initiate the upload to the helper app
-        uploadFiles(items: items, target: target)
+        uploadFiles(items: items)
     }
 
-    private func uploadFiles(items: [URL], target: URL, retry: Bool = false) {
+    private func uploadFiles(items: [URL]) {
         finderLogger.debug("Found items to upload, trying to get everything ready...")
 
         // Create request for Mach
