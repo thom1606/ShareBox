@@ -17,6 +17,9 @@ struct ShareBoxApp: App {
     private let updaterController: SPUStandardUpdaterController
     @State private var user = User()
     @State private var settingsTab: SettingsTab = .preferences
+    @State private var onboardingVisible: Bool = false { didSet { updateDock() } }
+    @State private var settingsVisible: Bool = false { didSet { updateDock() } }
+    @State private var subscribeVisible: Bool = false { didSet { updateDock() } }
 
     init() {
         // Initialize variables
@@ -41,7 +44,15 @@ struct ShareBoxApp: App {
         let runningApps = NSRunningApplication.runningApplications(withBundleIdentifier: Bundle.main.bundleIdentifier ?? "")
         return runningApps.count > 1
     }
-    
+
+    private func updateDock() {
+        if onboardingVisible || settingsVisible || subscribeVisible {
+            NSApplication.shared.setActivationPolicy(.regular)
+        } else {
+            NSApplication.shared.setActivationPolicy(.accessory)
+        }
+    }
+
     var body: some Scene {
         Window("Uploader", id: "uploader") {
             UploaderView()
@@ -61,12 +72,24 @@ struct ShareBoxApp: App {
         Window("Onboarding", id: "onboarding") {
             OnboardingView()
                 .environment(user)
+                .onAppear {
+                    onboardingVisible = true
+                }
+                .onDisappear {
+                    onboardingVisible = false
+                }
         }
         .windowResizability(.contentSize)
 
         Window("Subscribe", id: "subscribe") {
             SubscribeView()
                 .environment(user)
+                .onAppear {
+                    subscribeVisible = true
+                }
+                .onDisappear {
+                    subscribeVisible = false
+                }
         }
         .windowResizability(.contentSize)
 
@@ -76,6 +99,12 @@ struct ShareBoxApp: App {
         Settings {
             SettingsView(selectedTab: $settingsTab, updater: updaterController.updater, user: user)
                 .environment(user)
+                .onAppear {
+                    settingsVisible = true
+                }
+                .onDisappear {
+                    settingsVisible = false
+                }
         }
         .defaultSize(width: 600, height: 600)
         .defaultPosition(.center)

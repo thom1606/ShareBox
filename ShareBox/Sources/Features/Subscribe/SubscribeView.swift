@@ -33,11 +33,5 @@ struct SubscribeView: View {
         .background(WindowAccessor { window in
             window.titleVisibility = .hidden
         })
-        .onAppear {
-            NSApplication.shared.setActivationPolicy(.regular)
-        }
-        .onDisappear {
-            NSApplication.shared.setActivationPolicy(.accessory)
-        }
     }
 }

@@ -45,12 +45,6 @@ struct SettingsView: View {
                     .tag(SettingsTab.about)
             }
         }
-        .onAppear {
-            NSApplication.shared.setActivationPolicy(.regular)
-        }
-        .onDisappear {
-            NSApplication.shared.setActivationPolicy(.accessory)
-        }
     }
 }
 
