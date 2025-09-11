@@ -24,20 +24,20 @@ struct SettingsView: View {
                     }
                     .tag(SettingsTab.preferences)
                 DrivesSettingsView()
-                .tabItem {
-                    Label("Drives", systemImage: "cloud.fill")
-                }
-                .tag(SettingsTab.drives)
+                    .tabItem {
+                        Label("Drives", systemImage: "cloud.fill")
+                    }
+                    .tag(SettingsTab.drives)
                 AccountSettingsView(user: user)
                     .tabItem {
                         Label("Account", systemImage: "person.circle")
                     }
                     .tag(SettingsTab.account)
-                BoxesSettingsView(user: user)
+                PackagesSettingsView(user: user)
                     .tabItem {
-                        Label("Boxes", systemImage: "shippingbox.fill")
+                        Label("Packages", systemImage: "shippingbox.fill")
                     }
-                    .tag(SettingsTab.boxes)
+                    .tag(SettingsTab.packages)
                 AboutSettingsView()
                     .tabItem {
                         Label("About", systemImage: "info.circle.fill")
@@ -58,7 +58,7 @@ enum SettingsTab {
     case preferences
     case drives
     case account
-    case boxes
+    case packages
     case about
 }
 

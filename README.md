@@ -24,7 +24,7 @@ After the 48-hour (or otherwise configured) timeframe, your files and all traces
 - Quickly create a box with your files.
 - Share files with anyone, anywhere.
 - Protect your boxes with a password.
-- Choose how long your files should be available (24 hours, 48 hours, 3 days, 5 days, 7 days).
+- Choose how long your files should be available (24 hours, 48 hours, 3 days, 5 days, 7 days, 2 weeks).
 - Files are protected by pre-signed URLs.
 - After a box expires, all traces are deleted.
 - **Airdrop** files easily.

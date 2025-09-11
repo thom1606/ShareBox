@@ -29,6 +29,9 @@
     "2 days" : {
 
     },
+    "2 weeks" : {
+
+    },
     "3 days" : {
 
     },
@@ -41,10 +44,10 @@
     "7 days" : {
 
     },
-    "50GB of ShareBox uploads" : {
+    "50GB of ShareBox Packages" : {
 
     },
-    "250GB of ShareBox uploads" : {
+    "250GB of ShareBox Packages" : {
 
     },
     "About" : {
@@ -81,12 +84,6 @@
 
     },
     "Behaviour" : {
-
-    },
-    "Box Password" : {
-
-    },
-    "Boxes" : {
 
     },
     "Build number" : {
@@ -161,6 +158,9 @@
     "For just **€3.99**/month, enjoy a **250GB** upload limit, ensuring your files are always ready to share.\n\nSecure your personal cloud space and effortlessly upload up to **250GB** of files each month." : {
 
     },
+    "For users sharing more than 250GB of ShareBox Packages per each month. Enable the pay-as-you-go option and pay €0.03/GB." : {
+
+    },
     "General" : {
 
     },
@@ -174,9 +174,6 @@
       "comment" : "Clipboard message"
     },
     "I have read and agree to the [Terms and Conditions](https://shareboxed.app/terms-and-conditions) and [Privacy Policy](https://shareboxed.app/privacy-policy)." : {
-
-    },
-    "If you need access to more than 250GB of uploads each month. You can enable the pay-as-you-go option and pay €0.03/GB." : {
 
     },
     "Include files which are normally hidden in Finder. Be aware that this may cause sensitive files to be shared unintentionally." : {
@@ -218,7 +215,7 @@
     "No files or folders selected? Please try again after selecting items." : {
       "comment" : "If ShareBox ever gets triggered without files or folders selected."
     },
-    "No open boxes found." : {
+    "No open packages found." : {
 
     },
     "Onboarding" : {
@@ -233,7 +230,13 @@
     "Open billing" : {
 
     },
-    "Open Boxes" : {
+    "Open Packages" : {
+
+    },
+    "Packages" : {
+
+    },
+    "Password" : {
 
     },
     "Pay-as-you-go" : {
@@ -257,7 +260,10 @@
     "Pro" : {
 
     },
-    "Protect your boxes by letting users enter a password to access them." : {
+    "Protect your packages by letting users enter a password to access them." : {
+
+    },
+    "Purchases restored" : {
 
     },
     "Quit" : {
@@ -275,6 +281,12 @@
     "Request notification access" : {
 
     },
+    "Restore" : {
+
+    },
+    "Restore Purchases" : {
+
+    },
     "Select" : {
 
     },
@@ -290,6 +302,9 @@
     "ShareBox" : {
 
     },
+    "ShareBox Packages" : {
+
+    },
     "Show ShareBox in menu bar" : {
 
     },
@@ -297,6 +312,9 @@
 
     },
     "Sign in to ShareBox" : {
+
+    },
+    "Sign in..." : {
 
     },
     "Sign out" : {
@@ -332,6 +350,12 @@
     "Storage duration" : {
 
     },
+    "Store files up to 2 weeks" : {
+
+    },
+    "Store files up to 7 days" : {
+
+    },
     "Subscribe" : {
 
     },
@@ -353,7 +377,7 @@
     "Unauthorized" : {
 
     },
-    "Unlimited cloud drives" : {
+    "Unlimited Cloud Drives" : {
 
     },
     "Upload failed" : {
@@ -433,6 +457,9 @@
 
     },
     "Your item named \"%@\" has failed to upload and gave the following error:" : {
+
+    },
+    "Your purchases have been restored successfully." : {
 
     }
   },

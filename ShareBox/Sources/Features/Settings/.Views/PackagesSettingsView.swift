@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct BoxesSettingsView: View {
+struct PackagesSettingsView: View {
     var user: User
 
     private let apiService = ApiService()
@@ -26,7 +26,7 @@ struct BoxesSettingsView: View {
 
     var body: some View {
         Form {
-            Section(header: Text("Open Boxes")) {
+            Section(header: Text("Open Packages")) {
                 if self.loaded {
                     if !user.authenticated || user.userData == nil {
                         HStack {
@@ -37,7 +37,7 @@ struct BoxesSettingsView: View {
                     } else if groups.isEmpty {
                         HStack {
                             Spacer()
-                            Text("No open boxes found.")
+                            Text("No open packages found.")
                             Spacer()
                         }
                     } else {
@@ -64,5 +64,5 @@ struct BoxesSettingsView: View {
 }
 
 #Preview {
-    BoxesSettingsView(user: .init())
+    PackagesSettingsView(user: .init())
 }

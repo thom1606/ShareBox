@@ -41,9 +41,9 @@ struct UploaderView: View {
             HStack {
                 Color.black.opacity(0.001)
                     .onHover(perform: { isOver in
-                        if !enableMouseActivation { return }
                         state.onHover(isOver: isOver)
                     })
+                    .allowsHitTesting(enableMouseActivation && state.uiState == .hidden)
                     .frame(width: state.uiState == .hidden || state.uiState == .peeking ? 13 : geo.size.width)
                 Spacer()
             }
@@ -76,7 +76,10 @@ struct UploaderView: View {
                             .fill(.black)
                             .animation(.bouncy, value: state.uiState)
                     )
-                    .onHover(perform: state.onHover)
+                    .onHover { isOver in
+                        if state.uiState == .hidden { return }
+                        state.onHover(isOver: isOver)
+                    }
                     NotchCorner(inverted: true)
                         .fill(.black)
                         .frame(width: notchCornerRadius * 2, height: notchCornerRadius * 2)
@@ -84,7 +87,7 @@ struct UploaderView: View {
                         .offset(x: 5)
                 }
                 .offset(x: notchXOffset)
-                .background(hoverHelper)
+                .overlay(hoverHelper)
                 .animation(.bouncy, value: notchXOffset)
             }
             .environment(self.state)

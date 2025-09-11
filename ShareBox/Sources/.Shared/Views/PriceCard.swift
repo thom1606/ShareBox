@@ -31,8 +31,9 @@ struct PriceCard: View {
     var options: [PriceOption] {
         if plan == .plus {
             return [
-                .init(text: String(localized: "50GB of ShareBox uploads")),
-                .init(text: String(localized: "Unlimited cloud drives")),
+                .init(text: String(localized: "50GB of ShareBox Packages")),
+                .init(text: String(localized: "Unlimited Cloud Drives")),
+                .init(text: String(localized: "Store files up to 7 days")),
                 .init(
                     text: String(localized: "Pay-as-you-go option exceeding limit"),
                     included: false
@@ -40,13 +41,14 @@ struct PriceCard: View {
             ]
         }
         return [
-            .init(text: String(localized: "250GB of ShareBox uploads")),
-            .init(text: String(localized: "Unlimited cloud drives")),
+            .init(text: String(localized: "250GB of ShareBox Packages")),
+            .init(text: String(localized: "Unlimited Cloud Drives")),
+            .init(text: String(localized: "Store files up to 2 weeks")),
             .init(
                 text: String(localized: "Pay-as-you-go option exceeding limit"),
                 description: .init(
                     title: String(localized: "Pay-as-you-go"),
-                    text: String(localized: "If you need access to more than 250GB of uploads each month. You can enable the pay-as-you-go option and pay €0.03/GB.")
+                    text: String(localized: "For users sharing more than 250GB of ShareBox Packages per each month. Enable the pay-as-you-go option and pay €0.03/GB.")
                 )
             )
         ]

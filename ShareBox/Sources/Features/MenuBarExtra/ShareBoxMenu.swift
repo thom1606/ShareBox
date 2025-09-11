@@ -10,6 +10,7 @@ import Sparkle
 
 struct ShareBoxMenu: Scene {
     @Environment(\.openSettings) private var openSettings
+    @Environment(User.self) private var user
     @AppStorage(Constants.Settings.keepInMenuBarPrefKey) private var keepInMenuBar = true
 
     @Binding var settingsTab: SettingsTab
@@ -27,6 +28,9 @@ struct ShareBoxMenu: Scene {
             Button("About ShareBox") {
                 settingsTab = .about
                 openSettings()
+            }
+            if !user.authenticated {
+                Button("Sign in...", action: user.login)
             }
             Button("Check for Updates") {
                 updater.checkForUpdates()

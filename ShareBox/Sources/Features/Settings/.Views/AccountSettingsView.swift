@@ -12,6 +12,8 @@ struct AccountSettingsView: View {
 
     private let api = ApiService()
     @State private var loadingBilling = false
+    @State private var loadingRestore = false
+    @State private var presentingRestoreAlert = false
     @Environment(\.openWindow) private var openWindow
     @AppStorage(Constants.Settings.passwordPrefKey) private var boxPassword = ""
     @AppStorage(Constants.Settings.storagePrefKey) private var storageDuration = "3_days"
@@ -30,6 +32,21 @@ struct AccountSettingsView: View {
             } catch {
                 DispatchQueue.main.async {
                     withAnimation { self.loadingBilling = false }
+                }
+            }
+        }
+    }
+
+    private func restorePurchases() {
+        if self.loadingRestore { return }
+        self.presentingRestoreAlert = false
+        withAnimation { self.loadingRestore = true }
+        Task {
+            await user.refresh()
+            DispatchQueue.main.async {
+                withAnimation { self.loadingRestore = false }
+                if user.authenticated {
+                    self.presentingRestoreAlert = true
                 }
             }
         }
@@ -132,6 +149,22 @@ struct AccountSettingsView: View {
                                     .opacity(loadingBilling ? 1 : 0)
                             }
                         })
+                    }
+                    HStack {
+                        Text("Restore Purchases")
+                        Spacer()
+                        Button(action: restorePurchases, label: {
+                            ZStack {
+                                Text("Restore")
+                                    .opacity(loadingRestore ? 0 : 1)
+                                ProgressView()
+                                    .controlSize(.small)
+                                    .opacity(loadingRestore ? 1 : 0)
+                            }
+                        })
+                    }
+                    .alert(isPresented: $presentingRestoreAlert) {
+                        Alert(title: Text("Purchases restored"), message: Text("Your purchases have been restored successfully."))
                     }
                 }
             }

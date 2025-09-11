@@ -19,7 +19,7 @@ struct GeneralSettingsView: View {
     @AppStorage(Constants.Settings.keepNotchOpenWhileUploadingPrefKey) private var keepNotchOpen = true
     @AppStorage(Constants.Settings.hiddenFilesPrefKey) private var includeHiddenFiles = false
     @AppStorage(Constants.Settings.passwordPrefKey) private var boxPassword = ""
-    @AppStorage(Constants.Settings.storagePrefKey) private var storageDuration = "3_days"
+    @AppStorage(Constants.Settings.storagePrefKey) private var storageDuration = "7_days"
     @AppStorage(Constants.Settings.overMonthlyLimitStoragePrefKey) private var overMonthlyLimitStorage = false
 
     @State private var startAtLogin: Bool
@@ -85,6 +85,44 @@ struct GeneralSettingsView: View {
                     })
                 }
             }
+            if user.subscriptionData?.status == .active {
+                Section(header: Text("ShareBox Packages")) {
+                    VStack(alignment: .leading) {
+                        TextField("Password", text: $boxPassword)
+                            .onChange(of: boxPassword) {
+                                user.updateSettings(password: boxPassword, storageDuration: storageDuration, overMonthlyLimitStorage: overMonthlyLimitStorage)
+                            }
+                        Text("Protect your packages by letting users enter a password to access them.")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                    }
+                    HStack {
+                        Picker(selection: $storageDuration, label:
+                                VStack(alignment: .leading) {
+                            Text("Storage duration")
+                            Text("Determine the duration of time a Box will be accessible after being shared.")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                        }
+                        ) {
+#if DEBUG
+                            Text("5 minutes").tag("5_minutes")
+#endif
+                            Text("1 day").tag("1_days")
+                            Text("2 days").tag("2_days")
+                            Text("3 days").tag("3_days")
+                            Text("5 days").tag("5_days")
+                            Text("7 days").tag("7_days")
+                            if user.subscriptionData?.plan == "pro" {
+                                Text("2 weeks").tag("14_days")
+                            }
+                        }
+                        .onChange(of: storageDuration) {
+                            user.updateSettings(password: boxPassword, storageDuration: storageDuration, overMonthlyLimitStorage: overMonthlyLimitStorage)
+                        }
+                    }
+                }
+            }
             Section(header: Text("Behaviour")) {
                 Toggle(isOn: $enableMouseActivation) {
                     VStack(alignment: .leading) {
@@ -109,38 +147,6 @@ struct GeneralSettingsView: View {
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                     }
-                }
-                VStack(alignment: .leading) {
-                    TextField("Box Password", text: $boxPassword)
-                        .onChange(of: boxPassword) {
-                            user.updateSettings(password: boxPassword, storageDuration: storageDuration, overMonthlyLimitStorage: overMonthlyLimitStorage)
-                        }
-                    Text("Protect your boxes by letting users enter a password to access them.")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                }
-                HStack {
-                    Picker(selection: $storageDuration, label:
-                        VStack(alignment: .leading) {
-                            Text("Storage duration")
-                            Text("Determine the duration of time a Box will be accessible after being shared.")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                        }
-                    ) {
-                        #if DEBUG
-                        Text("5 minutes").tag("5_minutes")
-                        #endif
-                        Text("1 day").tag("1_days")
-                        Text("2 days").tag("2_days")
-                        Text("3 days").tag("3_days")
-                        Text("5 days").tag("5_days")
-                        Text("7 days").tag("7_days")
-                    }
-                    .onChange(of: storageDuration) {
-                        user.updateSettings(password: boxPassword, storageDuration: storageDuration, overMonthlyLimitStorage: overMonthlyLimitStorage)
-                    }
-                    Spacer()
                 }
             }
         }

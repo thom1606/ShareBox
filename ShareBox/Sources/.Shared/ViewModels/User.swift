@@ -38,7 +38,7 @@ import SwiftUI
 
     public func login() {
         if let domainString = (Bundle.main.object(forInfoDictionaryKey: "BASE_URL") as? String) {
-            NSWorkspace.shared.open(URL(string: "\(domainString)/auth/sign-in")!)
+            NSWorkspace.shared.open(URL(string: "\(domainString)/auth/sign-in?platform=macOS")!)
         }
     }
 
@@ -94,7 +94,10 @@ import SwiftUI
                         ]) as ApiService.BasicSuccessResponse
                         UserDefaults.standard.set(password, forKey: Constants.Settings.passwordPrefKey)
                         UserDefaults.standard.set(storageDuration, forKey: Constants.Settings.storagePrefKey)
-                    } catch {}
+                    } catch {
+                        // TODO: some settings may not be valid, refreshing user
+                        await self.refresh()
+                    }
                 }
             }
         }

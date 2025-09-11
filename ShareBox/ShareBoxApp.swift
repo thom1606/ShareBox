@@ -71,9 +71,11 @@ struct ShareBoxApp: App {
         .windowResizability(.contentSize)
 
         ShareBoxMenu(settingsTab: $settingsTab, updater: updaterController.updater)
+            .environment(user)
 
         Settings {
             SettingsView(selectedTab: $settingsTab, updater: updaterController.updater, user: user)
+                .environment(user)
         }
         .defaultSize(width: 600, height: 600)
         .defaultPosition(.center)
