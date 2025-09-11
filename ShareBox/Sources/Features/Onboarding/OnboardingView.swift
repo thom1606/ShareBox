@@ -24,6 +24,7 @@ struct OnboardingView: View {
                     .tag(1)
                 OnboardingSignInView(pageSelection: $selection)
                     .tag(2)
+                    .opacity(user.authenticated ? 0 : 1)
                 OnboardingPricingView(pageSelection: $selection, selectedPlan: $selectedPlan)
                     .tag(3)
                     .opacity(user.authenticated && (user.subscriptionData?.status ?? .inactive) != .active ? 1 : 0)

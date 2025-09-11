@@ -72,29 +72,29 @@ private struct ContinueButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         ZStack {
             configuration.label
-                .opacity(isLoading ? 0 : 1)
                 .animation(.easeInOut, value: isLoading)
+                .padding(.vertical, 12)
+                .padding(.horizontal, 24)
+                .background(
+                    Color("Colors/ButtonBackground")
+                )
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .foregroundColor(Color("Colors/ButtonLabel"))
+                .overlay {
+                    if isHovered {
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(.clear)
+                            .stroke(Color("Colors/ButtonLabel"), style: .init(lineWidth: 2))
+                    }
+                }
+                .font(.body.weight(.semibold))
+                .opacity(isLoading ? 0 : isEnabled ? 1 : 0.4)
+
             ProgressView()
                 .controlSize(.small)
                 .opacity(isLoading ? 1 : 0)
                 .animation(.easeInOut, value: isLoading)
         }
-        .padding(.vertical, 12)
-        .padding(.horizontal, 24)
-        .background(
-            Color("Colors/ButtonBackground")
-        )
-        .clipShape(RoundedRectangle(cornerRadius: 8))
-        .foregroundColor(Color("Colors/ButtonLabel"))
-        .overlay {
-            if isHovered {
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(.clear)
-                    .stroke(Color("Colors/ButtonLabel"), style: .init(lineWidth: 2))
-            }
-        }
-        .font(.body.weight(.semibold))
-        .opacity(isEnabled ? 1 : 0.4)
         .animation(.spring, value: isEnabled)
         .onHover { hovering in
             withAnimation {
