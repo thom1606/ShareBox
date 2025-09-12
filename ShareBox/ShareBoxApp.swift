@@ -174,7 +174,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                         }
                     }
                 }
-            } else if url.scheme == "sharebox" && url.host == "subscribed" {
+            } else if url.scheme == "sharebox" && (url.host == "subscribed" || url.host == "drive-connected") {
                 await User.shared?.refresh()
             }
         }

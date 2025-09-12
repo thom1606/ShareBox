@@ -21,4 +21,5 @@ enum PlatformError: String, Error {
     case hasExistingGroup = "Error 1011: Alreay a box open"
     case groupLimitReached = "Error 1012: Reached maximum number of active boxes"
     case appNotRunning = "Error 1013: App is currently not running"
+    case driveUnauthorized = "Error 1014: Unauthorized to upload files"
 }

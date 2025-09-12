@@ -10,6 +10,7 @@ import SwiftUI
 struct UploaderDropField: View {
     var type: UploaderId
     var image: Image
+    var metadata: FileUploaderMetaData?
     var isPlus: Bool = false
 
     @Environment(User.self) private var user
@@ -21,13 +22,11 @@ struct UploaderDropField: View {
     @State private var pickerShowing: Bool = false
 
     var heightOffset: CGFloat {
-        if type == .airdrop { return 5 }
-        if type == .drive { return 5 }
+        if type == .airdrop { return 10 }
         return 0
     }
 
     var dropOffset: CGFloat {
-        if type == .drive { return -5 }
         return 0
     }
 
@@ -51,7 +50,7 @@ struct UploaderDropField: View {
                         state.activateUploader(for: type)
                         // Get the appropriate uploader for this drop field
                         let targetUploader = state.getUploader(for: type)
-                        return targetUploader.confirmDrop(providers: providers)
+                        return targetUploader.confirmDrop(providers: providers, metadata: metadata)
                     })
                     .frame(width: geo.size.width, height: geo.size.height + heightOffset)
                     .offset(x: uploader.uiState == .hidden ? 60 : 0, y: dropOffset)
@@ -100,7 +99,7 @@ struct UploaderDropField: View {
                     pickerShowing = false
                     if result == .OK {
                         let targetUploader = state.getUploader(for: type)
-                        targetUploader.confirmDrop(paths: openPanel.urls.map { $0.toFilePath() })
+                        targetUploader.confirmDrop(paths: openPanel.urls.map { $0.toFilePath() }, metadata: metadata)
                     }
                     openPanel.close()
                 }

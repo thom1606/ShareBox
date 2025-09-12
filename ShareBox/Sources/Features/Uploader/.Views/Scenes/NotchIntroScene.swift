@@ -8,7 +8,9 @@
 import SwiftUI
 
 struct NotchIntroScene: View {
+    private let api = ApiService()
     @Environment(UploaderViewModel.self) private var uploader
+    @Environment(User.self) private var user
     @Environment(\.settingsTab) private var settingsTab
     @Environment(\.openSettings) private var openSettings
 
@@ -32,28 +34,35 @@ struct NotchIntroScene: View {
                 .fill(Color("Colors/TileBackground"))
                 .frame(width: 44, height: 2)
                 .padding(.vertical, 4)
-            UploaderButtonField(image: Image(systemName: "plus.circle"), onTap: {
-                completedCloudDriveOnboarding = true
-                settingsTab.wrappedValue = .drives
-                openSettings()
-            })
-            .popover(isPresented: .constant(showCloudStorageOption), attachmentAnchor: .point(.trailing), arrowEdge: .leading) {
-                VStack(alignment: .leading, spacing: 0) {
-                    Text("Got cloud storage?")
-                        .font(.headline)
-                    Text("Upload files straight to your personal drive of choice for later access.")
-                        .font(.body)
-                        .padding(.top, 3)
-                        .foregroundStyle(.secondary)
+            if !user.drivesData.isEmpty {
+                ForEach(user.drivesData) { drive in
+                    if let type = drive.getUploaderType() {
+                        UploaderDropField(
+                            type: type,
+                            image: Image("Images/Drives/\(drive.provider)"),
+                            metadata: .init(providerId: drive.id)
+                        )
+                    }
                 }
-                .frame(minWidth: 200, idealWidth: 200, maxWidth: 200)
-                .padding(10)
+            } else {
+                UploaderButtonField(image: Image(systemName: "plus.circle"), onTap: {
+                    completedCloudDriveOnboarding = true
+                    settingsTab.wrappedValue = .drives
+                    openSettings()
+                })
+                .popover(isPresented: .constant(showCloudStorageOption), attachmentAnchor: .point(.trailing), arrowEdge: .leading) {
+                    VStack(alignment: .leading, spacing: 0) {
+                        Text("Got cloud storage?")
+                            .font(.headline)
+                        Text("Upload files straight to your personal drive of choice for later access.")
+                            .font(.body)
+                            .padding(.top, 3)
+                            .foregroundStyle(.secondary)
+                    }
+                    .frame(minWidth: 200, idealWidth: 200, maxWidth: 200)
+                    .padding(10)
+                }
             }
-//            UploaderDropField(type: .drive, image: Image(systemName: "plus.circle"))
         }
     }
-}
-
-#Preview {
-    NotchIntroScene()
 }

@@ -44,6 +44,12 @@ struct NotchUploadingScene: View {
 
                     fileList
                         .padding(.bottom, isDone ? 36 : 0)
+                        .onDrop(of: [.fileURL], isTargeted: nil, perform: { providers in
+                            if let targetUploader = uploader.activeUploader {
+                                return targetUploader.confirmDrop(providers: providers)
+                            }
+                            return false
+                        })
                     VStack(alignment: .center, spacing: 0) {
                         LinearGradient(colors: [.black, .clear], startPoint: .top, endPoint: .bottom)
                             .frame(height: 15)

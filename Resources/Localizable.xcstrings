@@ -110,6 +110,9 @@
     "Cloud Drives" : {
 
     },
+    "Connect Google" : {
+
+    },
     "Contact Support" : {
 
     },
@@ -135,9 +138,6 @@
 
     },
     "Done" : {
-
-    },
-    "Drive support coming soon..." : {
 
     },
     "Drives" : {
@@ -448,6 +448,9 @@
 
     },
     "You have reached the maximum number of boxes you can create at this time. Please wait for some boxes to expire before creating more." : {
+
+    },
+    "You need to sign in again to upload files to this drive." : {
 
     },
     "You reached a state which is not supported by the current version of the app. Please contact support@shareboxed.app for further assistance." : {

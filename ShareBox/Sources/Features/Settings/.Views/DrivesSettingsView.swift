@@ -8,10 +8,31 @@
 import SwiftUI
 
 struct DrivesSettingsView: View {
+    @Environment(User.self) private var user
+    private let api = ApiService()
+
     var body: some View {
         Form {
             Section(header: Text("Cloud Drives")) {
-                Text("Drive support coming soon...")
+                ForEach(user.drivesData) { drive in
+                    HStack {
+                        Text(drive.id)
+                        Spacer()
+                        Text(drive.provider)
+                    }
+                }
+                Button("Connect Google", action: {
+                    Task {
+                        do {
+                            let res: ApiService.BasicRedirectResponse = try await api.post(endpoint: "/api/drives/link", parameters: [
+                                "type": "google"
+                            ])
+                            NSWorkspace.shared.open(URL(string: res.redirectUrl)!)
+                        } catch {
+                            print("aaaaa", error)
+                        }
+                    }
+                })
             }
         }
         .formStyle(.grouped)
@@ -19,6 +40,6 @@ struct DrivesSettingsView: View {
     }
 }
 
-#Preview {
-    DrivesSettingsView()
+private struct SessionResponse: Codable {
+    var accessToken: String
 }

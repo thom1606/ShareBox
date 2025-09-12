@@ -13,7 +13,15 @@ class AirdropUploader: FileUploader {
         .airdrop
     }
 
-    override func confirmDrop(providers: [NSItemProvider]) -> Bool {
+    override func confirmDrop(paths: [FilePath], metadata _: FileUploaderMetaData? = nil) {
+        if let airDropService = NSSharingService(named: .sendViaAirDrop) {
+            airDropService.perform(withItems: paths.map { URL(string: $0.absolute)! })
+        } else {
+            print("AirDrop service not available")
+        }
+    }
+
+    override func confirmDrop(providers: [NSItemProvider], metadata _: FileUploaderMetaData? = nil) -> Bool {
         var hasItemWithURL = false
         var finalPaths: [FilePath] = []
         let group = DispatchGroup()

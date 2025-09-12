@@ -17,7 +17,9 @@ struct FilePath: Codable, Hashable {
 extension FilePath {
     public func details() -> DetailedFile {
         var fileSize: Int64 = 0
+
         let url = URL(string: self.absolute)!
+        let fileName = url.lastPathComponent
         let fileAttributes = try? FileManager.default.attributesOfItem(atPath: url.path)
         if let attrSize = fileAttributes?[.size] as? Int64 {
             fileSize = attrSize
@@ -29,13 +31,14 @@ extension FilePath {
                 mimeType = preferredMIMEType
             }
         }
-        return .init(type: mimeType, size: fileSize, paths: self)
+        return .init(type: mimeType, size: fileSize, fileName: fileName, paths: self)
     }
 }
 
 struct DetailedFile: Codable {
     var type: String
     var size: Int64
+    var fileName: String
     var paths: FilePath
 }
 

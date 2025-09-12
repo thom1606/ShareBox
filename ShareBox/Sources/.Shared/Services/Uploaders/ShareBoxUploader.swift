@@ -17,13 +17,13 @@ class ShareBoxUploader: FileUploader {
         .sharebox
     }
 
-    override func confirmDrop(paths: [FilePath]) {
+    override func confirmDrop(paths: [FilePath], metadata _: FileUploaderMetaData? = nil) {
         Task {
            await self.appendFiles(paths)
         }
     }
 
-    override func confirmDrop(providers: [NSItemProvider]) -> Bool {
+    override func confirmDrop(providers: [NSItemProvider], metadata _: FileUploaderMetaData? = nil) -> Bool {
         var hasItemWithURL = false
         var finalPaths: [FilePath] = []
         let group = DispatchGroup()
@@ -126,7 +126,10 @@ class ShareBoxUploader: FileUploader {
         // Get all files which are hidden inside folders
         var onlyFiles: [FilePath] = []
         paths.forEach {
-            let itemURL = URL(filePath: $0.absolute.replacingOccurrences(of: "file://", with: ""))
+            guard let itemURL = URL(string: $0.absolute) else {
+                self.uploadProgress[$0.absolute] = .init(status: .failed, uploadProgress: 100, errors: [.fileNotFound])
+                return
+            }
             if itemURL.hasDirectoryPath {
                 let parentURL = itemURL.deletingLastPathComponent()
                 let basePath = parentURL.path
@@ -279,7 +282,11 @@ class ShareBoxUploader: FileUploader {
             }
 
             let fileDetails = path.details()
-            let handle = try FileHandle(forReadingFrom: URL(filePath: path.absolute.replacingOccurrences(of: "file://", with: "")))
+            guard let fileURL = URL(string: path.absolute) else {
+                self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [.fileNotFound])
+                return
+            }
+            let handle = try FileHandle(forReadingFrom: fileURL)
             defer { try? handle.close() }
 
             var etags: [String] = []
@@ -410,10 +417,7 @@ class ShareBoxUploader: FileUploader {
             let startTime = DispatchTime.now()
 
             do {
-                let storageDuration = UserDefaults.standard.string(forKey: Constants.Settings.storagePrefKey) ?? "3_days"
-                let createdGroupResponse: BoxDetails = try await apiService.post(endpoint: "/api/groups", parameters: [
-                    "expires_in": storageDuration
-                ])
+                let createdGroupResponse: BoxDetails = try await apiService.post(endpoint: "/api/groups")
 
                 // Ensure minimum 2 seconds have elapsed (Better for UI)
                 let elapsedTime = DispatchTime.now().uptimeNanoseconds - startTime.uptimeNanoseconds
@@ -450,30 +454,6 @@ class ShareBoxUploader: FileUploader {
                 }
             }
         }
-    }
-
-    /// Get files within the given folder path and convert them to FilePath's
-    private func getFilesInFolder(basePath: String, url: URL) -> [FilePath] {
-        var files: [FilePath] = []
-        let fileManager = FileManager.default
-        var options: FileManager.DirectoryEnumerationOptions = []
-        if !UserDefaults.standard.bool(forKey: Constants.Settings.hiddenFilesPrefKey) {
-            options = [.skipsHiddenFiles]
-        }
-        let contents = try? fileManager.contentsOfDirectory(at: url, includingPropertiesForKeys: nil, options: options)
-        for content in contents ?? [] {
-            if content.hasDirectoryPath {
-                let childFiles = getFilesInFolder(basePath: basePath, url: content)
-                files.append(contentsOf: childFiles)
-            } else {
-                files.append(.init(
-                    relative: content.absoluteString.replacingOccurrences(of: basePath, with: ""),
-                    absolute: content.absoluteString,
-                    isFolder: false
-                ))
-            }
-        }
-        return files
     }
 }
 

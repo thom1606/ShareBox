@@ -14,6 +14,7 @@ import SwiftUI
     private(set) var userData: UserData?
     private(set) var settingsData: SettingsData?
     private(set) var subscriptionData: SubscriptionData?
+    private(set) var drivesData: [CloudDrive] = []
     private(set) var authenticated: Bool = false
     private var updateTask: Task<Void, Never>?
 
@@ -63,6 +64,7 @@ import SwiftUI
             self.userData = res.user
             self.settingsData = res.settings
             self.subscriptionData = res.subscription
+            self.drivesData = res.drives
             UserDefaults.standard.set(res.settings.groupsPassword, forKey: Constants.Settings.passwordPrefKey)
             UserDefaults.standard.set(res.settings.groupStorageDuration, forKey: Constants.Settings.storagePrefKey)
             UserDefaults.standard.set(res.subscription?.overMonthlyLimitStorage ?? false, forKey: Constants.Settings.overMonthlyLimitStoragePrefKey)
@@ -95,7 +97,7 @@ import SwiftUI
                         UserDefaults.standard.set(password, forKey: Constants.Settings.passwordPrefKey)
                         UserDefaults.standard.set(storageDuration, forKey: Constants.Settings.storagePrefKey)
                     } catch {
-                        // TODO: some settings may not be valid, refreshing user
+                        // Some settings may not be valid, refreshing user
                         await self.refresh()
                     }
                 }
@@ -133,6 +135,11 @@ struct SubscriptionData: Codable, Equatable {
     }
 }
 
+struct CloudDrive: Codable, Equatable, Identifiable {
+    var id: String
+    var provider: String
+}
+
 struct SettingsData: Codable, Equatable {
     var groupStorageDuration: String
     var groupsPassword: String?
@@ -142,4 +149,5 @@ private struct UserFetchResponse: Codable {
     var user: UserData
     var settings: SettingsData
     var subscription: SubscriptionData?
+    var drives: [CloudDrive]
 }

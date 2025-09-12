@@ -151,8 +151,14 @@ class ApiService {
                     throw APIError.unauthorized
                 }
             case 400 ... 499:
+                #if DEBUG
+                print(String(data: data, encoding: .utf8) ?? "No data")
+                #endif
                 throw APIError.serverError(httpResponse.statusCode, try JSONDecoder().decode(ErrorResponse.self, from: data))
             case 500 ... 599:
+                #if DEBUG
+                print(String(data: data, encoding: .utf8) ?? "No data")
+                #endif
                 throw APIError.serverError(httpResponse.statusCode, try JSONDecoder().decode(ErrorResponse.self, from: data))
             default:
                 throw APIError.unknown
@@ -200,6 +206,10 @@ class ApiService {
     // MARK: - Subclasses
     struct BasicSuccessResponse: Codable {
         var success: Bool
+    }
+
+    struct BasicRedirectResponse: Codable {
+        var redirectUrl: String
     }
 }
 

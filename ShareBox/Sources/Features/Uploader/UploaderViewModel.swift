@@ -27,7 +27,7 @@ import UserNotifications
     // Uploaders
     private let shareBoxUploader = ShareBoxUploader()
     private let airdropUploader = AirdropUploader()
-    private let driveUploader = DriveUploader()
+    private let googleDriveUploader = GoogleDriveUploader()
 
     // Currently active uploader
     private(set) var activeUploader: FileUploader? {
@@ -100,8 +100,8 @@ import UserNotifications
             activeUploader = shareBoxUploader
         case .airdrop:
             activeUploader = airdropUploader
-        case .drive:
-            activeUploader = driveUploader
+        case .googleDrive:
+            activeUploader = googleDriveUploader
         }
     }
 
@@ -112,8 +112,8 @@ import UserNotifications
             return shareBoxUploader
         case .airdrop:
             return airdropUploader
-        case .drive:
-            return driveUploader
+        case .googleDrive:
+            return googleDriveUploader
         }
     }
 
@@ -134,6 +134,8 @@ import UserNotifications
                                 self.showGroupLimiDialog()
                             case .noSubscription:
                                 self.showMissingSubscriptionDialog()
+                            case .driveUnauthorized:
+                                self.showDriveUnauthorized()
                             default:
                                 self.showUnknownErrorDialog()
                             }
@@ -187,9 +189,7 @@ import UserNotifications
     private func reset() {
         self.droppedItems.removeAll()
         self.forceVisible = false
-        self.shareBoxUploader.reset()
-        self.airdropUploader.reset()
-        self.driveUploader.reset()
+        self.activeUploader?.reset()
     }
 
     // MARK: - Overlays
@@ -238,5 +238,16 @@ import UserNotifications
         alert.runModal()
         self.reset()
         self.openSettings?(.account)
+    }
+    private func showDriveUnauthorized() {
+        let alert = NSAlert()
+        alert.messageText = String(localized: "Unauthorized")
+        alert.informativeText = String(localized: "You need to sign in again to upload files to this drive.")
+        alert.alertStyle = .warning
+        alert.window.center()
+        alert.window.level = .floating
+        alert.window.makeKeyAndOrderFront(nil)
+        alert.runModal()
+        self.reset()
     }
 }
