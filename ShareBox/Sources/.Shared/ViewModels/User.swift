@@ -105,6 +105,14 @@ import SwiftUI
         }
     }
 
+    /// Remove a linked drive from the users settings
+    public func removeDrive(id: String) async {
+        do {
+            let _: ApiService.BasicSuccessResponse = try await self.api.delete(endpoint: "/api/drives/\(id)/disconnect")
+            self.drivesData.removeAll { $0.id == id }
+        } catch { }
+    }
+
     /// Sign out and remove all user details
     public func signOut() {
         Task {

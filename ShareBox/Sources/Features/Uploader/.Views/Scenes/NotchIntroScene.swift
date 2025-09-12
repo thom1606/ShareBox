@@ -47,7 +47,11 @@ struct NotchIntroScene: View {
             } else {
                 UploaderButtonField(image: Image(systemName: "plus.circle"), onTap: {
                     completedCloudDriveOnboarding = true
-                    settingsTab.wrappedValue = .drives
+                    if user.authenticated {
+                        settingsTab.wrappedValue = .drives
+                    } else {
+                        settingsTab.wrappedValue = .account
+                    }
                     openSettings()
                 })
                 .popover(isPresented: .constant(showCloudStorageOption), attachmentAnchor: .point(.trailing), arrowEdge: .leading) {

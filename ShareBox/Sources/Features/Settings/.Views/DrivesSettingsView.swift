@@ -15,11 +15,7 @@ struct DrivesSettingsView: View {
         Form {
             Section(header: Text("Cloud Drives")) {
                 ForEach(user.drivesData) { drive in
-                    HStack {
-                        Text(drive.id)
-                        Spacer()
-                        Text(drive.provider)
-                    }
+                    CloudDriveRow(drive: drive)
                 }
                 Button("Connect Google", action: {
                     Task {

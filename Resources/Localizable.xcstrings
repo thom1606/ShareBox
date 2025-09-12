@@ -77,6 +77,12 @@
     "App Details" : {
 
     },
+    "Are you sure you want to disconnect this drive? This action is irreversible." : {
+
+    },
+    "Are you sure?" : {
+
+    },
     "Authenticated" : {
 
     },
@@ -135,6 +141,9 @@
 
     },
     "Developer" : {
+
+    },
+    "Disconnect" : {
 
     },
     "Done" : {
