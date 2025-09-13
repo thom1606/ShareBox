@@ -10,7 +10,7 @@ import Foundation
 extension CloudDrive {
     func getUploaderType() -> UploaderId? {
         switch self.provider {
-        case "GOOGLE":
+        case .GOOGLE:
             return .googleDrive
 //        case "DROPBOX":
 //            return .dropBox

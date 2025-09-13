@@ -54,3 +54,23 @@ struct BoxDetails: Codable {
     var groupId: String
     var url: String
 }
+
+enum DriveProvider: String, Codable, CaseIterable, Identifiable {
+    case GOOGLE
+    case ONEDRIVE
+    case ICLOUD
+    case DROPBOX
+
+    var id: String {
+        self.rawValue
+    }
+
+    var displayName: String {
+        switch self {
+        case .GOOGLE: return "Google Drive"
+        case .ONEDRIVE: return "OneDrive"
+        case .ICLOUD: return "iCloud"
+        case .DROPBOX: return "Dropbox"
+        }
+    }
+}

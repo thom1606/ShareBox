@@ -21,7 +21,7 @@ class GoogleDriveUploader: FileUploader {
     override func confirmDrop(paths: [FilePath], metadata: FileUploaderMetaData? = nil) {
         if let meta = metadata {
             if activeProvider != nil { return }
-            if let provider = User.shared?.drivesData.first(where: { $0.id == meta.providerId && $0.provider == "GOOGLE" }) {
+            if let provider = User.shared?.drivesData.first(where: { $0.id == meta.providerId && $0.provider == .GOOGLE }) {
                 activeProvider = provider
             } else {
                 return
@@ -39,7 +39,7 @@ class GoogleDriveUploader: FileUploader {
 
         if let meta = metadata {
             if activeProvider != nil { return false }
-            if let provider = User.shared?.drivesData.first(where: { $0.id == meta.providerId && $0.provider == "GOOGLE" }) {
+            if let provider = User.shared?.drivesData.first(where: { $0.id == meta.providerId && $0.provider == .GOOGLE }) {
                 activeProvider = provider
             } else {
                 return false
@@ -195,7 +195,7 @@ class GoogleDriveUploader: FileUploader {
             request.httpBody = body
             request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
             request.setValue("multipart/related; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
-             request.setValue("\(body.count)", forHTTPHeaderField: "Content-Length")
+            request.setValue("\(body.count)", forHTTPHeaderField: "Content-Length")
 
             // Mark as uploading (no progress tracking)
             self.uploadProgress[path.absolute] = .init(status: .uploading)
@@ -209,7 +209,9 @@ class GoogleDriveUploader: FileUploader {
                 print("Google Drive multipart error:", (response as? HTTPURLResponse)?.statusCode ?? -1,
                       String(data: data, encoding: .utf8) ?? "No data")
                 #endif
-                self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [.unknown])
+                let status = (response as? HTTPURLResponse)?.statusCode ?? -1
+                let mapped = self.mapGDriveError(data: data, status: status)
+                self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [mapped])
                 checkForCompleteState()
             }
         } catch {
@@ -237,12 +239,13 @@ class GoogleDriveUploader: FileUploader {
             initReq.setValue(details.type, forHTTPHeaderField: "X-Upload-Content-Type")
             initReq.setValue("\(details.size)", forHTTPHeaderField: "X-Upload-Content-Length")
 
-            let (_, initResp) = try await URLSession.shared.data(for: initReq)
+            let (initData, initResp) = try await URLSession.shared.data(for: initReq)
             guard let httpInit = initResp as? HTTPURLResponse,
                   (200...299).contains(httpInit.statusCode),
                   let location = httpInit.allHeaderFields["Location"] as? String,
                   let sessionURL = URL(string: location) else {
-                self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [.unknown])
+                let mapped = self.mapGDriveError(data: initData, status: (initResp as? HTTPURLResponse)?.statusCode ?? -1)
+                self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [mapped])
                 return
             }
 
@@ -310,7 +313,7 @@ class GoogleDriveUploader: FileUploader {
                 putReq.setValue("bytes \(start)-\(end)/\(details.size)", forHTTPHeaderField: "Content-Range")
 
                 do {
-                    let (_, putResp) = try await URLSession.shared.data(for: putReq)
+                    let (respData, putResp) = try await URLSession.shared.data(for: putReq)
                     guard let httpPut = putResp as? HTTPURLResponse else {
                         throw URLError(.badServerResponse)
                     }
@@ -326,6 +329,12 @@ class GoogleDriveUploader: FileUploader {
                         #if DEBUG
                         print("Resumable upload chunk failed with status:", httpPut.statusCode)
                         #endif
+                        let mapped = self.mapGDriveError(data: respData, status: httpPut.statusCode)
+                        if mapped == .fileToBig {
+                            self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [mapped])
+                            checkForCompleteState()
+                            return
+                        }
                         throw URLError(.badServerResponse)
                     }
                 } catch {
@@ -432,9 +441,26 @@ class GoogleDriveUploader: FileUploader {
             }
         }
     }
+
+    private func mapGDriveError(data: Data, status: Int) -> PlatformError {
+        if let decoded = try? JSONDecoder().decode(GDriveAPIError.self, from: data) {
+            if decoded.error.errors?.contains(where: { $0.reason == "storageQuotaExceeded" }) == true {
+                return .fileToBig
+            }
+        }
+        // Fallback: many quota issues come back as 403 even if reason isn't present
+        if status == 403 { return .fileToBig }
+        return .unknown
+    }
 }
 
 private struct GoogleSessionResponse: Codable {
     var accessToken: String
+}
+
+private struct GDriveAPIError: Codable {
+    struct InnerError: Codable { var domain: String?; var reason: String?; var message: String? }
+    struct Inner: Codable { var errors: [InnerError]?; var code: Int?; var message: String? }
+    var error: Inner
 }
 // swiftlint:disable:this file_length

@@ -145,7 +145,7 @@ struct SubscriptionData: Codable, Equatable {
 
 struct CloudDrive: Codable, Equatable, Identifiable {
     var id: String
-    var provider: String
+    var provider: DriveProvider
 }
 
 struct SettingsData: Codable, Equatable {

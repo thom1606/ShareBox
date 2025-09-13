@@ -14,21 +14,12 @@ struct CloudDriveRow: View {
 
     @State private var presentingConfirmDeleteAlert: Bool = false
 
-    var driveName: String {
-        switch drive.provider {
-        case "GOOGLE":
-            return "Google Drive"
-        default:
-            return "-"
-        }
-    }
-
     var body: some View {
         HStack(spacing: 10) {
             Image("Images/Drives/Colored/\(drive.provider)")
                 .resizable()
                 .frame(width: 26, height: 26)
-            Text(driveName)
+            Text(drive.provider.displayName)
             Spacer()
             Button("Disconnect", action: {
                 self.presentingConfirmDeleteAlert.toggle()

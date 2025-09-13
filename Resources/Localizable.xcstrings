@@ -116,9 +116,6 @@
     "Cloud Drives" : {
 
     },
-    "Connect Google" : {
-
-    },
     "Contact Support" : {
 
     },
@@ -152,6 +149,9 @@
     "Drives" : {
 
     },
+    "Dropbox" : {
+
+    },
     "Email" : {
 
     },
@@ -176,6 +176,9 @@
     "Get started with ShareBox. Useful if you just want to share some files without going all in." : {
 
     },
+    "Google Drive" : {
+
+    },
     "Got cloud storage?" : {
 
     },
@@ -183,6 +186,9 @@
       "comment" : "Clipboard message"
     },
     "I have read and agree to the [Terms and Conditions](https://shareboxed.app/terms-and-conditions) and [Privacy Policy](https://shareboxed.app/privacy-policy)." : {
+
+    },
+    "iCloud" : {
 
     },
     "Include files which are normally hidden in Finder. Be aware that this may cause sensitive files to be shared unintentionally." : {
@@ -231,6 +237,9 @@
 
     },
     "One or more files in your folder named \"%@\" have failed to upload and gave the following errors:" : {
+
+    },
+    "OneDrive" : {
 
     },
     "Oops!" : {
@@ -314,6 +323,9 @@
     "ShareBox Packages" : {
 
     },
+    "Show multiple drives?" : {
+
+    },
     "Show ShareBox in menu bar" : {
 
     },
@@ -389,6 +401,9 @@
     "Unlimited Cloud Drives" : {
 
     },
+    "Upgrade" : {
+
+    },
     "Upload failed" : {
 
     },
@@ -439,6 +454,9 @@
 
     },
     "When enabled, moving your mouse to the screen edge will active the ShareBox Uploader." : {
+
+    },
+    "Wnat more than 1 drive visible in your sidebar? Upgrade your subscription." : {
 
     },
     "You are not signed in to ShareBox." : {
