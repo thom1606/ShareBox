@@ -28,6 +28,7 @@ import UserNotifications
     private let shareBoxUploader = ShareBoxUploader()
     private let airdropUploader = AirdropUploader()
     private let googleDriveUploader = GoogleDriveUploader()
+    private let onedriveUploader = OneDriveUploader()
 
     // Currently active uploader
     private(set) var activeUploader: FileUploader? {
@@ -46,7 +47,7 @@ import UserNotifications
     var forcePreviewVisible: Bool = false
 
     // Computed
-    public var dropTargets: [Bool] = [false, false, false] // Drop targets in these orders: [sharebox, airdrop, cloud drive]
+    public var dropTargets: [Bool] = [false, false] // Drop targets in these orders: [sharebox, airdrop, cloud drive]
     public var uiState: UIState {
         // Progress based states
         if case .preparingGroup = uploadState { return .visible }
@@ -102,6 +103,8 @@ import UserNotifications
             activeUploader = airdropUploader
         case .googleDrive:
             activeUploader = googleDriveUploader
+        case .oneDrive:
+            activeUploader = onedriveUploader
         }
     }
 
@@ -114,6 +117,8 @@ import UserNotifications
             return airdropUploader
         case .googleDrive:
             return googleDriveUploader
+        case .oneDrive:
+            return onedriveUploader
         }
     }
 

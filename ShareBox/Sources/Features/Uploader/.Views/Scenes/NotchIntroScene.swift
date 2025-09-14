@@ -28,16 +28,17 @@ struct NotchIntroScene: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            UploaderDropField(type: .sharebox, image: Image("Images/CloudLink"), isPlus: true)
-            UploaderDropField(type: .airdrop, image: Image("Images/Airdrop"))
+            UploaderDropField(index: 0, type: .sharebox, image: Image("Images/CloudLink"), isPlus: true)
+            UploaderDropField(index: 1, type: .airdrop, image: Image("Images/Airdrop"))
             Rectangle()
                 .fill(Color("Colors/TileBackground"))
                 .frame(width: 44, height: 2)
                 .padding(.vertical, 4)
             if !user.drivesData.isEmpty {
-                ForEach(user.drivesData) { drive in
+                ForEach(Array(user.drivesData.enumerated()), id: \.element.id) { index, drive in
                     if let type = drive.getUploaderType() {
                         UploaderDropField(
+                            index: index + 2,
                             type: type,
                             image: Image("Images/Drives/\(drive.provider)"),
                             metadata: .init(providerId: drive.id)

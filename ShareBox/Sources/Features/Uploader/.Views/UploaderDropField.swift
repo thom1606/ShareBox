@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct UploaderDropField: View {
+    var index: Int
     var type: UploaderId
     var image: Image
     var metadata: FileUploaderMetaData?
@@ -112,7 +113,10 @@ struct UploaderDropField: View {
         .frame(width: 60, height: 74)
         .frame(maxWidth: 60, maxHeight: 74)
         .onChange(of: isHovering) {
-            state.dropTargets[type.rawValue] = isHovering
+            if state.dropTargets.count <= index {
+                state.dropTargets = Array(repeating: false, count: index + 1)
+            }
+            state.dropTargets[index] = isHovering
         }
     }
 }

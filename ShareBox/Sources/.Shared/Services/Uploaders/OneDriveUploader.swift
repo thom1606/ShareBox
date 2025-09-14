@@ -1,27 +1,27 @@
 //
-//  DriveUploader.swift
+//  OneDriveUploader.swift
 //  ShareBox
 //
-//  Created by Thom van den Broek on 06/09/2025.
+//  Created by Thom van den Broek on 14/09/2025.
 //
 
 import SwiftUI
 
 // swiftlint:disable:next type_body_length
-class GoogleDriveUploader: FileUploader {
+class OneDriveUploader: FileUploader {
     private let apiService = ApiService()
     private var activeProvider: CloudDrive?
     private var pendingFiles: [FilePath] = []
     private var accessToken: String?
 
     override func getId() -> UploaderId {
-        .googleDrive
+        .oneDrive
     }
 
     override func confirmDrop(paths: [FilePath], metadata: FileUploaderMetaData? = nil) {
         if let meta = metadata {
             if activeProvider != nil { return }
-            if let provider = User.shared?.drivesData.first(where: { $0.id == meta.providerId && $0.provider == .GOOGLE }) {
+            if let provider = User.shared?.drivesData.first(where: { $0.id == meta.providerId && $0.provider == .ONEDRIVE }) {
                 activeProvider = provider
             } else {
                 return
@@ -39,7 +39,7 @@ class GoogleDriveUploader: FileUploader {
 
         if let meta = metadata {
             if activeProvider != nil { return false }
-            if let provider = User.shared?.drivesData.first(where: { $0.id == meta.providerId && $0.provider == .GOOGLE }) {
+            if let provider = User.shared?.drivesData.first(where: { $0.id == meta.providerId && $0.provider == .ONEDRIVE }) {
                 activeProvider = provider
             } else {
                 return false
@@ -158,11 +158,11 @@ class GoogleDriveUploader: FileUploader {
 
         for file in onlyFiles {
             let details = file.details()
-            if details.size <= 5 * 1024 * 1024 { // Files <= 5MB -> Simple multipart upload
-                await self.uploadSimpleFile(file, token: token)
-            } else {
-                await self.uploadResumableFile(file, token: token)
-            }
+           if details.size <= 4 * 1024 * 1024 { // Files <= 5MB -> Simple multipart upload
+               await self.uploadSimpleFile(file, token: token)
+           } else {
+               await self.uploadResumableFile(file, token: token)
+           }
         }
     }
 
@@ -170,34 +170,15 @@ class GoogleDriveUploader: FileUploader {
         do {
             let fileData = try Data(contentsOf: URL(string: path.absolute)!)
             let fileDetails = path.details()
+            let encodedName = fileDetails.fileName.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? fileDetails.fileName
 
-            // Create metadata JSON
-            let metadata: [String: Any] = [
-                "name": fileDetails.fileName,
-                "mimeType": fileDetails.type
-            ]
-            let metadataData = try JSONSerialization.data(withJSONObject: metadata, options: [])
-
-            let boundary = "----WebKitFormBoundary\(UUID().uuidString)"
-            var body = Data()
-            body.appendString("--\(boundary)\r\n")
-            body.appendString("Content-Type: application/json; charset=UTF-8\r\n\r\n")
-            body.append(metadataData)
-            body.appendString("\r\n")
-            body.appendString("--\(boundary)\r\n")
-            body.appendString("Content-Type: \(fileDetails.type)\r\n\r\n")
-            body.append(fileData)
-            body.appendString("\r\n")
-            body.appendString("--\(boundary)--\r\n")
-
-            var request = URLRequest(url: URL(string: "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart")!)
-            request.httpMethod = "POST"
-            request.httpBody = body
+            var request = URLRequest(url: URL(string: "https://graph.microsoft.com/v1.0/me/drive/root:/\(encodedName):/content")!)
+            request.httpMethod = "PUT"
+            request.httpBody = fileData
             request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-            request.setValue("multipart/related; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
-            request.setValue("\(body.count)", forHTTPHeaderField: "Content-Length")
+            request.setValue(fileDetails.type, forHTTPHeaderField: "Content-Type")
+            request.setValue("\(fileDetails.size)", forHTTPHeaderField: "Content-Length")
 
-            // Mark as uploading (no progress tracking)
             self.uploadProgress[path.absolute] = .init(status: .uploading)
 
             let (data, response) = try await URLSession.shared.data(for: request)
@@ -206,15 +187,16 @@ class GoogleDriveUploader: FileUploader {
                 checkForCompleteState()
             } else {
                 #if DEBUG
-                print("Google Drive multipart error:", (response as? HTTPURLResponse)?.statusCode ?? -1,
+                print("OneDrive simple upload error:", (response as? HTTPURLResponse)?.statusCode ?? -1,
                       String(data: data, encoding: .utf8) ?? "No data")
                 #endif
                 let status = (response as? HTTPURLResponse)?.statusCode ?? -1
-                let mapped = self.mapGDriveError(data: data, status: status)
+                let mapped = self.mapOneDriveError(data: data, status: status)
                 self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [mapped])
                 checkForCompleteState()
             }
         } catch {
+            print("aaaa", error)
             self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [.unknown])
             checkForCompleteState()
         }
@@ -224,28 +206,30 @@ class GoogleDriveUploader: FileUploader {
     private func uploadResumableFile(_ path: FilePath, token: String, chunkSize: Int = 10 * 1024 * 1014) async {
         do {
             let details = path.details()
+            let encodedName = details.fileName.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? details.fileName
 
-            // Initiate session
-            let metadata: [String: Any] = [
-                "name": details.fileName,
-                "mimeType": details.type
-            ]
-            let metadataData = try JSONSerialization.data(withJSONObject: metadata, options: [])
-            var initReq = URLRequest(url: URL(string: "https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable")!)
+            // Create upload session
+            var initReq = URLRequest(url: URL(string: "https://graph.microsoft.com/v1.0/me/drive/root:/\(encodedName):/createUploadSession")!)
             initReq.httpMethod = "POST"
-            initReq.httpBody = metadataData
             initReq.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
             initReq.setValue("application/json; charset=UTF-8", forHTTPHeaderField: "Content-Type")
-            initReq.setValue(details.type, forHTTPHeaderField: "X-Upload-Content-Type")
-            initReq.setValue("\(details.size)", forHTTPHeaderField: "X-Upload-Content-Length")
+            let initBody: [String: Any] = [
+                "item": [
+                    "@microsoft.graph.conflictBehavior": "rename",
+                    "name": details.fileName
+                ]
+            ]
+            initReq.httpBody = try JSONSerialization.data(withJSONObject: initBody, options: [])
 
             let (initData, initResp) = try await URLSession.shared.data(for: initReq)
-            guard let httpInit = initResp as? HTTPURLResponse,
-                  (200...299).contains(httpInit.statusCode),
-                  let location = httpInit.allHeaderFields["Location"] as? String,
-                  let sessionURL = URL(string: location) else {
-                let mapped = self.mapGDriveError(data: initData, status: (initResp as? HTTPURLResponse)?.statusCode ?? -1)
+            guard let httpInit = initResp as? HTTPURLResponse, (200...299).contains(httpInit.statusCode) else {
+                let mapped = self.mapOneDriveError(data: initData, status: (initResp as? HTTPURLResponse)?.statusCode ?? -1)
                 self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [mapped])
+                return
+            }
+            let session = try JSONDecoder().decode(OneDriveUploadSessionResponse.self, from: initData)
+            guard let sessionURL = URL(string: session.uploadUrl) else {
+                self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [.unknown])
                 return
             }
 
@@ -258,38 +242,12 @@ class GoogleDriveUploader: FileUploader {
             let handle = try FileHandle(forReadingFrom: fileURL)
             defer { try? handle.close() }
 
-            let align = 256 * 1024
+            // Align to 320 KiB for Graph
+            let align = 320 * 1024
             var offset = 0
-
-            // Helper to recover server offset after timeout/network hiccup
-            func queryServerOffset() async throws -> Int? {
-                var statusReq = URLRequest(url: sessionURL)
-                statusReq.httpMethod = "PUT"
-                statusReq.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-                statusReq.setValue("bytes */\(details.size)", forHTTPHeaderField: "Content-Range")
-                statusReq.setValue("0", forHTTPHeaderField: "Content-Length")
-                statusReq.timeoutInterval = 30
-
-                let (_, resp) = try await URLSession.shared.data(for: statusReq)
-                guard let http = resp as? HTTPURLResponse else { return nil }
-                if http.statusCode == 308 {
-                    if let range = http.allHeaderFields["Range"] as? String,
-                       let last = range.split(separator: "=").last?.split(separator: "-").last,
-                       let lastByte = Int(last) {
-                        return lastByte + 1
-                    }
-                    return 0
-                } else if (200...299).contains(http.statusCode) {
-                    self.uploadProgress[path.absolute] = .init(status: .completed, uploadProgress: 100)
-                    return nil
-                }
-                return nil
-            }
 
             while offset < Int(details.size) {
                 let bytesLeft = Int(details.size) - offset
-
-                // Align non-final chunks to 256 KiB multiples
                 let maxChunk = min(chunkSize, bytesLeft)
                 let length = (bytesLeft <= chunkSize) ? maxChunk : max((maxChunk / align) * align, align)
                 if length <= 0 { break }
@@ -307,8 +265,7 @@ class GoogleDriveUploader: FileUploader {
                 var putReq = URLRequest(url: sessionURL)
                 putReq.httpMethod = "PUT"
                 putReq.httpBody = data
-                putReq.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-                putReq.setValue(details.type, forHTTPHeaderField: "Content-Type")
+                putReq.setValue("application/octet-stream", forHTTPHeaderField: "Content-Type")
                 putReq.setValue("\(data.count)", forHTTPHeaderField: "Content-Length")
                 putReq.setValue("bytes \(start)-\(end)/\(details.size)", forHTTPHeaderField: "Content-Range")
 
@@ -318,18 +275,28 @@ class GoogleDriveUploader: FileUploader {
                         throw URLError(.badServerResponse)
                     }
 
-                    if httpPut.statusCode == 308 {
-                        let progress = Double(end + 1) / Double(details.size)
+                    if httpPut.statusCode == 202 {
+                        // In-progress
+                        if let chunkAck = try? JSONDecoder().decode(OneDriveChunkAcceptedResponse.self, from: respData),
+                           let next = chunkAck.nextExpectedRanges?.first,
+                           let nextStartStr = next.split(separator: "-").first,
+                           let nextStart = Int(nextStartStr) {
+                            offset = nextStart
+                        } else {
+                            offset = end + 1
+                        }
+                        let progress = Double(offset) / Double(details.size)
                         self.uploadProgress[path.absolute] = .init(status: .uploading, uploadProgress: progress * 100)
-                        offset = end + 1
                     } else if (200...299).contains(httpPut.statusCode) {
+                        // Completed (200/201)
                         self.uploadProgress[path.absolute] = .init(status: .completed, uploadProgress: 100)
                         break
                     } else {
                         #if DEBUG
-                        print("Resumable upload chunk failed with status:", httpPut.statusCode)
+                        print("OneDrive resumable chunk failed with status:", httpPut.statusCode,
+                              String(data: respData, encoding: .utf8) ?? "No data")
                         #endif
-                        let mapped = self.mapGDriveError(data: respData, status: httpPut.statusCode)
+                        let mapped = self.mapOneDriveError(data: respData, status: httpPut.statusCode)
                         if mapped == .fileToBig {
                             self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [mapped])
                             checkForCompleteState()
@@ -338,11 +305,7 @@ class GoogleDriveUploader: FileUploader {
                         throw URLError(.badServerResponse)
                     }
                 } catch {
-                    // Attempt to recover current offset from server and continue
-                    if let nextOffset = try? await queryServerOffset() {
-                        offset = nextOffset
-                        continue
-                    }
+                    // No offset recovery API here; fail and let user retry
                     throw error
                 }
             }
@@ -402,7 +365,7 @@ class GoogleDriveUploader: FileUploader {
                 guard let provider = self.activeProvider else {
                     throw PlatformError.driveUnauthorized
                 }
-                let res: GoogleSessionResponse = try await apiService.post(endpoint: "/api/drives/\(provider.id)/create-session")
+                let res: OneDriveSessionResponse = try await apiService.post(endpoint: "/api/drives/\(provider.id)/create-session")
                 let accessToken = res.accessToken
 
                 // Ensure minimum 2 seconds have elapsed (Better for UI)
@@ -429,7 +392,7 @@ class GoogleDriveUploader: FileUploader {
                     do {
                         if let provider = self.activeProvider {
                             let res: ApiService.BasicRedirectResponse = try await self.apiService.post(endpoint: "/api/drives/\(provider.id)/reconnect", parameters: [
-                                "type": "GOOGLE"
+                                "type": "ONEDRIVE"
                             ])
                             NSWorkspace.shared.open(URL(string: res.redirectUrl)!)
                         }
@@ -442,25 +405,31 @@ class GoogleDriveUploader: FileUploader {
         }
     }
 
-    private func mapGDriveError(data: Data, status: Int) -> PlatformError {
-        if let decoded = try? JSONDecoder().decode(GDriveAPIError.self, from: data) {
-            if decoded.error.errors?.contains(where: { $0.reason == "storageQuotaExceeded" }) == true {
+    private func mapOneDriveError(data: Data, status: Int) -> PlatformError {
+        if let decoded = try? JSONDecoder().decode(GraphAPIError.self, from: data) {
+            if decoded.error.code == "quotaLimitReached" {
                 return .fileToBig
             }
         }
-        // Fallback: many quota issues come back as 403 even if reason isn't present
-        if status == 403 { return .fileToBig }
+        if status == 507 || status == 413 { return .fileToBig } // Insufficient Storage / Payload Too Large
         return .unknown
     }
 }
 
-private struct GoogleSessionResponse: Codable {
+private struct OneDriveSessionResponse: Codable {
     var accessToken: String
 }
 
-private struct GDriveAPIError: Codable {
-    struct InnerError: Codable { var domain: String?; var reason: String?; var message: String? }
-    struct Inner: Codable { var errors: [InnerError]?; var code: Int?; var message: String? }
-    var error: Inner
+private struct GraphAPIError: Codable {
+    struct ErrorObj: Codable { var code: String?; var message: String? }
+    var error: ErrorObj
+}
+
+private struct OneDriveUploadSessionResponse: Codable {
+    var uploadUrl: String
+}
+
+private struct OneDriveChunkAcceptedResponse: Codable {
+    var nextExpectedRanges: [String]?
 }
 // swiftlint:disable:this file_length

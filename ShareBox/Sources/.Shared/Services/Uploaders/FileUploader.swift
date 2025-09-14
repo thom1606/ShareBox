@@ -105,7 +105,7 @@ enum UploaderId: Int {
     case airdrop = 1
     case googleDrive = 2
 //    case dropBox = 3
-//    case oneDrive = 4
+    case oneDrive = 4
 //    case iCloud = 5
 }
 
