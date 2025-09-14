@@ -12,8 +12,8 @@ extension CloudDrive {
         switch self.provider {
         case .GOOGLE:
             return .googleDrive
-//        case "DROPBOX":
-//            return .dropBox
+        case .DROPBOX:
+            return .dropBox
         case .ONEDRIVE:
             return .oneDrive
 //        case "ICLOUD":

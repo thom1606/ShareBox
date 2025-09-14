@@ -29,6 +29,7 @@ import UserNotifications
     private let airdropUploader = AirdropUploader()
     private let googleDriveUploader = GoogleDriveUploader()
     private let onedriveUploader = OneDriveUploader()
+    private let dropboxUploader = DropboxUploader()
 
     // Currently active uploader
     private(set) var activeUploader: FileUploader? {
@@ -105,6 +106,8 @@ import UserNotifications
             activeUploader = googleDriveUploader
         case .oneDrive:
             activeUploader = onedriveUploader
+        case .dropBox:
+            activeUploader = dropboxUploader
         }
     }
 
@@ -119,6 +122,8 @@ import UserNotifications
             return googleDriveUploader
         case .oneDrive:
             return onedriveUploader
+        case .dropBox:
+            return dropboxUploader
         }
     }
 
