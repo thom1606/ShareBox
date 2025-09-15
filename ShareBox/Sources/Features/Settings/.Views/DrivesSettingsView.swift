@@ -17,41 +17,51 @@ struct DrivesSettingsView: View {
     var body: some View {
         Form {
             Section(header: Text("Cloud Drives")) {
-                ForEach(user.drivesData) { drive in
-                    CloudDriveRow(drive: drive)
-                }
-                if user.subscriptionData?.status == .active || user.drivesData.isEmpty {
+                if !user.authenticated {
                     HStack {
+                        Text("Sign in to ShareBox")
                         Spacer()
-                        Menu {
-                            if !user.drivesData.contains(where: { $0.provider == .ICLOUD }) {
-                                Button("iCloud") { startLink(.ICLOUD) }
-                            }
-                            Button("Google Drive") { startLink(.GOOGLE) }
-                            Button("OneDrive") { startLink(.ONEDRIVE) }
-                            Button("Dropbox") { startLink(.DROPBOX) }
-                        } label: {
-                            Image(systemName: "plus")
-                        }
-                        .menuStyle(.borderedButton)
-                        .frame(width: 44)
+                        Button(action: user.login, label: {
+                            Text("Sign in")
+                        })
                     }
                 } else {
-                    HStack {
-                        VStack(alignment: .leading) {
-                            Text("Show multiple drives?")
-                            Text("Wnat more than 1 drive visible in your sidebar? Upgrade your subscription.")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                        }
-                        Spacer()
-                        Button(action: {
-                            openWindow(id: "subscribe")
-                        }, label: {
-                            ZStack {
-                                Text("Upgrade")
+                    ForEach(user.drivesData) { drive in
+                        CloudDriveRow(drive: drive)
+                    }
+                    if user.subscriptionData?.status == .active || user.drivesData.isEmpty {
+                        HStack {
+                            Spacer()
+                            Menu {
+                                if !user.drivesData.contains(where: { $0.provider == .ICLOUD }) {
+                                    Button("iCloud") { startLink(.ICLOUD) }
+                                }
+                                Button("Google Drive") { startLink(.GOOGLE) }
+                                Button("OneDrive") { startLink(.ONEDRIVE) }
+                                Button("Dropbox") { startLink(.DROPBOX) }
+                            } label: {
+                                Image(systemName: "plus")
                             }
-                        })
+                            .menuStyle(.borderedButton)
+                            .frame(width: 44)
+                        }
+                    } else {
+                        HStack {
+                            VStack(alignment: .leading) {
+                                Text("Show multiple drives?")
+                                Text("Wnat more than 1 drive visible in your sidebar? Upgrade your subscription.")
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
+                            }
+                            Spacer()
+                            Button(action: {
+                                openWindow(id: "subscribe")
+                            }, label: {
+                                ZStack {
+                                    Text("Upgrade")
+                                }
+                            })
+                        }
                     }
                 }
             }

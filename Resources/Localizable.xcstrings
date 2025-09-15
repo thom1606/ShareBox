@@ -418,7 +418,6 @@
     },
     "Upload to ShareBox" : {
       "comment" : "Finder Context Menu Label",
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {

@@ -29,7 +29,11 @@ class FinderSync: FIFinderSync {
         if menuKind == .toolbarItemMenu { return nil }
         // Produce a menu for the extension.
         let menu = NSMenu(title: "")
+        #if DEBUG
         menu.addItem(withTitle: NSLocalizedString("Upload to ShareBox (Dev)", comment: "Finder Context Menu Label"), action: #selector(handleFileSelection(_:)), keyEquivalent: "")
+        #else
+        menu.addItem(withTitle: NSLocalizedString("Upload to ShareBox", comment: "Finder Context Menu Label"), action: #selector(handleFileSelection(_:)), keyEquivalent: "")
+        #endif
         return menu
     }
 

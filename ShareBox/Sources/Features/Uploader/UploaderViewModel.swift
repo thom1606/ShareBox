@@ -205,6 +205,9 @@ import UserNotifications
         self.droppedItems.removeAll()
         self.forceVisible = false
         self.activeUploader?.reset()
+        self.activeUploader = nil
+        self.dropTargets = Array(repeating: false, count: self.dropTargets.count)
+        self.isUserHovering = false
     }
 
     // MARK: - Overlays
