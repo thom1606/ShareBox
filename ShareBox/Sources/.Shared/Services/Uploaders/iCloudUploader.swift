@@ -9,7 +9,6 @@ import SwiftUI
 
 class iCloudUploader: FileUploader {
     private let containerId = "iCloud.ShareBox"
-    private let subdirectory = "ShareBox"
 
     override func getId() -> UploaderId {
         .iCloud
@@ -102,15 +101,21 @@ class iCloudUploader: FileUploader {
         checkForCompleteState()
     }
 
-    func iCloudDriveRoot() -> URL? {
-        let icloudDriveURL = FileManager.default.homeDirectoryForCurrentUser
-            .appendingPathComponent("Library/Mobile Documents/com~apple~CloudDocs")
-        return FileManager.default.fileExists(atPath: icloudDriveURL.path) ? icloudDriveURL : nil
+    // Attempts to get the iCloud ubiquity container's Documents directory with a brief retry to allow iCloud to initialize.
+    private func containerDocumentsURL() async -> URL? {
+        let fileManager = FileManager.default
+        for _ in 0..<10 {
+            if let containerURL = fileManager.url(forUbiquityContainerIdentifier: containerId) {
+                return containerURL.appendingPathComponent("Documents", isDirectory: true)
+            }
+            try? await Task.sleep(for: .milliseconds(300))
+        }
+        return nil
     }
 
-    // swiftlint:disable:next function_body_length
+    // swiftlint:disable:next function_body_length cyclomatic_complexity
     private func copyToICloud(_ path: FilePath) async {
-        guard let icloudDrive = iCloudDriveRoot() else {
+        guard let docsRoot = await containerDocumentsURL() else {
             self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [.driveUnauthorized])
             checkForCompleteState()
             return
@@ -118,8 +123,8 @@ class iCloudUploader: FileUploader {
 
         let fileManager = FileManager.default
 
-        // Destination base: iCloud Drive / ShareBox /
-        let baseDir = icloudDrive.appendingPathComponent(subdirectory, isDirectory: true)
+        // Destination base: iCloud Container / Documents /
+        let baseDir = docsRoot
         do {
             try fileManager.createDirectory(at: baseDir, withIntermediateDirectories: true, attributes: nil)
         } catch {
@@ -155,40 +160,50 @@ class iCloudUploader: FileUploader {
             return
         }
 
-        do {
-            let attrs = try fileManager.attributesOfItem(atPath: srcURL.path)
-            let size = (attrs[.size] as? NSNumber)?.intValue ?? 0
-            if size == 0 {
-                self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [.fileSizeZero])
-                checkForCompleteState()
-                return
-            }
+        let scoped = srcURL.startAccessingSecurityScopedResource()
+        defer { if scoped { srcURL.stopAccessingSecurityScopedResource() } }
 
-            fileManager.createFile(atPath: destURL.path, contents: nil)
-            guard let read = try? FileHandle(forReadingFrom: srcURL),
-                  let write = try? FileHandle(forWritingTo: destURL) else {
+        let coordinator = NSFileCoordinator()
+        var coordError: NSError?
+
+        coordinator.coordinate(readingItemAt: srcURL, options: .withoutChanges, writingItemAt: destURL, options: [], error: &coordError) { readURL, writeURL in
+            do {
+                let attrs = try fileManager.attributesOfItem(atPath: readURL.path)
+                let size = (attrs[.size] as? NSNumber)?.intValue ?? 0
+                if size == 0 {
+                    self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [.fileSizeZero])
+                    return
+                }
+
+                fileManager.createFile(atPath: writeURL.path, contents: nil)
+                guard let read = try? FileHandle(forReadingFrom: readURL),
+                      let write = try? FileHandle(forWritingTo: writeURL) else {
+                    self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [.unknown])
+                    return
+                }
+                defer { try? read.close(); try? write.close() }
+
+                let chunk = 4 * 1024 * 1024
+                var copied = 0
+                self.uploadProgress[path.absolute] = .init(status: .uploading, uploadProgress: 0)
+
+                while true {
+                    try Task.checkCancellation()
+                    let data = try read.read(upToCount: chunk) ?? Data()
+                    print(data.count)
+                    if data.isEmpty { break }
+                    try write.write(contentsOf: data)
+                    copied += data.count
+                    let progress = min(100, (Double(copied) / Double(size)) * 100)
+                    self.uploadProgress[path.absolute] = .init(status: .uploading, uploadProgress: progress)
+                }
+                self.uploadProgress[path.absolute] = .init(status: .completed, uploadProgress: 100)
+            } catch {
                 self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [.unknown])
-                checkForCompleteState()
-                return
             }
-            defer { try? read.close(); try? write.close() }
+        }
 
-            let chunk = 4 * 1024 * 1024
-            var copied = 0
-            self.uploadProgress[path.absolute] = .init(status: .uploading, uploadProgress: 0)
-
-            while true {
-                try Task.checkCancellation()
-                let data = try read.read(upToCount: chunk) ?? Data()
-                if data.isEmpty { break }
-                try write.write(contentsOf: data)
-                copied += data.count
-                let progress = min(100, (Double(copied) / Double(size)) * 100)
-                self.uploadProgress[path.absolute] = .init(status: .uploading, uploadProgress: progress)
-            }
-
-            self.uploadProgress[path.absolute] = .init(status: .completed, uploadProgress: 100)
-        } catch {
+        if coordError != nil {
             self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [.unknown])
         }
 

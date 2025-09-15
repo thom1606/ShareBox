@@ -19,6 +19,18 @@
 			</array>
 		</dict>
 	</array>
+	<key>NSUbiquitousContainers</key>
+	<dict>
+		<key>iCloud.ShareBox</key>
+		<dict>
+			<key>NSUbiquitousContainerIsDocumentScopePublic</key>
+			<true/>
+			<key>NSUbiquitousContainerName</key>
+			<string>ShareBox</string>
+			<key>NSUbiquitousContainerSupportedFolderLevels</key>
+			<string>Any</string>
+		</dict>
+	</dict>
 	<key>CF_ACCESS_CLIENT_ID</key>
 	<string>$(CF_ACCESS_CLIENT_ID)</string>
 	<key>CF_ACCESS_CLIENT_SECRET</key>
