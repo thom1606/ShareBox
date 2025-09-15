@@ -93,7 +93,11 @@ class FileUploader {
         self.reset()
     }
 
-    public func reset() {}
+    public func reset() {
+        uploadProgress.removeAll()
+        droppedFiles.removeAll()
+        state = .idle
+    }
 
     public func getId() -> UploaderId {
         return .sharebox
@@ -103,10 +107,10 @@ class FileUploader {
 enum UploaderId: Int {
     case sharebox = 0
     case airdrop = 1
-    case googleDrive = 2
-    case dropBox = 3
-    case oneDrive = 4
-//    case iCloud = 5
+    case iCloud = 2
+    case googleDrive = 3
+    case dropBox = 4
+    case oneDrive = 5
 }
 
 enum UploadState: Equatable {

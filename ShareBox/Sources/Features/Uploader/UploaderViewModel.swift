@@ -30,6 +30,7 @@ import UserNotifications
     private let googleDriveUploader = GoogleDriveUploader()
     private let onedriveUploader = OneDriveUploader()
     private let dropboxUploader = DropboxUploader()
+    private let icloudUploader = iCloudUploader()
 
     // Currently active uploader
     private(set) var activeUploader: FileUploader? {
@@ -108,6 +109,8 @@ import UserNotifications
             activeUploader = onedriveUploader
         case .dropBox:
             activeUploader = dropboxUploader
+        case .iCloud:
+            activeUploader = icloudUploader
         }
     }
 
@@ -124,6 +127,8 @@ import UserNotifications
             return onedriveUploader
         case .dropBox:
             return dropboxUploader
+        case .iCloud:
+            return icloudUploader
         }
     }
 

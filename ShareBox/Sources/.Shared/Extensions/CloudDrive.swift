@@ -16,10 +16,8 @@ extension CloudDrive {
             return .dropBox
         case .ONEDRIVE:
             return .oneDrive
-//        case "ICLOUD":
-//            return .iCloud
-        default:
-            return nil
+        case .ICLOUD:
+            return .iCloud
         }
     }
 }

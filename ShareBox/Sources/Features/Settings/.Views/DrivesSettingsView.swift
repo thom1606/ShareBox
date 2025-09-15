@@ -24,8 +24,10 @@ struct DrivesSettingsView: View {
                     HStack {
                         Spacer()
                         Menu {
+                            if !user.drivesData.contains(where: { $0.provider == .ICLOUD }) {
+                                Button("iCloud") { startLink(.ICLOUD) }
+                            }
                             Button("Google Drive") { startLink(.GOOGLE) }
-                            Button("iCloud") { startLink(.ICLOUD) }
                             Button("OneDrive") { startLink(.ONEDRIVE) }
                             Button("Dropbox") { startLink(.DROPBOX) }
                         } label: {
@@ -61,10 +63,20 @@ struct DrivesSettingsView: View {
     private func startLink(_ type: DriveProvider) {
         Task {
             do {
-                let res: ApiService.BasicRedirectResponse = try await api.post(endpoint: "/api/drives/link", parameters: [
-                    "type": type.rawValue
-                ])
-                NSWorkspace.shared.open(URL(string: res.redirectUrl)!)
+                if type == .ICLOUD {
+                    // Check locally if icloud is allowed
+                    let res: ApiService.BasicSuccessResponse = try await api.post(endpoint: "/api/drives/link", parameters: [
+                        "type": type.rawValue
+                    ])
+                    if res.success {
+                        await user.refresh()
+                    }
+                } else {
+                    let res: ApiService.BasicRedirectResponse = try await api.post(endpoint: "/api/drives/link", parameters: [
+                        "type": type.rawValue
+                    ])
+                    NSWorkspace.shared.open(URL(string: res.redirectUrl)!)
+                }
             } catch {}
         }
     }

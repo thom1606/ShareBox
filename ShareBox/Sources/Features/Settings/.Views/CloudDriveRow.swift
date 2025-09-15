@@ -11,6 +11,7 @@ struct CloudDriveRow: View {
     @Environment(User.self) private var user
     private let api = ApiService()
     var drive: CloudDrive
+    var removable: Bool = true
 
     @State private var presentingConfirmDeleteAlert: Bool = false
 
@@ -21,9 +22,11 @@ struct CloudDriveRow: View {
                 .frame(width: 26, height: 26)
             Text(drive.provider.displayName)
             Spacer()
-            Button("Disconnect", action: {
-                self.presentingConfirmDeleteAlert.toggle()
-            })
+            if removable {
+                Button("Disconnect", action: {
+                    self.presentingConfirmDeleteAlert.toggle()
+                })
+            }
         }
         .alert("Are you sure?", isPresented: $presentingConfirmDeleteAlert, actions: {
             Button("Disconnect", role: .destructive) {
