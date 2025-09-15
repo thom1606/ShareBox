@@ -9,10 +9,9 @@ import SwiftUI
 
 struct NotchIntroScene: View {
     private let api = ApiService()
-    @Environment(UploaderViewModel.self) private var uploader
     @Environment(User.self) private var user
-    @Environment(\.settingsTab) private var settingsTab
-    @Environment(\.openSettings) private var openSettings
+    @Environment(GlobalContext.self) private var globalContext
+    @Environment(UploaderViewModel.self) private var uploader
 
     @AppStorage(Constants.Settings.completedCloudDriveOnboardingPrefKey) private var completedCloudDriveOnboarding = false
 
@@ -48,12 +47,7 @@ struct NotchIntroScene: View {
             } else {
                 UploaderButtonField(image: Image(systemName: "plus.circle"), onTap: {
                     completedCloudDriveOnboarding = true
-                    if user.authenticated {
-                        settingsTab.wrappedValue = .drives
-                    } else {
-                        settingsTab.wrappedValue = .account
-                    }
-                    openSettings()
+                    globalContext.openSettingsTab(.drives)
                 })
                 .popover(isPresented: .constant(showCloudStorageOption), attachmentAnchor: .point(.trailing), arrowEdge: .leading) {
                     VStack(alignment: .leading, spacing: 0) {

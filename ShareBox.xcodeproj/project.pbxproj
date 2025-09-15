@@ -9,8 +9,6 @@
 /* Begin PBXBuildFile section */
 		8477DA582E4C9F2300162F53 /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = 8477DA552E4C9F2300162F53 /* .swiftlint.yml */; };
 		847BE91A2E532218001577F8 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 847BE9192E532218001577F8 /* Sparkle */; };
-		8494E4342E49FE61003065BD /* Debug.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 8494E4332E49FE61003065BD /* Debug.xcconfig */; };
-		8494E4392E49FE6B003065BD /* Release.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 8494E4372E49FE6B003065BD /* Release.xcconfig */; };
 		8494E4BE2E4A3B1E003065BD /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 8494E4BC2E4A3B14003065BD /* Localizable.xcstrings */; };
 		84A4FE522E521B0100428485 /* ThomKit in Frameworks */ = {isa = PBXBuildFile; productRef = 84A4FE512E521B0100428485 /* ThomKit */; };
 /* End PBXBuildFile section */
@@ -143,7 +141,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1620;
-				LastUpgradeCheck = 1620;
+				LastUpgradeCheck = 2600;
 				TargetAttributes = {
 					8426D9452E49DD65008F6EB1 = {
 						CreatedOnToolsVersion = 16.2;
@@ -179,9 +177,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8477DA582E4C9F2300162F53 /* .swiftlint.yml in Resources */,
-				8494E4392E49FE6B003065BD /* Release.xcconfig in Resources */,
 				8494E4BE2E4A3B1E003065BD /* Localizable.xcstrings in Resources */,
-				8494E4342E49FE61003065BD /* Debug.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -255,7 +251,9 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = U6WA8YA735;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -279,6 +277,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -320,7 +319,9 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = U6WA8YA735;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -337,6 +338,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 			};
@@ -348,50 +350,20 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = ShareBox/ShareBoxDebug.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 16;
+				CURRENT_PROJECT_VERSION = 17;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"ShareBox/Preview Content\"";
-				DEVELOPMENT_TEAM = U6WA8YA735;
+				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_INCOMING_NETWORK_CONNECTIONS = YES;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = ShareBox/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = ShareBox;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
-				INFOPLIST_KEY_LSUIElement = YES;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.2.0;
-				OTHER_SWIFT_FLAGS = "";
-				PRODUCT_BUNDLE_IDENTIFIER = com.thom1606.ShareBox.Dev;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
-			};
-			name = Debug;
-		};
-		8426D9572E49DD66008F6EB1 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8494E4372E49FE6B003065BD /* Release.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = ShareBox/ShareBox.entitlements;
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 16;
-				DEVELOPMENT_ASSET_PATHS = "\"ShareBox/Preview Content\"";
-				DEVELOPMENT_TEAM = U6WA8YA735;
-				ENABLE_HARDENED_RUNTIME = YES;
-				ENABLE_PREVIEWS = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ShareBox/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ShareBox;
@@ -407,6 +379,48 @@
 				OTHER_SWIFT_FLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = com.thom1606.ShareBox;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		8426D9572E49DD66008F6EB1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8494E4372E49FE6B003065BD /* Release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				CODE_SIGN_ENTITLEMENTS = ShareBox/ShareBox.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 17;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_ASSET_PATHS = "\"ShareBox/Preview Content\"";
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_INCOMING_NETWORK_CONNECTIONS = YES;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ShareBox/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = ShareBox;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_LSUIElement = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.2.0;
+				OTHER_SWIFT_FLAGS = "";
+				PRODUCT_BUNDLE_IDENTIFIER = com.thom1606.ShareBox;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = RELEASE;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;

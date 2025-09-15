@@ -15,8 +15,7 @@ struct UploaderDropField: View {
     var isPlus: Bool = false
 
     @Environment(User.self) private var user
-    @Environment(\.openSettings) private var openSettings
-    @Environment(\.settingsTab) private var settingsTab
+    @Environment(GlobalContext.self) private var globalContext
     @Environment(UploaderViewModel.self) private var uploader
 
     @State private var isHovering: Bool = false
@@ -44,8 +43,7 @@ struct UploaderDropField: View {
                 Color.black.opacity(0.001)
                     .onDrop(of: [.fileURL], isTargeted: $isHovering, perform: { providers in
                         if showPlusBadge {
-                            settingsTab.wrappedValue = .account
-                            openSettings()
+                            globalContext.openSettingsTab(.account)
                             return false
                         }
                         state.activateUploader(for: type)
@@ -85,8 +83,7 @@ struct UploaderDropField: View {
             .onTapGesture {
                 if pickerShowing { return }
                 if showPlusBadge {
-                    settingsTab.wrappedValue = .account
-                    openSettings()
+                    globalContext.openSettingsTab(.account)
                     return
                 }
                 state.activateUploader(for: type)

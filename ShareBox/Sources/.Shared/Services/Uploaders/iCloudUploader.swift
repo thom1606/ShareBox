@@ -190,7 +190,6 @@ class iCloudUploader: FileUploader {
                 while true {
                     try Task.checkCancellation()
                     let data = try read.read(upToCount: chunk) ?? Data()
-                    print(data.count)
                     if data.isEmpty { break }
                     try write.write(contentsOf: data)
                     copied += data.count

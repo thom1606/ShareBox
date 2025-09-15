@@ -19,6 +19,14 @@
 			</array>
 		</dict>
 	</array>
+	<key>CF_ACCESS_CLIENT_ID</key>
+	<string>$(CF_ACCESS_CLIENT_ID)</string>
+	<key>CF_ACCESS_CLIENT_SECRET</key>
+	<string>$(CF_ACCESS_CLIENT_SECRET)</string>
+	<key>NSSupportsAutomaticTermination</key>
+	<false/>
+	<key>NSSupportsSuddenTermination</key>
+	<false/>
 	<key>NSUbiquitousContainers</key>
 	<dict>
 		<key>iCloud.ShareBox</key>
@@ -31,14 +39,6 @@
 			<string>Any</string>
 		</dict>
 	</dict>
-	<key>CF_ACCESS_CLIENT_ID</key>
-	<string>$(CF_ACCESS_CLIENT_ID)</string>
-	<key>CF_ACCESS_CLIENT_SECRET</key>
-	<string>$(CF_ACCESS_CLIENT_SECRET)</string>
-	<key>NSSupportsAutomaticTermination</key>
-	<false/>
-	<key>NSSupportsSuddenTermination</key>
-	<false/>
 	<key>SUEnableDownloaderService</key>
 	<true/>
 	<key>SUEnableInstallerLauncherService</key>

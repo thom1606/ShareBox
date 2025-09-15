@@ -11,7 +11,6 @@ import UserNotifications
 
 @Observable class UploaderViewModel {
     public static var shared: UploaderViewModel?
-    private var machListener: MachMessageListener?
 
     enum UIState: Equatable {
         case hidden
@@ -46,7 +45,6 @@ import UserNotifications
     var keepNotchOpen: Bool = false
     var userInteractable: Bool = false
     var forceVisible: Bool = false
-    var forcePreviewVisible: Bool = false
 
     // Computed
     public var dropTargets: [Bool] = [false, false] // Drop targets in these orders: [sharebox, airdrop, cloud drive]
@@ -57,7 +55,7 @@ import UserNotifications
         if case .completed = uploadState { return .visible }
 
         // User activated states
-        if (isUserHovering && userInteractable) || forceVisible || forcePreviewVisible || dropTargets.contains(true) {
+        if (isUserHovering && userInteractable) || forceVisible || (globalContext?.forcePreviewUploader ?? false) || dropTargets.contains(true) {
             if droppedItems.isEmpty && uploadState == .idle { return .small }
             return .visible
         }
@@ -77,19 +75,18 @@ import UserNotifications
     }
 
     // Internal
+    private var globalContext: GlobalContext?
     private var uploader: FileUploader?
     private var closeOverlayWorkItem: DispatchWorkItem?
     private var isUserHovering: Bool = false
-    private(set) var openSettings: ((SettingsTab?) -> Void)?
 
     // MARK: - Public Methods
     init() {
         UploaderViewModel.shared = self
-        self.machListener = MachMessageListener(state: self)
     }
 
-    public func onAppear(openSettings: @escaping (SettingsTab?) -> Void) {
-        self.openSettings = openSettings
+    public func onAppear(globalContext: GlobalContext) {
+        self.globalContext = globalContext
         // Wait for the whole UI to settle in before any user interactions are available
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             self.userInteractable = true
@@ -190,7 +187,7 @@ import UserNotifications
             // Show overlay immediately
             self.isUserHovering = true
         } else {
-            self.forcePreviewVisible = false
+            self.globalContext?.forcePreviewUploader = false
             // Schedule closing after 0.5 seconds
             let workItem = DispatchWorkItem { [weak self] in
                 self?.isUserHovering = false
@@ -204,12 +201,11 @@ import UserNotifications
     public func reset() {
         self.droppedItems.removeAll()
         self.forceVisible = false
-        self.forcePreviewVisible = false
+        self.globalContext?.forcePreviewUploader = false
         self.activeUploader?.reset()
         self.activeUploader = nil
         self.dropTargets = Array(repeating: false, count: self.dropTargets.count)
         self.isUserHovering = false
-        self.forcePreviewVisible = false
     }
 
     // MARK: - Overlays
@@ -245,7 +241,7 @@ import UserNotifications
         alert.window.makeKeyAndOrderFront(nil)
         alert.runModal()
         self.reset()
-        self.openSettings?(.account)
+        self.globalContext?.openSettingsTab(.account)
     }
     private func showUnauthorizedDialog() {
         let alert = NSAlert()
@@ -257,7 +253,7 @@ import UserNotifications
         alert.window.makeKeyAndOrderFront(nil)
         alert.runModal()
         self.reset()
-        self.openSettings?(.account)
+        self.globalContext?.openSettingsTab(.account)
     }
     private func showDriveUnauthorized() {
         let alert = NSAlert()

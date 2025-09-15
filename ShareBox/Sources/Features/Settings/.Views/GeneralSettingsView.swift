@@ -14,6 +14,8 @@ struct GeneralSettingsView: View {
     private let updater: SPUUpdater
     var user: User
 
+    @Environment(GlobalContext.self) private var globalContext
+
     @AppStorage(Constants.Settings.keepInMenuBarPrefKey) private var keepInMenuBar = true
     @AppStorage(Constants.Settings.mouseActivationPrefKey) private var enableMouseActivation = true
     @AppStorage(Constants.Settings.keepNotchOpenWhileUploadingPrefKey) private var keepNotchOpen = true
@@ -98,12 +100,12 @@ struct GeneralSettingsView: View {
                     }
                     HStack {
                         Picker(selection: $storageDuration, label:
-                                VStack(alignment: .leading) {
-                            Text("Storage duration")
-                            Text("Determine the duration of time a Box will be accessible after being shared.")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                        }
+                            VStack(alignment: .leading) {
+                                Text("Storage duration")
+                                Text("Determine the duration of time a Box will be accessible after being shared.")
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
+                            }
                         ) {
 #if DEBUG
                             Text("5 minutes").tag("5_minutes")

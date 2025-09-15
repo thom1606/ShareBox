@@ -10,7 +10,6 @@ analyzer_rules:
   - unused_declaration
 included:
   - "ShareBox/Sources/**"
-  - "ShareBox.Finder/**"
 excluded:
   - Carthage
   - Pods

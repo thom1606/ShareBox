@@ -9,8 +9,8 @@ import SwiftUI
 
 struct UploaderView: View {
     @Environment(\.openWindow) private var openWindow
-    @Environment(\.openSettings) private var openSettings
     @Environment(\.settingsTab) private var settingsTab
+    @Environment(GlobalContext.self) private var globalContext
     @AppStorage(Constants.Settings.mouseActivationPrefKey) private var enableMouseActivation = true
     @AppStorage(Constants.Settings.keepNotchOpenWhileUploadingPrefKey) private var keepNotchOpen = true
     @AppStorage(Constants.Settings.completedOnboardingPrefKey) private var completedOnboarding = false
@@ -58,7 +58,7 @@ struct UploaderView: View {
                 VStack(alignment: .leading, spacing: -1) {
                     NotchCorner()
                         .fill(.black)
-                        .frame(width: notchCornerRadius * 2, height: notchCornerRadius * 2)
+                        .frame(width: notchCornerRadius * 3, height: notchCornerRadius * 3)
                         .animation(.bouncy, value: state.uiState)
                         .offset(x: 5)
                     ZStack(alignment: .leading) {
@@ -83,7 +83,7 @@ struct UploaderView: View {
                     }
                     NotchCorner(inverted: true)
                         .fill(.black)
-                        .frame(width: notchCornerRadius * 2, height: notchCornerRadius * 2)
+                        .frame(width: notchCornerRadius * 3, height: notchCornerRadius * 3)
                         .animation(.bouncy, value: state.uiState)
                         .offset(x: 5)
                 }
@@ -104,12 +104,7 @@ struct UploaderView: View {
             if !completedOnboarding {
                 openWindow(id: "onboarding")
             }
-            state.onAppear(openSettings: { view in
-                if view != nil {
-                    settingsTab.wrappedValue = view!
-                }
-                openSettings()
-            })
+            state.onAppear(globalContext: globalContext)
             state.keepNotchOpen = keepNotchOpen
         }
         .onChange(of: keepNotchOpen) {

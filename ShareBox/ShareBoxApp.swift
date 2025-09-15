@@ -16,6 +16,8 @@ struct ShareBoxApp: App {
     // Properties
     private let updaterController: SPUStandardUpdaterController
     @State private var user = User()
+    @State private var globalContext = GlobalContext()
+
     @State private var settingsTab: SettingsTab = .preferences
     @State private var onboardingVisible: Bool = false { didSet { updateDock() } }
     @State private var settingsVisible: Bool = false { didSet { updateDock() } }
@@ -24,22 +26,12 @@ struct ShareBoxApp: App {
     init() {
         // Initialize variables
         updaterController = SPUStandardUpdaterController(startingUpdater: true, updaterDelegate: nil, userDriverDelegate: nil)
-        
-        // For release we only allow up to 1 instance running at a time
-        #if RELEASE
-        if isAnotherInstanceRunning() {
-            // Launch the settings view on the main instance via mach
-            let mach = MachMessenger.shared
-            try? mach.send(.init(type: .openSettings))
-            NSApp.terminate(nil)
-        }
-        #endif
-        
+
         // Setup local handlers
         UNUserNotificationCenter.current().delegate = NotificationDelegate.shared
         NSApplication.shared.setActivationPolicy(.accessory)
     }
-    
+
     private func isAnotherInstanceRunning() -> Bool {
         let runningApps = NSRunningApplication.runningApplications(withBundleIdentifier: Bundle.main.bundleIdentifier ?? "")
         return runningApps.count > 1
@@ -55,9 +47,12 @@ struct ShareBoxApp: App {
 
     var body: some Scene {
         Window("Uploader", id: "uploader") {
-            UploaderView()
-                .environment(\.settingsTab, $settingsTab)
-                .environment(user)
+            AppManager {
+                UploaderView()
+            }
+            .environment(\.settingsTab, $settingsTab)
+            .environment(user)
+            .environment(globalContext)
         }
         .windowResizability(.contentSize)
         .commands {
@@ -72,6 +67,7 @@ struct ShareBoxApp: App {
         Window("Onboarding", id: "onboarding") {
             OnboardingView()
                 .environment(user)
+                .environment(globalContext)
                 .onAppear {
                     onboardingVisible = true
                 }
@@ -84,6 +80,7 @@ struct ShareBoxApp: App {
         Window("Subscribe", id: "subscribe") {
             SubscribeView()
                 .environment(user)
+                .environment(globalContext)
                 .onAppear {
                     subscribeVisible = true
                 }
@@ -93,12 +90,14 @@ struct ShareBoxApp: App {
         }
         .windowResizability(.contentSize)
 
-        ShareBoxMenu(settingsTab: $settingsTab, updater: updaterController.updater)
+        ShareBoxMenu(updater: updaterController.updater)
             .environment(user)
+            .environment(globalContext)
 
         Settings {
-            SettingsView(selectedTab: $settingsTab, updater: updaterController.updater, user: user)
+            SettingsView(updater: updaterController.updater, user: user)
                 .environment(user)
+                .environment(globalContext)
                 .onAppear {
                     settingsVisible = true
                 }

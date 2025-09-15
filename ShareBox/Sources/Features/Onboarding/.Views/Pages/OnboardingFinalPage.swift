@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct OnboardingFinalPage: View {
-    @AppStorage(Constants.Settings.completedOnboardingPrefKey) private var onboardingCompleted = false
+    @Environment(GlobalContext.self) private var globalContext
     @Environment(\.dismissWindow) private var dismissWindow
 
     var body: some View {
@@ -39,23 +39,8 @@ struct OnboardingFinalPage: View {
     }
 
     private func handleContinue() {
-        let task = Process()
-        task.launchPath = "/usr/bin/env"
-        task.arguments = ["pluginkit", "-e", "use", "-i", "com.thom1606.ShareBox.Finder"]
-
-        let pipe = Pipe()
-        task.standardOutput = pipe
-        task.standardError = pipe
-
-        task.launch()
-        task.waitUntilExit()
-
-        onboardingCompleted = true
-        _ = try? MachMessenger.shared.send(MachMessage(type: .peek, data: nil))
+        UserDefaults.standard.set(true, forKey: Constants.Settings.completedOnboardingPrefKey)
+        globalContext.forcePreviewUploader = true
         dismissWindow()
     }
-}
-
-#Preview {
-    OnboardingFinalPage()
 }

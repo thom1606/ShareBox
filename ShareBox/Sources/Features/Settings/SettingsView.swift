@@ -9,15 +9,16 @@ import SwiftUI
 import Sparkle
 
 struct SettingsView: View {
-    @Binding var selectedTab: SettingsTab
+    @Environment(GlobalContext.self) private var globalContext
 
     var updater: SPUUpdater
     var user: User
 
     var body: some View {
+        @Bindable var context = globalContext
         ZStack {
             Color.clear
-            TabView(selection: $selectedTab) {
+            TabView(selection: $context.settingsTab) {
                 GeneralSettingsView(updater: updater, user: user)
                     .tabItem {
                         Label("Preferences", systemImage: "gear")
@@ -54,9 +55,4 @@ enum SettingsTab {
     case account
     case packages
     case about
-}
-
-#Preview {
-    let mockUpdater = SPUStandardUpdaterController(startingUpdater: false, updaterDelegate: nil, userDriverDelegate: nil).updater
-    SettingsView(selectedTab: .constant(.about), updater: mockUpdater, user: .init())
 }

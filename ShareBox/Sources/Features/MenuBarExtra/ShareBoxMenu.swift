@@ -9,11 +9,10 @@ import SwiftUI
 import Sparkle
 
 struct ShareBoxMenu: Scene {
-    @Environment(\.openSettings) private var openSettings
     @Environment(User.self) private var user
+    @Environment(GlobalContext.self) private var globalContext
     @AppStorage(Constants.Settings.keepInMenuBarPrefKey) private var keepInMenuBar = true
 
-    @Binding var settingsTab: SettingsTab
     var updater: SPUUpdater
 
     var body: some Scene {
@@ -26,8 +25,7 @@ struct ShareBoxMenu: Scene {
             Text("Version \(buildNumber) (\(buildVersion))")
                 .foregroundStyle(.secondary)
             Button("About ShareBox") {
-                settingsTab = .about
-                openSettings()
+                globalContext.openSettingsTab(.about)
             }
             if !user.authenticated {
                 Button("Sign in...", action: user.login)
