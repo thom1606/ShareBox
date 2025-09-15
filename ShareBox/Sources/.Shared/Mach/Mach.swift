@@ -60,7 +60,6 @@ class MachMessage: Codable {
     }
 
     enum MessageType: String, Codable {
-        case fileUploadRequest
         case openSettings
         case peek
     }
@@ -86,8 +85,4 @@ extension MachData {
         }
         return encodedMessage
     }
-}
-
-struct MachFileUploadBody: MachData {
-    var items: [FilePath]
 }

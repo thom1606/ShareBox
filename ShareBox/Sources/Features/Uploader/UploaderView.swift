@@ -64,6 +64,7 @@ struct UploaderView: View {
                     ZStack(alignment: .leading) {
                         if state.uploadState == .idle {
                             NotchIntroScene()
+                                .transition(.opacity)
                         } else {
                             NotchUploadingScene(geo: geo)
                         }

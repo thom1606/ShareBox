@@ -55,34 +55,12 @@ class MachMessageListener {
 
     private func handleMessage(message: MachMessage) {
         let decoder = JSONDecoder()
-        do {
-            switch message.type {
-            case .fileUploadRequest:
-                generalLogger.debug("Received file upload request...")
-                let res = try decoder.decode(MachFileUploadBody.self, from: message.data!)
-                // Make sure no other active uploader is active
-                if self.state.activeUploader != nil {
-                    if self.state.activeUploader!.getId() != .sharebox {
-                        Utilities.showNotification(
-                            title: String(localized: "Another upload in progress"),
-                            body: String(localized: "Another upload progress outside of ShareBox is currently in progress. Please wait for it to complete before attempting to upload again.")
-                        )
-                        return
-                    }
-                }
-                // If ShareBox is currently active, append these files to the queue
-                Task {
-                    let uploader = self.state.getUploader(for: .sharebox)
-                    uploader.confirmDrop(paths: res.items)
-                }
-            case .openSettings:
-                generalLogger.debug("Got requested to open settings...")
-                self.state.openSettings?(nil)
-            case .peek:
-                self.state.forcePreviewVisible = true
-            }
-        } catch {
-            generalLogger.error("Failed to handle MachMessage: \(error)")
+        switch message.type {
+        case .openSettings:
+            generalLogger.debug("Got requested to open settings...")
+            self.state.openSettings?(nil)
+        case .peek:
+            self.state.forcePreviewVisible = true
         }
     }
 }

@@ -201,13 +201,15 @@ import UserNotifications
     }
 
     // MARK: - Private Methods
-    private func reset() {
+    public func reset() {
         self.droppedItems.removeAll()
         self.forceVisible = false
+        self.forcePreviewVisible = false
         self.activeUploader?.reset()
         self.activeUploader = nil
         self.dropTargets = Array(repeating: false, count: self.dropTargets.count)
         self.isUserHovering = false
+        self.forcePreviewVisible = false
     }
 
     // MARK: - Overlays

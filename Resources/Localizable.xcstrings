@@ -68,12 +68,6 @@
     "An unknown error occurred while uploading your files. Please try again later." : {
 
     },
-    "Another upload in progress" : {
-
-    },
-    "Another upload progress outside of ShareBox is currently in progress. Please wait for it to complete before attempting to upload again." : {
-
-    },
     "App Details" : {
 
     },
@@ -227,9 +221,6 @@
     "Name" : {
 
     },
-    "No files or folders selected? Please try again after selecting items." : {
-      "comment" : "If ShareBox ever gets triggered without files or folders selected."
-    },
     "No open packages found." : {
 
     },
@@ -240,9 +231,6 @@
 
     },
     "OneDrive" : {
-
-    },
-    "Oops!" : {
 
     },
     "Open billing" : {
@@ -353,9 +341,6 @@
     "Something went wrong" : {
 
     },
-    "Something went wrong internally, please try again." : {
-
-    },
     "Start at login" : {
 
     },
@@ -418,6 +403,7 @@
     },
     "Upload to ShareBox" : {
       "comment" : "Finder Context Menu Label",
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -426,9 +412,6 @@
           }
         }
       }
-    },
-    "Upload to ShareBox (Dev)" : {
-      "comment" : "Finder Context Menu Label"
     },
     "Uploader" : {
 

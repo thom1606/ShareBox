@@ -62,6 +62,7 @@ struct NotchUploadingScene: View {
                         if isDone {
                             Button("Done") {
                                 uploader.activeUploader?.complete()
+                                uploader.reset()
                             }
                             .buttonStyle(NotchButton())
                         }

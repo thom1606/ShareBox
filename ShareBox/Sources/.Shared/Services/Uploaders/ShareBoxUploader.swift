@@ -68,7 +68,6 @@ class ShareBoxUploader: FileUploader {
 
             Utilities.showNotification(title: String(localized: "Link Copied!"), body: String(localized: "The ShareBox link is copied to your clipboard!"))
         }
-        self.reset()
     }
 
     override func reset() {

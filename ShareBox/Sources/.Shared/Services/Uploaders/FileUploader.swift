@@ -89,9 +89,7 @@ class FileUploader {
         return false
     }
 
-    public func complete() {
-        self.reset()
-    }
+    public func complete() {}
 
     public func reset() {
         uploadProgress.removeAll()
