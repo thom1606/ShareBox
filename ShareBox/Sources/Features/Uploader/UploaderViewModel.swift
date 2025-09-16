@@ -47,7 +47,6 @@ import UserNotifications
     var forceVisible: Bool = false
 
     // Computed
-    public var dropTargets: [Bool] = [false, false] // Drop targets in these orders: [sharebox, airdrop, cloud drive]
     public var uiState: UIState {
         // Progress based states
         if case .preparingGroup = uploadState { return .visible }
@@ -55,7 +54,7 @@ import UserNotifications
         if case .completed = uploadState { return .visible }
 
         // User activated states
-        if (isUserHovering && userInteractable) || forceVisible || (globalContext?.forcePreviewUploader ?? false) || dropTargets.contains(true) {
+        if (isUserHovering && userInteractable) || forceVisible || (globalContext?.forcePreviewUploader ?? false) {
             if droppedItems.isEmpty && uploadState == .idle { return .small }
             return .visible
         }
@@ -73,12 +72,11 @@ import UserNotifications
         if !userInteractable { result = false }
         return result
     }
+    public var isUserHovering: Bool = false
 
     // Internal
     private var globalContext: GlobalContext?
     private var uploader: FileUploader?
-    private var closeOverlayWorkItem: DispatchWorkItem?
-    private var isUserHovering: Bool = false
 
     // MARK: - Public Methods
     init() {
@@ -174,29 +172,6 @@ import UserNotifications
         }
     }
 
-    /// Handle user hover interactions
-    public func onHover(isOver: Bool) {
-        if isOver {
-            // If the UI is currently not user interactable, we won't listen
-            if !self.userInteractable {
-                return
-            }
-            // Cancel any pending close
-            closeOverlayWorkItem?.cancel()
-            closeOverlayWorkItem = nil
-            // Show overlay immediately
-            self.isUserHovering = true
-        } else {
-            self.globalContext?.forcePreviewUploader = false
-            // Schedule closing after 0.5 seconds
-            let workItem = DispatchWorkItem { [weak self] in
-                self?.isUserHovering = false
-            }
-            closeOverlayWorkItem = workItem
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, execute: workItem)
-        }
-    }
-
     // MARK: - Private Methods
     public func reset() {
         self.droppedItems.removeAll()
@@ -204,7 +179,6 @@ import UserNotifications
         self.globalContext?.forcePreviewUploader = false
         self.activeUploader?.reset()
         self.activeUploader = nil
-        self.dropTargets = Array(repeating: false, count: self.dropTargets.count)
         self.isUserHovering = false
     }
 

@@ -1,5 +1,5 @@
 //
-//  NotchUploadingScene.swift
+//  UploaderUploadingScene.swift
 //  ShareBox
 //
 //  Created by Thom van den Broek on 06/09/2025.
@@ -7,10 +7,8 @@
 
 import SwiftUI
 
-struct NotchUploadingScene: View {
+struct UploaderUploadingScene: View {
     @Environment(UploaderViewModel.self) private var uploader
-
-    var geo: GeometryProxy
 
     private var fileList: some View {
         ScrollView {
@@ -67,17 +65,10 @@ struct NotchUploadingScene: View {
                             .buttonStyle(NotchButton())
                         }
                     }
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, 12)
                 }
             }
         }
-        .frame(maxHeight: max(600, geo.size.height / 2))
         .padding(.vertical, 12)
-    }
-}
-
-#Preview {
-    GeometryReader { geo in
-        NotchUploadingScene(geo: geo)
     }
 }

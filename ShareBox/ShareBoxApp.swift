@@ -18,7 +18,6 @@ struct ShareBoxApp: App {
     @State private var user = User()
     @State private var globalContext = GlobalContext()
 
-    @State private var settingsTab: SettingsTab = .preferences
     @State private var onboardingVisible: Bool = false { didSet { updateDock() } }
     @State private var settingsVisible: Bool = false { didSet { updateDock() } }
     @State private var subscribeVisible: Bool = false { didSet { updateDock() } }
@@ -50,7 +49,7 @@ struct ShareBoxApp: App {
             AppManager {
                 UploaderView()
             }
-            .environment(\.settingsTab, $settingsTab)
+            .frame(width: Constants.Uploader.windowWidth)
             .environment(user)
             .environment(globalContext)
         }

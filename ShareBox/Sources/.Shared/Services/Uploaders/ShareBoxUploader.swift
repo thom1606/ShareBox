@@ -176,9 +176,8 @@ class ShareBoxUploader: FileUploader {
 
                 let shouldPutOnS3String: String = (Bundle.main.object(forInfoDictionaryKey: "UPLOAD_S3") as? String ?? "true")
                 if let shouldPutOnS3 = Bool(shouldPutOnS3String), !shouldPutOnS3 {
-                    dataLogger.debug("Skipping upload to S3 as it is disabled by environment, simulating it instead...")
                     await self.simulateFile(currentFile, in: group, item: item)
-                    return
+                    continue
                 }
 
                 if item.type == "multipart" {
