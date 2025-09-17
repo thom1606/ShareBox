@@ -18,100 +18,43 @@ class GoogleDriveUploader: FileUploader {
         .googleDrive
     }
 
-    override func confirmDrop(paths: [FilePath], metadata: FileUploaderMetaData? = nil) {
-        if let meta = metadata {
-            if activeProvider != nil { return }
-            if let provider = User.shared?.drivesData.first(where: { $0.id == meta.providerId && $0.provider == .GOOGLE }) {
-                activeProvider = provider
-            } else {
-                return
-            }
+    /// Check newly received metadata and check if that if all values are valid before continueing the file drop
+    override func receivedMetadata(metadata: FileUploaderMetaData) -> Bool {
+        if activeProvider != nil { return false }
+        if let provider = User.shared?.drivesData.first(where: { $0.id == metadata.providerId && $0.provider == .GOOGLE }) {
+            activeProvider = provider
+            return true
         }
-        Task {
-           await self.appendFiles(paths)
-        }
-    }
-
-    override func confirmDrop(providers: [NSItemProvider], metadata: FileUploaderMetaData? = nil) -> Bool {
-        var hasItemWithURL = false
-        var finalPaths: [FilePath] = []
-        let group = DispatchGroup()
-
-        if let meta = metadata {
-            if activeProvider != nil { return false }
-            if let provider = User.shared?.drivesData.first(where: { $0.id == meta.providerId && $0.provider == .GOOGLE }) {
-                activeProvider = provider
-            } else {
-                return false
-            }
-        }
-
-        for provider in providers where provider.hasItemConformingToTypeIdentifier("public.file-url") {
-            hasItemWithURL = true
-            group.enter()
-
-            provider.loadItem(forTypeIdentifier: "public.file-url", options: nil) { (item, _) in
-                defer { group.leave() }
-
-                var path: FilePath?
-                if let data = item as? Data, let url = URL(dataRepresentation: data, relativeTo: nil) {
-                    path = url.toFilePath()
-                } else if let url = item as? URL {
-                    path = url.toFilePath()
-                }
-
-                if path == nil { return }
-                finalPaths.append(path!)
-            }
-        }
-
-        group.notify(queue: .main) {
-            Task {
-               await self.appendFiles(finalPaths)
-            }
-        }
-        return hasItemWithURL
+        return false
     }
 
     override func reset() {
         activeProvider = nil
         accessToken = nil
-        uploadProgress.removeAll()
-        droppedFiles.removeAll()
-        state = .idle
+        super.reset()
     }
 
-    /// Filter out duplicates before appending anything
-    private func appendFiles(_ paths: [FilePath]) async {
-        // Filter out all the duplicates
-        let nonDuplicatePaths = paths.filter { path in !self.droppedFiles.contains(where: { $0.absolute == path.absolute }) }
-        self.droppedFiles.append(contentsOf: nonDuplicatePaths)
-        try? await self.processBatch(paths)
-    }
-
-    /// Start processing the given batch with the drive's server
-    private func processBatch(_ files: [FilePath]) async throws {
-        guard !files.isEmpty else { return }
-
+    override func processBatch(paths: [FilePath]) async {
         // If drive is already authenticated → upload immediately
         if let token = accessToken {
-            return await startUpload(files, token: token)
+            return await startUpload(paths, token: token)
         }
 
         // If access_token is being generated → stash the files
         if state == .preparingGroup {
-            pendingFiles.append(contentsOf: files)
+            pendingFiles.append(contentsOf: paths)
             return
         }
 
         // Otherwise, create access_token first
         guard let token = try? await ensureToken() else {
-            for path in files {
+            for path in paths {
                 self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [.driveUnauthorized])
             }
+            checkForCompleteState()
             return
         }
-        await startUpload(files, token: token)
+        await startUpload(paths, token: token)
         // Also flush any files dropped while creating
         if !pendingFiles.isEmpty {
             let extra = pendingFiles
@@ -122,27 +65,8 @@ class GoogleDriveUploader: FileUploader {
 
     private func startUpload(_ paths: [FilePath], token: String) async {
         self.state = .uploading
-
         // Get all files which are hidden inside folders
-        var onlyFiles: [FilePath] = []
-        paths.forEach {
-            guard let itemURL = URL(string: $0.absolute) else {
-                self.uploadProgress[$0.absolute] = .init(status: .failed, uploadProgress: 100, errors: [.fileNotFound])
-                return
-            }
-            if itemURL.hasDirectoryPath {
-                let parentURL = itemURL.deletingLastPathComponent()
-                let basePath = parentURL.path
-                // For all folders, it should go in and fetch all those children until there are no folders left
-                let files = self.getFilesInFolder(
-                    basePath: "file://\(basePath)/",
-                    url: itemURL
-                )
-                onlyFiles.append(contentsOf: files)
-            } else {
-                onlyFiles.append($0)
-            }
-        }
+        let onlyFiles = self.getFilesFromPaths(paths: paths)
 
         // Notarize each file to the upload progress
         for file in onlyFiles {
@@ -164,6 +88,7 @@ class GoogleDriveUploader: FileUploader {
                 await self.uploadResumableFile(file, token: token)
             }
         }
+        checkForCompleteState()
     }
 
     private func uploadSimpleFile(_ path: FilePath, token: String) async {
@@ -246,6 +171,7 @@ class GoogleDriveUploader: FileUploader {
                   let sessionURL = URL(string: location) else {
                 let mapped = self.mapGDriveError(data: initData, status: (initResp as? HTTPURLResponse)?.statusCode ?? -1)
                 self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [mapped])
+                checkForCompleteState()
                 return
             }
 
@@ -253,6 +179,7 @@ class GoogleDriveUploader: FileUploader {
             self.uploadProgress[path.absolute] = .init(status: .uploading, uploadProgress: 0)
             guard let fileURL = URL(string: path.absolute) else {
                 self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [.fileNotFound])
+                checkForCompleteState()
                 return
             }
             let handle = try FileHandle(forReadingFrom: fileURL)
@@ -281,6 +208,7 @@ class GoogleDriveUploader: FileUploader {
                     return 0
                 } else if (200...299).contains(http.statusCode) {
                     self.uploadProgress[path.absolute] = .init(status: .completed, uploadProgress: 100)
+                    checkForCompleteState()
                     return nil
                 }
                 return nil
@@ -357,19 +285,6 @@ class GoogleDriveUploader: FileUploader {
         Task {
             await MainActor.run {
                 uploadProgress[path.absolute] = progress
-            }
-        }
-    }
-
-    private func checkForCompleteState() {
-        Task {
-            try? await Task.sleep(for: .seconds(0.2))
-            var hasPendingFiles = false
-            if self.uploadProgress.values.contains(where: { $0.status != .completed && $0.status != .failed }) {
-                hasPendingFiles = true
-            }
-            if !hasPendingFiles {
-                self.state = .completed
             }
         }
     }
@@ -463,4 +378,3 @@ private struct GDriveAPIError: Codable {
     struct Inner: Codable { var errors: [InnerError]?; var code: Int?; var message: String? }
     var error: Inner
 }
-// swiftlint:disable:this file_length

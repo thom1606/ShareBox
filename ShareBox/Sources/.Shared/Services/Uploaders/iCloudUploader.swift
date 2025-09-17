@@ -14,74 +14,10 @@ class iCloudUploader: FileUploader {
         .iCloud
     }
 
-    override func confirmDrop(paths: [FilePath], metadata _: FileUploaderMetaData? = nil) {
-        Task { await self.appendFiles(paths) }
-    }
-
-    override func confirmDrop(providers: [NSItemProvider], metadata _: FileUploaderMetaData? = nil) -> Bool {
-        var hasItemWithURL = false
-        var finalPaths: [FilePath] = []
-        let group = DispatchGroup()
-
-        for provider in providers where provider.hasItemConformingToTypeIdentifier("public.file-url") {
-            hasItemWithURL = true
-            group.enter()
-            provider.loadItem(forTypeIdentifier: "public.file-url", options: nil) { (item, _) in
-                defer { group.leave() }
-                var path: FilePath?
-                if let data = item as? Data, let url = URL(dataRepresentation: data, relativeTo: nil) {
-                    path = url.toFilePath()
-                } else if let url = item as? URL {
-                    path = url.toFilePath()
-                }
-                if let legitPath = path { finalPaths.append(legitPath) }
-            }
-        }
-
-        group.notify(queue: .main) {
-            Task { await self.appendFiles(finalPaths) }
-        }
-        return hasItemWithURL
-    }
-
-    override func reset() {
-        uploadProgress.removeAll()
-        droppedFiles.removeAll()
-        state = .idle
-    }
-
-    private func appendFiles(_ paths: [FilePath]) async {
-        let nonDuplicatePaths = paths.filter { path in !self.droppedFiles.contains(where: { $0.absolute == path.absolute }) }
-        self.droppedFiles.append(contentsOf: nonDuplicatePaths)
-        if state == .idle {
-            state = .preparingGroup
-            try? await Task.sleep(for: .seconds(1))
-        }
-        await self.startUpload(paths)
-    }
-
-    private func startUpload(_ paths: [FilePath]) async {
+    override func processBatch(paths: [FilePath]) async {
         self.state = .uploading
-
-        // Expand folders to files
-        var onlyFiles: [FilePath] = []
-        paths.forEach {
-            guard let itemURL = URL(string: $0.absolute) else {
-                self.uploadProgress[$0.absolute] = .init(status: .failed, uploadProgress: 100, errors: [.fileNotFound])
-                return
-            }
-            if itemURL.hasDirectoryPath {
-                let parentURL = itemURL.deletingLastPathComponent()
-                let basePath = parentURL.path
-                let files = self.getFilesInFolder(
-                    basePath: "file://\(basePath)/",
-                    url: itemURL
-                )
-                onlyFiles.append(contentsOf: files)
-            } else {
-                onlyFiles.append($0)
-            }
-        }
+        // Get all files which are hidden inside folders
+        let onlyFiles = self.getFilesFromPaths(paths: paths)
 
         // Mark notarized
         for file in onlyFiles {
@@ -117,7 +53,6 @@ class iCloudUploader: FileUploader {
     private func copyToICloud(_ path: FilePath) async {
         guard let docsRoot = await containerDocumentsURL() else {
             self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [.driveUnauthorized])
-            checkForCompleteState()
             return
         }
 
@@ -129,7 +64,6 @@ class iCloudUploader: FileUploader {
             try fileManager.createDirectory(at: baseDir, withIntermediateDirectories: true, attributes: nil)
         } catch {
             self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [.unknown])
-            checkForCompleteState()
             return
         }
 
@@ -146,17 +80,12 @@ class iCloudUploader: FileUploader {
             try fileManager.createDirectory(at: destURL.deletingLastPathComponent(), withIntermediateDirectories: true, attributes: nil)
         } catch {
             self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [.unknown])
-            checkForCompleteState()
             return
         }
-
-        // Avoid name collisions
-        destURL = uniqueDestination(base: destURL)
 
         // Chunked copy with progress
         guard let srcURL = URL(string: path.absolute) else {
             self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [.fileNotFound])
-            checkForCompleteState()
             return
         }
 
@@ -172,6 +101,7 @@ class iCloudUploader: FileUploader {
                 let size = (attrs[.size] as? NSNumber)?.intValue ?? 0
                 if size == 0 {
                     self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [.fileSizeZero])
+                    checkForCompleteState()
                     return
                 }
 
@@ -179,6 +109,7 @@ class iCloudUploader: FileUploader {
                 guard let read = try? FileHandle(forReadingFrom: readURL),
                       let write = try? FileHandle(forWritingTo: writeURL) else {
                     self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [.unknown])
+                    checkForCompleteState()
                     return
                 }
                 defer { try? read.close(); try? write.close() }
@@ -197,45 +128,16 @@ class iCloudUploader: FileUploader {
                     self.uploadProgress[path.absolute] = .init(status: .uploading, uploadProgress: progress)
                 }
                 self.uploadProgress[path.absolute] = .init(status: .completed, uploadProgress: 100)
+                checkForCompleteState()
             } catch {
                 self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [.unknown])
+                checkForCompleteState()
             }
         }
 
         if coordError != nil {
             self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [.unknown])
-        }
-
-        checkForCompleteState()
-    }
-
-    private func uniqueDestination(base: URL) -> URL {
-        let fileManager = FileManager.default
-        if !fileManager.fileExists(atPath: base.path) { return base }
-
-        let name = base.deletingPathExtension().lastPathComponent
-        let ext = base.pathExtension
-        let dir = base.deletingLastPathComponent()
-
-        var index = 1
-        while true {
-            let candidateName = "\(name) (\(index))"
-            let candidate = dir.appendingPathComponent(ext.isEmpty ? candidateName : "\(candidateName).\(ext)")
-            if !fileManager.fileExists(atPath: candidate.path) { return candidate }
-            index += 1
-        }
-    }
-
-    private func checkForCompleteState() {
-        Task {
-            try? await Task.sleep(for: .seconds(0.2))
-            var hasPendingFiles = false
-            if self.uploadProgress.values.contains(where: { $0.status != .completed && $0.status != .failed }) {
-                hasPendingFiles = true
-            }
-            if !hasPendingFiles {
-                self.state = .completed
-            }
+            checkForCompleteState()
         }
     }
 }

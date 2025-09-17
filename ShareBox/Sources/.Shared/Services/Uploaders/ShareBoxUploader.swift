@@ -17,45 +17,6 @@ class ShareBoxUploader: FileUploader {
         .sharebox
     }
 
-    override func confirmDrop(paths: [FilePath], metadata _: FileUploaderMetaData? = nil) {
-        Task {
-           await self.appendFiles(paths)
-        }
-    }
-
-    override func confirmDrop(providers: [NSItemProvider], metadata _: FileUploaderMetaData? = nil) -> Bool {
-        var hasItemWithURL = false
-        var finalPaths: [FilePath] = []
-        let group = DispatchGroup()
-
-        for provider in providers where provider.hasItemConformingToTypeIdentifier("public.file-url") {
-            hasItemWithURL = true
-            group.enter()
-
-            provider.loadItem(forTypeIdentifier: "public.file-url", options: nil) { (item, _) in
-                defer { group.leave() }
-
-                var path: FilePath?
-                if let data = item as? Data, let url = URL(dataRepresentation: data, relativeTo: nil) {
-                    path = url.toFilePath()
-                } else if let url = item as? URL {
-                    path = url.toFilePath()
-                }
-
-                if path == nil { return }
-                finalPaths.append(path!)
-            }
-        }
-
-        group.notify(queue: .main) {
-            Task {
-               await self.appendFiles(finalPaths)
-            }
-        }
-
-        return hasItemWithURL
-    }
-
     override func complete() {
         // Only show notification + group clipboard if there are actually succesfully uploaded files
         if self.uploadProgress.values.contains(where: { $0.status == .completed }) {
@@ -72,43 +33,30 @@ class ShareBoxUploader: FileUploader {
 
     override func reset() {
         groupDetails = nil
-        pendingFiles.removeAll()
-        uploadProgress.removeAll()
-        droppedFiles.removeAll()
-        state = .idle
+        super.reset()
     }
 
-    /// Filter out duplicates before appending anything
-    private func appendFiles(_ paths: [FilePath]) async {
-        // Filter out all the duplicates
-        let nonDuplicatePaths = paths.filter { path in !self.droppedFiles.contains(where: { $0.absolute == path.absolute }) }
-        self.droppedFiles.append(contentsOf: nonDuplicatePaths)
-        try? await self.processBatch(paths)
-    }
-
-    /// Start processing the given batch with the server
-    private func processBatch(_ files: [FilePath]) async throws {
-        guard !files.isEmpty else { return }
-
+    override func processBatch(paths: [FilePath]) async {
         // If group is already created → upload immediately
         if let group = groupDetails {
-            return await startUpload(files, in: group)
+            return await startUpload(paths, in: group)
         }
 
         // If group is being created → stash the files
         if state == .preparingGroup {
-            pendingFiles.append(contentsOf: files)
+            pendingFiles.append(contentsOf: paths)
             return
         }
 
         // Otherwise, create group first
         guard let group = try? await ensureGroup() else {
-            for path in files {
+            for path in paths {
                 self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [.groupNotFound])
             }
+            checkForCompleteState()
             return
         }
-        await startUpload(files, in: group)
+        await startUpload(paths, in: group)
         // Also flush any files dropped while creating
         if !pendingFiles.isEmpty {
             let extra = pendingFiles
@@ -121,27 +69,8 @@ class ShareBoxUploader: FileUploader {
     // swiftlint:disable:next cyclomatic_complexity function_body_length
     private func startUpload(_ paths: [FilePath], in group: BoxDetails) async {
         self.state = .uploading
-
         // Get all files which are hidden inside folders
-        var onlyFiles: [FilePath] = []
-        paths.forEach {
-            guard let itemURL = URL(string: $0.absolute) else {
-                self.uploadProgress[$0.absolute] = .init(status: .failed, uploadProgress: 100, errors: [.fileNotFound])
-                return
-            }
-            if itemURL.hasDirectoryPath {
-                let parentURL = itemURL.deletingLastPathComponent()
-                let basePath = parentURL.path
-                // For all folders, it should go in and fetch all those children until there are no folders left
-                let files = self.getFilesInFolder(
-                    basePath: "file://\(basePath)/",
-                    url: itemURL
-                )
-                onlyFiles.append(contentsOf: files)
-            } else {
-                onlyFiles.append($0)
-            }
-        }
+        let onlyFiles = self.getFilesFromPaths(paths: paths)
 
         // Notarize each file to the upload progress
         for file in onlyFiles {
@@ -186,7 +115,7 @@ class ShareBoxUploader: FileUploader {
                     await self.uploadSinglePartFile(currentFile, in: group, item: item)
                 }
             }
-
+            checkForCompleteState()
         } catch {
             dataLogger.error("Registering file batch failed: \(error.localizedDescription)")
             // Since the whole batch failed, we error on all the files in this batch at once
@@ -210,6 +139,7 @@ class ShareBoxUploader: FileUploader {
             for file in onlyFiles {
                 self.uploadProgress[file.absolute] = .init(status: .failed, uploadProgress: 100, errors: [foundError])
             }
+            checkForCompleteState()
         }
     }
 
@@ -356,21 +286,6 @@ class ShareBoxUploader: FileUploader {
         checkForCompleteState()
     }
 
-    /// Check with all files if there are any left, if not, we can continue to the complete state
-    private func checkForCompleteState() {
-        Task {
-            try? await Task.sleep(for: .seconds(0.2))
-            // Find any file left not in the completed or failed state
-            var hasPendingFiles = false
-            if self.uploadProgress.values.contains(where: { $0.status != .completed && $0.status != .failed }) {
-                hasPendingFiles = true
-            }
-            if !hasPendingFiles {
-                self.state = .completed
-            }
-        }
-    }
-
     /// Submit a request and read possible Etags
     private func uploadPart(request: URLRequest) async throws -> String {
         let (_, response) = try await URLSession.shared.data(for: request)
@@ -473,4 +388,3 @@ private struct CompleteItem: Codable {
     var uploadId: String?
     var etags: [String]?
 }
-// swiftlint:disable:this file_length

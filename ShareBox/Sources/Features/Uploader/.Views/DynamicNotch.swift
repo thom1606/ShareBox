@@ -18,9 +18,9 @@ struct DynamicNotch<CompactContent: View, SlimContent: View, ExpandedContent: Vi
     @State private var slimSize: CGSize = .zero
     @State private var expandedSize: CGSize = .zero
 
-    @State private var cornerRadii: CGFloat = 1
+    @State private var cornerRadii: CGFloat = 15
     @State private var uiSize: CGSize = .zero
-    @State private var compactOpacity: CGFloat = 0
+    @State private var compactOpacity: CGFloat = 1
     @State private var slimOpacity: CGFloat = 0
     @State private var expandedOpacity: CGFloat = 0
     @State private var globalMonitor: Any?
@@ -104,15 +104,27 @@ struct DynamicNotch<CompactContent: View, SlimContent: View, ExpandedContent: Vi
         .onAppear {
             if localMonitor != nil { NSEvent.removeMonitor(localMonitor!) }
             localMonitor = NSEvent.addLocalMonitorForEvents(matching: [.mouseMoved, .mouseExited], handler: { event in
-                guard let window = NSApp.keyWindow ?? NSApp.windows.first(where: { $0.isVisible }) else { return event }
-                handleRelativeOffset(x: event.locationInWindow.x, y: event.locationInWindow.y - window.frame.minY)
+                if !NSApp.isActive { return event }
+                let mouseLocation = NSEvent.mouseLocation
+                if let screen = NSScreen.screens.first(where: { $0.frame.contains(mouseLocation) }) {
+                    let screenFrame = screen.visibleFrame
+                    let relativeX = mouseLocation.x - screenFrame.origin.x
+                    let relativeY = mouseLocation.y - screenFrame.origin.y
+                    handleRelativeOffset(x: relativeX, y: relativeY)
+                }
                 return event
             })
+
             if globalMonitor != nil { NSEvent.removeMonitor(globalMonitor!) }
-            globalMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.leftMouseDragged]) { event in
-                let point = event.locationInWindow
-                guard let window = NSApp.keyWindow ?? NSApp.windows.first(where: { $0.isVisible }) else { return }
-                handleRelativeOffset(x: point.x, y: point.y - window.frame.minY)
+            globalMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.mouseMoved, .leftMouseDragged]) { _ in
+                if NSApp.isActive { return }
+                let mouseLocation = NSEvent.mouseLocation
+                if let screen = NSScreen.screens.first(where: { $0.frame.contains(mouseLocation) }) {
+                    let screenFrame = screen.visibleFrame
+                    let relativeX = mouseLocation.x - screenFrame.origin.x
+                    let relativeY = mouseLocation.y - screenFrame.origin.y
+                    handleRelativeOffset(x: relativeX, y: relativeY)
+                }
             }
         }
         .onDisappear {
@@ -134,6 +146,7 @@ struct DynamicNotch<CompactContent: View, SlimContent: View, ExpandedContent: Vi
             let topY = contentView.bounds.height / 2 - size.height / 2
             // To allow some extra play in vertically, we add an buffer area of 20 pixels
             let yOverflow: CGFloat = 20
+//            print(posX)
             if posX >= 0, posY >= topY - yOverflow, posX <= size.width, posY <= size.height + topY + yOverflow {
                 return true
             }

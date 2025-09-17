@@ -34,21 +34,35 @@ class FileUploader {
     // Required initializer for generic construction
     required init() {}
 
-    public func stateStream() -> AsyncStream<UploadState> {
+    private func filterFiles(paths: [FilePath]) {
+        // Filter out all the duplicates
+        let nonDuplicatePaths = paths.filter { path in !self.droppedFiles.contains(where: { $0.relative == path.relative }) }
+        print("newly added files", nonDuplicatePaths.map { $0.absolute })
+        self.droppedFiles.append(contentsOf: nonDuplicatePaths)
+        if nonDuplicatePaths.isEmpty { return }
+        Task {
+            await processBatch(paths: nonDuplicatePaths)
+        }
+    }
+
+    // Update publisher for upload state changes
+    public final func stateStream() -> AsyncStream<UploadState> {
         AsyncStream { continuation in
             self.stateContinuation = continuation
             continuation.yield(state)
         }
     }
 
-    public func progressStream() -> AsyncStream<[String: FilePathProgress]> {
+    /// Update publisher for progress updates
+    public final func progressStream() -> AsyncStream<[String: FilePathProgress]> {
         AsyncStream { continuation in
             self.progressContinuation = continuation
             continuation.yield(uploadProgress)
         }
     }
 
-    public func filesStream() -> AsyncStream<[FilePath]> {
+    /// Update publisher for dropped and registered files
+    public final func filesStream() -> AsyncStream<[FilePath]> {
         AsyncStream { continuation in
             self.filesContinuation = continuation
             continuation.yield(droppedFiles)
@@ -56,7 +70,7 @@ class FileUploader {
     }
 
     /// Get files within the given folder path and convert them to FilePath's
-    public func getFilesInFolder(basePath: String, url: URL) -> [FilePath] {
+    private func getFilesInFolder(basePath: String, url: URL) -> [FilePath] {
         var files: [FilePath] = []
         let fileManager = FileManager.default
         var options: FileManager.DirectoryEnumerationOptions = []
@@ -79,24 +93,112 @@ class FileUploader {
         return files
     }
 
+    /// Confirm item drops coming from NSOpenPanel or other internal linking methods
+    public func confirmDrop(paths: [FilePath], metadata: FileUploaderMetaData? = nil) {
+        if let meta = metadata, !receivedMetadata(metadata: meta) {
+            return
+        }
+        self.filterFiles(paths: paths)
+    }
+
+    /// Confirm item drops  coming from file drops
+    public func confirmDrop(providers: [NSItemProvider], metadata: FileUploaderMetaData? = nil) -> Bool {
+        if let meta = metadata, !receivedMetadata(metadata: meta) {
+            return false
+        }
+
+        var hasItemWithURL = false
+        var finalPaths: [FilePath] = []
+        let group = DispatchGroup()
+
+        for provider in providers where provider.hasItemConformingToTypeIdentifier("public.file-url") {
+            hasItemWithURL = true
+            group.enter()
+
+            provider.loadItem(forTypeIdentifier: "public.file-url", options: nil) { (item, _) in
+                defer { group.leave() }
+
+                var path: FilePath?
+                if let data = item as? Data, let url = URL(dataRepresentation: data, relativeTo: nil) {
+                    path = url.toFilePath()
+                } else if let url = item as? URL {
+                    path = url.toFilePath()
+                }
+
+                if path == nil { return }
+                finalPaths.append(path!)
+            }
+        }
+
+        group.notify(queue: .main) {
+            Task {
+               self.filterFiles(paths: finalPaths)
+            }
+        }
+
+        return hasItemWithURL
+    }
+
+    /// Fetch all file paths (without folders) for the given paths
+    public final func getFilesFromPaths(paths: [FilePath]) -> [FilePath] {
+        var onlyFiles: [FilePath] = []
+        paths.forEach {
+            guard let itemURL = URL(string: $0.absolute) else {
+                self.uploadProgress[$0.absolute] = .init(status: .failed, uploadProgress: 100, errors: [.fileNotFound])
+                return
+            }
+            if itemURL.hasDirectoryPath {
+                let parentURL = itemURL.deletingLastPathComponent()
+                let basePath = parentURL.path
+                // For all folders, it should go in and fetch all those children until there are no folders left
+                let files = self.getFilesInFolder(
+                    basePath: "file://\(basePath)/",
+                    url: itemURL
+                )
+                onlyFiles.append(contentsOf: files)
+            } else {
+                onlyFiles.append($0)
+            }
+        }
+        return onlyFiles
+    }
+
+    /// Check with all files if there are any left, if not, we can continue to the complete state
+    public final func checkForCompleteState() {
+        Task {
+            try? await Task.sleep(for: .seconds(0.2))
+            // Find any file left not in the completed or failed state
+            var hasPendingFiles = false
+            if self.uploadProgress.values.contains(where: { $0.status != .completed && $0.status != .failed }) {
+                hasPendingFiles = true
+            }
+            if !hasPendingFiles {
+                self.state = .completed
+            }
+        }
+    }
+
     // Overridable
-    public func confirmDrop(paths _: [FilePath], metadata _: FileUploaderMetaData? = nil) {
-        print("Dropped files on generic FileUploader, not handled")
+    public func processBatch(paths _: [FilePath]) async {
+        print("Proces batch not implemented...")
     }
 
-    public func confirmDrop(providers _: [NSItemProvider], metadata _: FileUploaderMetaData? = nil) -> Bool {
-        print("Dropped files on generic FileUploader, not handled")
-        return false
-    }
-
+    /// Fired after all uploadProgresses are set to either completed or failed
     public func complete() {}
 
+    /// Reset all values and states connecting with the latest upload
     public func reset() {
         uploadProgress.removeAll()
         droppedFiles.removeAll()
         state = .idle
     }
 
+    /// Check newly received metadata and check if that if all values are valid before continueing the file drop
+    public func receivedMetadata(metadata _: FileUploaderMetaData) -> Bool {
+        return true
+    }
+
+    /// Quickly get the type of uploader this is
     public func getId() -> UploaderId {
         return .sharebox
     }
