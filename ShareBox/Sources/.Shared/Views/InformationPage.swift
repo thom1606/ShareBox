@@ -18,13 +18,13 @@ struct InformationPage<C: View>: View {
     @ViewBuilder var content: () -> C
 
     var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             ZStack {
                 Color.clear
                 content()
             }
             HStack {
-                Spacer()
+                Spacer(minLength: 0)
                 if onCancel != nil {
                     Button(action: onCancel!, label: {
                         Text(cancelText)
@@ -57,6 +57,7 @@ private struct CancelButtonStyle: ButtonStyle {
             .foregroundColor(isHovered ? .primary.opacity(0.6) : .primary)
             .font(.body.weight(.medium))
             .opacity(isEnabled ? 1 : 0.4)
+            .background(Color.black.opacity(0.001))
             .onHover { hovering in
                 isHovered = hovering
             }

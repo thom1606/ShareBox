@@ -4,11 +4,11 @@
         <title>ShareBox</title>
         <item>
             <title>1.2.0</title>
-            <pubDate>Thu, 18 Sep 2025 15:40:11 +0200</pubDate>
-            <sparkle:version>19</sparkle:version>
+            <pubDate>Thu, 18 Sep 2025 16:47:28 +0200</pubDate>
+            <sparkle:version>21</sparkle:version>
             <sparkle:shortVersionString>1.2.0</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://assets.shareboxed.app/ShareBox-1.2.0-app.zip" length="5973428" type="application/octet-stream" sparkle:edSignature="rXJSYJPPJ9TedKvo0f9Z9anUi2MDEmLlNCfXHueExVxQSxF+j9UxyyJuMpZ3WoKqfwC1uIDQghXNtt7Gv5ovCA=="/>
+            <enclosure url="https://shareboxed.app/macOS/ShareBox.zip" length="5974462" type="application/octet-stream" sparkle:edSignature="MYFNSLipw9rbOLyY12LRWKixey0aZc+Q3sRO1SMxzWYI+68WPDfrLaTZB0LklvY5YTCW8dtF+jO+O/ufOLuECg=="/>
         </item>
         <item>
             <title>1.1.2</title>

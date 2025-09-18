@@ -75,6 +75,9 @@ struct PriceCard: View {
                 Text(description)
                     .foregroundStyle(.secondary)
                     .padding(.bottom, 12)
+                    .lineLimit(3)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(minWidth: 0, maxWidth: .infinity)
                 VStack(spacing: 6) {
                     ForEach(options, id: \.text) { option in
                         PriceCardRow(option: option)

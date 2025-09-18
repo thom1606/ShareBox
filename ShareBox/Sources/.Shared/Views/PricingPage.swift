@@ -25,7 +25,7 @@ struct PricingPage: View {
     var body: some View {
         InformationPage(cancelText: cancelText, onCancel: onCancel, continueText: continueText, isLoading: user.isLoading, onContinue: onContinue) {
             HStack {
-                VStack(alignment: .leading, spacing: 30) {
+                VStack(alignment: .leading, spacing: 16) {
                     PriceCard(
                         selectedPlan: $selectedPlan,
                         plan: .plus
