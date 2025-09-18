@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-// swiftlint:disable:next type_body_length
 class OneDriveUploader: FileUploader {
     private let apiService = ApiService()
     private var activeProvider: CloudDrive?
@@ -54,7 +53,6 @@ class OneDriveUploader: FileUploader {
             for path in paths {
                 self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [.driveUnauthorized])
             }
-            checkForCompleteState()
             return
         }
         await startUpload(paths, token: token)
@@ -91,7 +89,6 @@ class OneDriveUploader: FileUploader {
                await self.uploadResumableFile(file, token: token)
            }
         }
-        checkForCompleteState()
     }
 
     private func uploadSimpleFile(_ path: FilePath, token: String) async {
@@ -112,7 +109,6 @@ class OneDriveUploader: FileUploader {
             let (data, response) = try await URLSession.shared.data(for: request)
             if let http = response as? HTTPURLResponse, (200...299).contains(http.statusCode) {
                 self.uploadProgress[path.absolute] = .init(status: .completed, uploadProgress: 100)
-                checkForCompleteState()
             } else {
                 #if DEBUG
                 print("OneDrive simple upload error:", (response as? HTTPURLResponse)?.statusCode ?? -1,
@@ -121,11 +117,9 @@ class OneDriveUploader: FileUploader {
                 let status = (response as? HTTPURLResponse)?.statusCode ?? -1
                 let mapped = self.mapOneDriveError(data: data, status: status)
                 self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [mapped])
-                checkForCompleteState()
             }
         } catch {
             self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [.unknown])
-            checkForCompleteState()
         }
     }
 
@@ -152,13 +146,11 @@ class OneDriveUploader: FileUploader {
             guard let httpInit = initResp as? HTTPURLResponse, (200...299).contains(httpInit.statusCode) else {
                 let mapped = self.mapOneDriveError(data: initData, status: (initResp as? HTTPURLResponse)?.statusCode ?? -1)
                 self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [mapped])
-                checkForCompleteState()
                 return
             }
             let session = try JSONDecoder().decode(OneDriveUploadSessionResponse.self, from: initData)
             guard let sessionURL = URL(string: session.uploadUrl) else {
                 self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [.unknown])
-                checkForCompleteState()
                 return
             }
 
@@ -166,7 +158,6 @@ class OneDriveUploader: FileUploader {
             self.uploadProgress[path.absolute] = .init(status: .uploading, uploadProgress: 0)
             guard let fileURL = URL(string: path.absolute) else {
                 self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [.fileNotFound])
-                checkForCompleteState()
                 return
             }
             let handle = try FileHandle(forReadingFrom: fileURL)
@@ -229,29 +220,17 @@ class OneDriveUploader: FileUploader {
                         let mapped = self.mapOneDriveError(data: respData, status: httpPut.statusCode)
                         if mapped == .fileToBig {
                             self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [mapped])
-                            checkForCompleteState()
                             return
                         }
                         throw URLError(.badServerResponse)
                     }
                 } catch {
-                    checkForCompleteState()
                     // No offset recovery API here; fail and let user retry
                     throw error
                 }
             }
-            checkForCompleteState()
         } catch {
             self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [.unknown])
-            checkForCompleteState()
-        }
-    }
-
-    private func updateProgress(path: FilePath, progress: FilePathProgress) {
-        Task {
-            await MainActor.run {
-                uploadProgress[path.absolute] = progress
-            }
         }
     }
 

@@ -34,7 +34,6 @@ class iCloudUploader: FileUploader {
         for file in onlyFiles {
             await self.copyToICloud(file)
         }
-        checkForCompleteState()
     }
 
     // Attempts to get the iCloud ubiquity container's Documents directory with a brief retry to allow iCloud to initialize.
@@ -49,7 +48,7 @@ class iCloudUploader: FileUploader {
         return nil
     }
 
-    // swiftlint:disable:next function_body_length cyclomatic_complexity
+    // swiftlint:disable:next cyclomatic_complexity function_body_length
     private func copyToICloud(_ path: FilePath) async {
         guard let docsRoot = await containerDocumentsURL() else {
             self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [.driveUnauthorized])
@@ -92,52 +91,57 @@ class iCloudUploader: FileUploader {
         let scoped = srcURL.startAccessingSecurityScopedResource()
         defer { if scoped { srcURL.stopAccessingSecurityScopedResource() } }
 
-        let coordinator = NSFileCoordinator()
         var coordError: NSError?
-
-        coordinator.coordinate(readingItemAt: srcURL, options: .withoutChanges, writingItemAt: destURL, options: [], error: &coordError) { readURL, writeURL in
-            do {
-                let attrs = try fileManager.attributesOfItem(atPath: readURL.path)
-                let size = (attrs[.size] as? NSNumber)?.intValue ?? 0
-                if size == 0 {
-                    self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [.fileSizeZero])
-                    checkForCompleteState()
-                    return
+        // Await the completion of file coordination work
+        await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+            let coordinator = NSFileCoordinator()
+            coordinator.coordinate(readingItemAt: srcURL, options: .withoutChanges, writingItemAt: destURL, options: [], error: &coordError) { readURL, writeURL in
+                defer {
+                    continuation.resume()
                 }
 
-                fileManager.createFile(atPath: writeURL.path, contents: nil)
-                guard let read = try? FileHandle(forReadingFrom: readURL),
-                      let write = try? FileHandle(forWritingTo: writeURL) else {
+                do {
+                    let attrs = try fileManager.attributesOfItem(atPath: readURL.path)
+                    let size = (attrs[.size] as? NSNumber)?.intValue ?? 0
+                    if size == 0 {
+                        self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [.fileSizeZero])
+                        return
+                    }
+
+                    fileManager.createFile(atPath: writeURL.path, contents: nil)
+                    guard let read = try? FileHandle(forReadingFrom: readURL),
+                          let write = try? FileHandle(forWritingTo: writeURL) else {
+                        self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [.unknown])
+                        return
+                    }
+                    defer { try? read.close(); try? write.close() }
+
+                    let chunk = 4 * 1024 * 1024
+                    var copied = 0
+                    self.uploadProgress[path.absolute] = .init(status: .uploading, uploadProgress: 0)
+
+                    while true {
+                        do { try Task.checkCancellation() } catch {
+                            // Best effort: mark as failed and stop copying
+                            self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [.unknown])
+                            return
+                        }
+                        let data = try read.read(upToCount: chunk) ?? Data()
+                        if data.isEmpty { break }
+                        try write.write(contentsOf: data)
+                        copied += data.count
+                        let progress = min(100, (Double(copied) / Double(size)) * 100)
+                        self.uploadProgress[path.absolute] = .init(status: .uploading, uploadProgress: progress)
+                    }
+                    self.uploadProgress[path.absolute] = .init(status: .completed, uploadProgress: 100)
+                } catch {
                     self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [.unknown])
-                    checkForCompleteState()
-                    return
                 }
-                defer { try? read.close(); try? write.close() }
-
-                let chunk = 4 * 1024 * 1024
-                var copied = 0
-                self.uploadProgress[path.absolute] = .init(status: .uploading, uploadProgress: 0)
-
-                while true {
-                    try Task.checkCancellation()
-                    let data = try read.read(upToCount: chunk) ?? Data()
-                    if data.isEmpty { break }
-                    try write.write(contentsOf: data)
-                    copied += data.count
-                    let progress = min(100, (Double(copied) / Double(size)) * 100)
-                    self.uploadProgress[path.absolute] = .init(status: .uploading, uploadProgress: progress)
-                }
-                self.uploadProgress[path.absolute] = .init(status: .completed, uploadProgress: 100)
-                checkForCompleteState()
-            } catch {
-                self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [.unknown])
-                checkForCompleteState()
             }
         }
-
         if coordError != nil {
             self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [.unknown])
-            checkForCompleteState()
         }
     }
+
 }

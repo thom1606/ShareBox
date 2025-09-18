@@ -6,11 +6,15 @@ Welcome to **ShareBox**! The easiest and quickest option for sharing files via t
 
 ## What does ShareBox do?
 
-ShareBox is a macOS application that gives you the simple option to upload any file from Finder to the cloud. Just drag & drop or right-click a file and select **Upload to ShareBox**. This creates a new package with those files. After all the files are uploaded, they will become available for **7 days** (configurable for up to a week in the settings) at a uniquely generated URL created just for you!
+ShareBox is a macOS application that gives you the simple option to upload any file from Finder to the cloud. Just drag & drop files to the left side of you screen and start uploading. When dropping files, you get multiple options. Creating a ShareBox package for you to share fiels with others, airdrop or simply upload your files to a cloud drive of your liking.
 
-After the 7 days (or otherwise configured) timeframe, your files and all traces will be **permanently** deleted.
+## What are ShareBox Packages?
 
-![Preview](./assets/sharebox-readme-preview.png)
+ShareBox Packages are small bundles of files you create when uploading files to ShareBox. After doing this, your package will become available for up to 14 days (configurable in the settings) for anyone you share the uniquely generated URL with.
+
+After the expiry date, your package and all traces will be **permanently** deleted.
+
+![Preview](./assets/sharebox-upload-preview.png)
 
 ## Getting Started 🔨
 
@@ -27,9 +31,10 @@ After the 7 days (or otherwise configured) timeframe, your files and all traces 
 - Choose how long your files should be available (24 hours, 48 hours, 3 days, 5 days, 7 days, 2 weeks).
 - Files are protected by pre-signed URLs.
 - After a package expires, all traces are deleted.
+- Upload files to your favorite cloud drive service (iCloud, Dropbox, OneDrive, Google Drive).
 - **Airdrop** files easily.
 
-![Download Preview](./assets/sharebox-box-preview.png)
+![Download Preview](./assets/sharebox-download-preview.png)
 
 ## Feature Requests?
 
@@ -52,4 +57,4 @@ ShareBox is still in active development, but it's already useful for quick and e
 4. File previews for the download page (starting with images).
 5. ~~Pay-as-you-go subscription option. For users who need more than 250 GB per month, I want to help by giving the option to pay per GB after the initial 250 GB has been reached.~~
 6. The ability to cancel an upload.
-7. Upload files to your favorite cloud drives.
+7. ~~Upload files to your favorite cloud drives.~~

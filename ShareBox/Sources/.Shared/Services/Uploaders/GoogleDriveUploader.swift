@@ -51,7 +51,6 @@ class GoogleDriveUploader: FileUploader {
             for path in paths {
                 self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [.driveUnauthorized])
             }
-            checkForCompleteState()
             return
         }
         await startUpload(paths, token: token)
@@ -128,7 +127,6 @@ class GoogleDriveUploader: FileUploader {
             let (data, response) = try await URLSession.shared.data(for: request)
             if let http = response as? HTTPURLResponse, (200...299).contains(http.statusCode) {
                 self.uploadProgress[path.absolute] = .init(status: .completed, uploadProgress: 100)
-                checkForCompleteState()
             } else {
                 #if DEBUG
                 print("Google Drive multipart error:", (response as? HTTPURLResponse)?.statusCode ?? -1,
@@ -137,11 +135,9 @@ class GoogleDriveUploader: FileUploader {
                 let status = (response as? HTTPURLResponse)?.statusCode ?? -1
                 let mapped = self.mapGDriveError(data: data, status: status)
                 self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [mapped])
-                checkForCompleteState()
             }
         } catch {
             self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [.unknown])
-            checkForCompleteState()
         }
     }
 
@@ -171,7 +167,6 @@ class GoogleDriveUploader: FileUploader {
                   let sessionURL = URL(string: location) else {
                 let mapped = self.mapGDriveError(data: initData, status: (initResp as? HTTPURLResponse)?.statusCode ?? -1)
                 self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [mapped])
-                checkForCompleteState()
                 return
             }
 
@@ -179,7 +174,6 @@ class GoogleDriveUploader: FileUploader {
             self.uploadProgress[path.absolute] = .init(status: .uploading, uploadProgress: 0)
             guard let fileURL = URL(string: path.absolute) else {
                 self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [.fileNotFound])
-                checkForCompleteState()
                 return
             }
             let handle = try FileHandle(forReadingFrom: fileURL)
@@ -208,7 +202,6 @@ class GoogleDriveUploader: FileUploader {
                     return 0
                 } else if (200...299).contains(http.statusCode) {
                     self.uploadProgress[path.absolute] = .init(status: .completed, uploadProgress: 100)
-                    checkForCompleteState()
                     return nil
                 }
                 return nil
@@ -260,7 +253,6 @@ class GoogleDriveUploader: FileUploader {
                         let mapped = self.mapGDriveError(data: respData, status: httpPut.statusCode)
                         if mapped == .fileToBig {
                             self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [mapped])
-                            checkForCompleteState()
                             return
                         }
                         throw URLError(.badServerResponse)
@@ -274,18 +266,8 @@ class GoogleDriveUploader: FileUploader {
                     throw error
                 }
             }
-            checkForCompleteState()
         } catch {
             self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [.unknown])
-            checkForCompleteState()
-        }
-    }
-
-    private func updateProgress(path: FilePath, progress: FilePathProgress) {
-        Task {
-            await MainActor.run {
-                uploadProgress[path.absolute] = progress
-            }
         }
     }
 

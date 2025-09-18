@@ -8,6 +8,7 @@
 import SwiftUI
 import Combine
 import UserNotifications
+import AppKit
 
 @Observable class UploaderViewModel {
     public static var shared: UploaderViewModel?
@@ -77,6 +78,8 @@ import UserNotifications
     // Internal
     private var globalContext: GlobalContext?
     private var uploader: FileUploader?
+    private var hasPlayedCompleteSound: Bool = false
+    private var completionSound: NSSound? = NSSound(named: NSSound.Name("Glass"))
 
     // MARK: - Public Methods
     init() {
@@ -127,29 +130,29 @@ import UserNotifications
         }
     }
 
+    public func reset() {
+        self.droppedItems.removeAll()
+        self.forceVisible = false
+        self.globalContext?.forcePreviewUploader = false
+        self.activeUploader?.reset()
+        self.activeUploader = nil
+        self.isUserHovering = false
+        self.hasPlayedCompleteSound = false
+    }
+
+    // MARK: - Private Methods
     private func linkUploader(_ target: FileUploader) {
         self.uploader = target
         Task {
             for await newState in uploader!.stateStream() {
+                if newState == .completed {
+                    await handleComplete()
+                }
                 await MainActor.run {
                     self.uploadState = newState
                     if case .error(let error) = newState {
                         // Wait a second for the UI to change to the error state
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
-                            guard let self = self else { return }
-                            switch error {
-                            case .unauthorized:
-                                self.showUnauthorizedDialog()
-                            case .groupLimitReached:
-                                self.showGroupLimiDialog()
-                            case .noSubscription:
-                                self.showMissingSubscriptionDialog()
-                            case .driveUnauthorized:
-                                self.showDriveUnauthorized()
-                            default:
-                                self.showUnknownErrorDialog()
-                            }
-                        }
+                        handleFailed(withError: error)
                     }
                 }
             }
@@ -172,14 +175,31 @@ import UserNotifications
         }
     }
 
-    // MARK: - Private Methods
-    public func reset() {
-        self.droppedItems.removeAll()
-        self.forceVisible = false
-        self.globalContext?.forcePreviewUploader = false
-        self.activeUploader?.reset()
-        self.activeUploader = nil
-        self.isUserHovering = false
+    private func handleComplete() async {
+        if hasPlayedCompleteSound { return }
+        completionSound?.play()
+        await MainActor.run {
+            hasPlayedCompleteSound = true
+        }
+    }
+
+    private func handleFailed(withError error: PlatformError) {
+        // Wait a second for the UI to change to the error state
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
+            guard let self = self else { return }
+            switch error {
+            case .unauthorized:
+                self.showUnauthorizedDialog()
+            case .groupLimitReached:
+                self.showGroupLimiDialog()
+            case .noSubscription:
+                self.showMissingSubscriptionDialog()
+            case .driveUnauthorized:
+                self.showDriveUnauthorized()
+            default:
+                self.showUnknownErrorDialog()
+            }
+        }
     }
 
     // MARK: - Overlays

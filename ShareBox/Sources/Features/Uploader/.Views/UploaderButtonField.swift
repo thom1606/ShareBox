@@ -35,9 +35,3 @@ struct UploaderButtonField: View {
         .frame(maxWidth: 60, maxHeight: 74)
     }
 }
-
-#Preview {
-    UploaderButtonField(image: Image(systemName: "plus.circle"), onTap: {
-        print("Tapped button")
-    })
-}

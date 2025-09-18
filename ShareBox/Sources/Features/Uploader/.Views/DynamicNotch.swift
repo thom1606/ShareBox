@@ -146,7 +146,6 @@ struct DynamicNotch<CompactContent: View, SlimContent: View, ExpandedContent: Vi
             let topY = contentView.bounds.height / 2 - size.height / 2
             // To allow some extra play in vertically, we add an buffer area of 20 pixels
             let yOverflow: CGFloat = 20
-//            print(posX)
             if posX >= 0, posY >= topY - yOverflow, posX <= size.width, posY <= size.height + topY + yOverflow {
                 return true
             }

@@ -27,6 +27,7 @@ class DropboxUploader: FileUploader {
         }
         return false
     }
+
     override func reset() {
         activeProvider = nil
         accessToken = nil
@@ -53,7 +54,6 @@ class DropboxUploader: FileUploader {
             for path in paths {
                 self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [.driveUnauthorized])
             }
-            checkForCompleteState()
             return
         }
         await startUpload(paths, token: token)
@@ -91,7 +91,6 @@ class DropboxUploader: FileUploader {
                await self.uploadResumableFile(file, token: token)
            }
         }
-        checkForCompleteState()
     }
 
     private func uploadSimpleFile(_ path: FilePath, token: String) async {
@@ -122,7 +121,6 @@ class DropboxUploader: FileUploader {
             let (data, response) = try await URLSession.shared.data(for: request)
             if let http = response as? HTTPURLResponse, (200...299).contains(http.statusCode) {
                 self.uploadProgress[path.absolute] = .init(status: .completed, uploadProgress: 100)
-                checkForCompleteState()
             } else {
                 #if DEBUG
                 print("Dropbox simple upload error:", (response as? HTTPURLResponse)?.statusCode ?? -1,
@@ -131,11 +129,9 @@ class DropboxUploader: FileUploader {
                 let status = (response as? HTTPURLResponse)?.statusCode ?? -1
                 let mapped = self.mapDropboxError(data: data, status: status)
                 self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [mapped])
-                checkForCompleteState()
             }
         } catch {
             self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [.unknown])
-            checkForCompleteState()
         }
     }
 
@@ -145,7 +141,6 @@ class DropboxUploader: FileUploader {
             let details = path.details()
             guard let fileURL = URL(string: path.absolute) else {
                 self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [.fileNotFound])
-                checkForCompleteState()
                 return
             }
             let handle = try FileHandle(forReadingFrom: fileURL)
@@ -176,7 +171,6 @@ class DropboxUploader: FileUploader {
             guard let httpStart = startResp as? HTTPURLResponse, (200...299).contains(httpStart.statusCode) else {
                 let mapped = self.mapDropboxError(data: startData, status: (startResp as? HTTPURLResponse)?.statusCode ?? -1)
                 self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [mapped])
-                checkForCompleteState()
                 return
             }
             let session = try JSONDecoder().decode(DropboxSessionStartResponse.self, from: startData)
@@ -209,7 +203,6 @@ class DropboxUploader: FileUploader {
                     let mapped = self.mapDropboxError(data: respData, status: (resp as? HTTPURLResponse)?.statusCode ?? -1)
                     if mapped == .fileToBig {
                         self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [mapped])
-                        checkForCompleteState()
                         return
                     }
                     throw URLError(.badServerResponse)
@@ -248,23 +241,12 @@ class DropboxUploader: FileUploader {
                 #endif
                 let mapped = self.mapDropboxError(data: finishData, status: (finishResp as? HTTPURLResponse)?.statusCode ?? -1)
                 self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [mapped])
-                checkForCompleteState()
                 return
             }
 
             self.uploadProgress[path.absolute] = .init(status: .completed, uploadProgress: 100)
-            checkForCompleteState()
         } catch {
             self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [.unknown])
-            checkForCompleteState()
-        }
-    }
-
-    private func updateProgress(path: FilePath, progress: FilePathProgress) {
-        Task {
-            await MainActor.run {
-                uploadProgress[path.absolute] = progress
-            }
         }
     }
 

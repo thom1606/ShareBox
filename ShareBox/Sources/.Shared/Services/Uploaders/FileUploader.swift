@@ -34,17 +34,6 @@ class FileUploader {
     // Required initializer for generic construction
     required init() {}
 
-    private func filterFiles(paths: [FilePath]) {
-        // Filter out all the duplicates
-        let nonDuplicatePaths = paths.filter { path in !self.droppedFiles.contains(where: { $0.relative == path.relative }) }
-        print("newly added files", nonDuplicatePaths.map { $0.absolute })
-        self.droppedFiles.append(contentsOf: nonDuplicatePaths)
-        if nonDuplicatePaths.isEmpty { return }
-        Task {
-            await processBatch(paths: nonDuplicatePaths)
-        }
-    }
-
     // Update publisher for upload state changes
     public final func stateStream() -> AsyncStream<UploadState> {
         AsyncStream { continuation in
@@ -166,13 +155,12 @@ class FileUploader {
     /// Check with all files if there are any left, if not, we can continue to the complete state
     public final func checkForCompleteState() {
         Task {
-            try? await Task.sleep(for: .seconds(0.2))
             // Find any file left not in the completed or failed state
             var hasPendingFiles = false
             if self.uploadProgress.values.contains(where: { $0.status != .completed && $0.status != .failed }) {
                 hasPendingFiles = true
             }
-            if !hasPendingFiles {
+            if !hasPendingFiles && self.state == .uploading {
                 self.state = .completed
             }
         }
@@ -201,6 +189,17 @@ class FileUploader {
     /// Quickly get the type of uploader this is
     public func getId() -> UploaderId {
         return .sharebox
+    }
+
+    private func filterFiles(paths: [FilePath]) {
+        // Filter out all the duplicates
+        let nonDuplicatePaths = paths.filter { path in !self.droppedFiles.contains(where: { $0.relative == path.relative }) }
+        self.droppedFiles.append(contentsOf: nonDuplicatePaths)
+        if nonDuplicatePaths.isEmpty { return }
+        Task {
+            await processBatch(paths: nonDuplicatePaths)
+            checkForCompleteState()
+        }
     }
 }
 

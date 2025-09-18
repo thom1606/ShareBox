@@ -18,7 +18,11 @@ struct OnboardingSignInView: View {
         SignInPage(onCancel: {
             self.pageSelection += 3
         }, onContinue: {
-            self.pageSelection += 1
+            if user.subscriptionData?.status ?? .inactive == .active {
+                self.pageSelection += 3
+            } else {
+                self.pageSelection += 1
+            }
         })
     }
 }

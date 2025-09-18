@@ -53,7 +53,6 @@ class ShareBoxUploader: FileUploader {
             for path in paths {
                 self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [.groupNotFound])
             }
-            checkForCompleteState()
             return
         }
         await startUpload(paths, in: group)
@@ -115,7 +114,6 @@ class ShareBoxUploader: FileUploader {
                     await self.uploadSinglePartFile(currentFile, in: group, item: item)
                 }
             }
-            checkForCompleteState()
         } catch {
             dataLogger.error("Registering file batch failed: \(error.localizedDescription)")
             // Since the whole batch failed, we error on all the files in this batch at once
@@ -139,7 +137,6 @@ class ShareBoxUploader: FileUploader {
             for file in onlyFiles {
                 self.uploadProgress[file.absolute] = .init(status: .failed, uploadProgress: 100, errors: [foundError])
             }
-            checkForCompleteState()
         }
     }
 
@@ -160,43 +157,44 @@ class ShareBoxUploader: FileUploader {
             // Start updating the progress
             self.uploadProgress[path.absolute] = .init(status: .uploading)
 
-            let uploadTask = URLSession.shared.uploadTask(with: request, from: fileData) { [updateProgress, handleComplete, uploadSinglePartFile, checkForCompleteState] _, response, error in
-                Task {
-                    if let error = error {
-                        dataLogger.error("Upload failed with some internal error: \(error.localizedDescription)")
-                        if tryCount < 3 {
-                            try? await Task.sleep(for: .seconds(1))
-                            await uploadSinglePartFile(path, group, item, tryCount + 1)
+            await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+                let uploadTask = URLSession.shared.uploadTask(with: request, from: fileData) { [updateProgress, handleComplete, uploadSinglePartFile] _, response, error in
+                    Task {
+                        if let error = error {
+                            dataLogger.error("Upload failed with some internal error: \(error.localizedDescription)")
+                            if tryCount < 3 {
+                                try? await Task.sleep(for: .seconds(1))
+                                await uploadSinglePartFile(path, group, item, tryCount + 1)
+                            } else {
+                                try? await Task.sleep(for: .seconds(1))
+                                await updateProgress(path, .init(status: .failed, uploadProgress: 100, errors: [.s3Failed]))
+                            }
+                        } else if let httpResponse = response as? HTTPURLResponse, !(200...299).contains(httpResponse.statusCode) {
+                            dataLogger.error("Upload failed, got an invalid status code back from S3: \(httpResponse.statusCode)")
+                            if tryCount < 3 {
+                                try? await Task.sleep(for: .seconds(1))
+                                await uploadSinglePartFile(path, group, item, tryCount + 1)
+                            } else {
+                                try? await Task.sleep(for: .seconds(1))
+                                await updateProgress(path, .init(status: .failed, uploadProgress: 100, errors: [.s3Failed]))
+                            }
                         } else {
-                            try? await Task.sleep(for: .seconds(1))
-                            updateProgress(path, .init(status: .failed, uploadProgress: 100, errors: [.s3Failed]))
-                            checkForCompleteState()
+                            // Complete the upload
+                            await handleComplete(group, .init(id: item.id, path: path))
                         }
-                    } else if let httpResponse = response as? HTTPURLResponse, !(200...299).contains(httpResponse.statusCode) {
-                        dataLogger.error("Upload failed, got an invalid status code back from S3: \(httpResponse.statusCode)")
-                        if tryCount < 3 {
-                            try? await Task.sleep(for: .seconds(1))
-                            await uploadSinglePartFile(path, group, item, tryCount + 1)
-                        } else {
-                            try? await Task.sleep(for: .seconds(1))
-                            updateProgress(path, .init(status: .failed, uploadProgress: 100, errors: [.s3Failed]))
-                            checkForCompleteState()
-                        }
-                    } else {
-                        // Complete the upload
-                        await handleComplete(group, .init(id: item.id))
-                        updateProgress(path, .init(status: .completed, uploadProgress: 100))
+                        continuation.resume()
                     }
                 }
+                progressCancellables[path.absolute]?.cancel()
+                progressCancellables[path.absolute] = nil
+                progressCancellables[path.absolute] = uploadTask.progress.publisher(for: \.fractionCompleted)
+                    .receive(on: DispatchQueue.main).sink { [updateProgress] fraction in
+                        Task {
+                            await updateProgress(path, .init(status: .uploading, uploadProgress: fraction * 100))
+                        }
+                    }
+                uploadTask.resume()
             }
-
-            progressCancellables[path.absolute]?.cancel()
-            progressCancellables[path.absolute] = nil
-            progressCancellables[path.absolute] = uploadTask.progress.publisher(for: \.fractionCompleted)
-                .receive(on: DispatchQueue.main).sink { [updateProgress] fraction in
-                    updateProgress(path, .init(status: .uploading, uploadProgress: fraction * 100))
-                }
-            uploadTask.resume()
         } catch {
             self.uploadProgress[path.absolute] = .init(status: .failed, uploadProgress: 100, errors: [.s3Failed])
         }
@@ -252,8 +250,7 @@ class ShareBoxUploader: FileUploader {
             }
 
             // Complete the upload
-            await self.handleComplete(in: group, item: .init(id: item.id, uploadId: item.uploadId, etags: etags))
-            self.uploadProgress[path.absolute] = .init(status: .completed, uploadProgress: 100)
+            await self.handleComplete(in: group, item: .init(id: item.id, uploadId: item.uploadId, etags: etags, path: path))
         } catch {
             // Upload failed, show error on item
             generalLogger.error("Failed to upload multipart file: \(error.localizedDescription)")
@@ -271,8 +268,7 @@ class ShareBoxUploader: FileUploader {
         self.uploadProgress[path.absolute] = .init(status: .uploading, uploadProgress: 100)
         try? await Task.sleep(for: .seconds(1))
         // Mark the file as completed
-        await self.handleComplete(in: group, item: .init(id: item.id, uploadId: item.uploadId, etags: ["\"dummy\""]))
-        self.uploadProgress[path.absolute] = .init(status: .completed, uploadProgress: 100)
+        await self.handleComplete(in: group, item: .init(id: item.id, uploadId: item.uploadId, etags: ["\"dummy\""], path: path))
     }
 
     /// Mark the item as complete
@@ -282,8 +278,7 @@ class ShareBoxUploader: FileUploader {
             "uploadId": item.uploadId,
             "etags": item.etags
         ]) as ApiService.BasicSuccessResponse
-
-        checkForCompleteState()
+        await updateProgress(path: item.path, progress: .init(status: .completed, uploadProgress: 100))
     }
 
     /// Submit a request and read possible Etags
@@ -297,9 +292,9 @@ class ShareBoxUploader: FileUploader {
         return etag
     }
 
-    private func updateProgress(path: FilePath, progress: FilePathProgress) {
-        Task {
-            await MainActor.run {
+    private func updateProgress(path: FilePath, progress: FilePathProgress) async {
+        await MainActor.run {
+            if let item = uploadProgress[path.absolute], item.status != .completed && item.status != .failed {
                 uploadProgress[path.absolute] = progress
             }
         }
@@ -387,4 +382,5 @@ private struct CompleteItem: Codable {
     var id: String
     var uploadId: String?
     var etags: [String]?
+    var path: FilePath
 }
