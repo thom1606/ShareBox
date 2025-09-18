@@ -1,0 +1,46 @@
+//
+//  OnboardingFinalPage.swift
+//  ShareBox
+//
+//  Created by Thom van den Broek on 17/08/2025.
+//
+
+import SwiftUI
+
+struct OnboardingFinalPage: View {
+    @Environment(GlobalContext.self) private var globalContext
+    @Environment(\.dismissWindow) private var dismissWindow
+
+    var body: some View {
+        InformationPage(continueText: "Let's go!", onContinue: handleContinue) {
+            HStack {
+                VStack(alignment: .leading, spacing: 30) {
+                    VStack(alignment: .leading, spacing: 5) {
+                        Text("You're ready!")
+                            .fontDesign(.serif)
+                            .font(.largeTitle)
+                            .fontWeight(.bold)
+                        Text("Start dragging files to the left edge of your screen to start sharing files using **ShareBox**.")
+                            .foregroundStyle(.secondary)
+                            .font(.title3)
+                    }
+                }
+                .frame(width: 350)
+                VStack {
+                    Image(systemName: "play.circle")
+                        .foregroundStyle(.primary.opacity(0.3))
+                        .font(.system(size: 250))
+                }
+                .frame(maxWidth: .infinity)
+            }
+            .padding(.leading, 32)
+            .padding(.top, 48)
+        }
+    }
+
+    private func handleContinue() {
+        UserDefaults.standard.set(true, forKey: Constants.Settings.completedOnboardingPrefKey)
+        globalContext.forcePreviewUploader = true
+        dismissWindow()
+    }
+}

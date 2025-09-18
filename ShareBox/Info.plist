@@ -4,6 +4,10 @@
 <dict>
 	<key>BASE_URL</key>
 	<string>$(BASE_URL)</string>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>en</string>
+	</array>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -15,16 +19,32 @@
 			</array>
 		</dict>
 	</array>
+	<key>CF_ACCESS_CLIENT_ID</key>
+	<string>$(CF_ACCESS_CLIENT_ID)</string>
+	<key>CF_ACCESS_CLIENT_SECRET</key>
+	<string>$(CF_ACCESS_CLIENT_SECRET)</string>
 	<key>NSSupportsAutomaticTermination</key>
 	<false/>
 	<key>NSSupportsSuddenTermination</key>
 	<false/>
+	<key>NSUbiquitousContainers</key>
+	<dict>
+		<key>iCloud.ShareBox</key>
+		<dict>
+			<key>NSUbiquitousContainerIsDocumentScopePublic</key>
+			<true/>
+			<key>NSUbiquitousContainerName</key>
+			<string>ShareBox</string>
+			<key>NSUbiquitousContainerSupportedFolderLevels</key>
+			<string>Any</string>
+		</dict>
+	</dict>
 	<key>SUEnableDownloaderService</key>
 	<true/>
 	<key>SUEnableInstallerLauncherService</key>
 	<true/>
 	<key>SUFeedURL</key>
-	<string>https://raw.githubusercontent.com/thom1606/ShareBox/refs/heads/main/Builds/appcast.xml</string>
+	<string>https://shareboxed.app/macOS/appcast.xml</string>
 	<key>SUPublicEDKey</key>
 	<string>8jnb+oJxxlzxCefWv7iPQni/4WDGvw/zTSPHm9+5HiE=</string>
 	<key>UPLOAD_S3</key>

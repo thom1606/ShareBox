@@ -9,26 +9,28 @@ import SwiftUI
 import ThomKit
 
 struct OnboardingView: View {
-    var user: User
-
-    private let api = ApiService()
     // Properties
-    @AppStorage(Constants.Settings.keepInDockPrefKey) private var keepInDock = false
+    private let api = ApiService()
     @State private var selection = 0
+    @State private var selectedPlan: Plan = .pro
+    @Environment(User.self) var user
 
     var body: some View {
         FrostedWindow {
-            PagingView(selection: $selection, pageCount: 6) {
-                OnboardingWelcomeView(pageSelection: $selection, user: user, isLoading: user.isLoading)
+            PagingView(selection: $selection) {
+                OnboardingWelcomeView(pageSelection: $selection, isLoading: user.isLoading)
                     .tag(0)
-                OnboardingSignInView(pageSelection: $selection, user: user)
-                    .tag(1)
                 OnboardingExperienceView(pageSelection: $selection)
+                    .tag(1)
+                OnboardingSignInView(pageSelection: $selection)
                     .tag(2)
-                OnboardingSecureView(pageSelection: $selection, user: user)
+                    .opacity(user.authenticated ? 0 : 1)
+                OnboardingPricingView(pageSelection: $selection, selectedPlan: $selectedPlan)
                     .tag(3)
-                OnboardingSubscribeView(pageSelection: $selection, user: user)
+                    .opacity(user.authenticated && (user.subscriptionData?.status ?? .inactive) != .active ? 1 : 0)
+                OnboardingConfirmView(pageSelection: $selection, selectedPlan: selectedPlan)
                     .tag(4)
+                    .opacity(user.authenticated && (user.subscriptionData?.status ?? .inactive) != .active ? 1 : 0)
                 OnboardingFinalPage()
                     .tag(5)
             }
@@ -37,17 +39,5 @@ struct OnboardingView: View {
         .background(WindowAccessor { window in
             window.titleVisibility = .hidden
         })
-        .onAppear {
-            NSApplication.shared.setActivationPolicy(.regular)
-        }
-        .onDisappear {
-            if !keepInDock {
-                NSApplication.shared.setActivationPolicy(.accessory)
-            }
-        }
     }
-}
-
-#Preview {
-    OnboardingView(user: .init())
 }

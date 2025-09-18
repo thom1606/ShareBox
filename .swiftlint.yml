@@ -5,10 +5,11 @@ disabled_rules:
 opt_in_rules:
   - empty_count
   - explicit_init
+  - unused_parameter
+analyzer_rules:
+  - unused_declaration
 included:
   - "ShareBox/Sources/**"
-  - "ShareBox.Finder/**"
-  - "ShareBox.Helper/**"
 excluded:
   - Carthage
   - Pods

@@ -9,47 +9,50 @@ import SwiftUI
 import Sparkle
 
 struct SettingsView: View {
+    @Environment(GlobalContext.self) private var globalContext
+
     var updater: SPUUpdater
     var user: User
 
-    // Properties
-    @AppStorage(Constants.Settings.keepInDockPrefKey) private var keepInDock = false
-
     var body: some View {
+        @Bindable var context = globalContext
         ZStack {
             Color.clear
-            TabView {
+            TabView(selection: $context.settingsTab) {
                 GeneralSettingsView(updater: updater, user: user)
                     .tabItem {
                         Label("Preferences", systemImage: "gear")
                     }
+                    .tag(SettingsTab.preferences)
+                DrivesSettingsView()
+                    .tabItem {
+                        Label("Drives", systemImage: "cloud.fill")
+                    }
+                    .tag(SettingsTab.drives)
                 AccountSettingsView(user: user)
                     .tabItem {
                         Label("Account", systemImage: "person.circle")
                     }
-                BoxesSettingsView(user: user)
+                    .tag(SettingsTab.account)
+                PackagesSettingsView(user: user)
                     .tabItem {
-                        Label("Boxes", systemImage: "shippingbox.fill")
+                        Label("Packages", systemImage: "shippingbox.fill")
                     }
+                    .tag(SettingsTab.packages)
                 AboutSettingsView()
                     .tabItem {
                         Label("About", systemImage: "info.circle.fill")
                     }
-            }
-        }
-        .onAppear {
-            NSApplication.shared.setActivationPolicy(.regular)
-        }
-        .onDisappear {
-            if !keepInDock {
-                NSApplication.shared.setActivationPolicy(.accessory)
+                    .tag(SettingsTab.about)
             }
         }
     }
 }
 
-#Preview {
-    let mockUpdater = SPUStandardUpdaterController(startingUpdater: false, updaterDelegate: nil, userDriverDelegate: nil).updater
-
-    SettingsView(updater: mockUpdater, user: .init())
+enum SettingsTab {
+    case preferences
+    case drives
+    case account
+    case packages
+    case about
 }

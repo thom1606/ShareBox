@@ -13,6 +13,9 @@ class MouseListener {
     private var timer: Timer?
     private var timedPaused: Bool = false
 
+    private var globalMonitor: Any?
+    private var localMonitor: Any?
+
     public var paused: Bool = false {
         didSet {
             if paused {
@@ -29,8 +32,16 @@ class MouseListener {
     func startTrackingMouse(window: NSWindow) {
         self.window = window
         self.updateWindowPosition()
-        mouseMonitor = NSEvent.addGlobalMonitorForEvents(matching: .mouseMoved) { [weak self] _ in
-            self?.updateWindowPosition()
+        if localMonitor != nil { NSEvent.removeMonitor(globalMonitor!) }
+        localMonitor = NSEvent.addLocalMonitorForEvents(matching: [.mouseMoved]) { event in
+            if !NSApp.isActive { return event }
+            self.updateWindowPosition()
+            return event
+        }
+        if globalMonitor != nil { NSEvent.removeMonitor(globalMonitor!) }
+        globalMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.mouseMoved]) { _ in
+            if NSApp.isActive { return }
+            self.updateWindowPosition()
         }
     }
 

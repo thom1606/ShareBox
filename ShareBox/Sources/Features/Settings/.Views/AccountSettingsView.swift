@@ -12,7 +12,9 @@ struct AccountSettingsView: View {
 
     private let api = ApiService()
     @State private var loadingBilling = false
-    @State private var loadingSubscribe = false
+    @State private var loadingRestore = false
+    @State private var presentingRestoreAlert = false
+    @Environment(\.openWindow) private var openWindow
     @AppStorage(Constants.Settings.passwordPrefKey) private var boxPassword = ""
     @AppStorage(Constants.Settings.storagePrefKey) private var storageDuration = "3_days"
     @AppStorage(Constants.Settings.overMonthlyLimitStoragePrefKey) private var overMonthlyLimitStorage = false
@@ -35,22 +37,32 @@ struct AccountSettingsView: View {
         }
     }
 
-    private func subscribe() {
-        if self.loadingSubscribe { return }
-        withAnimation { self.loadingSubscribe = true }
+    private func restorePurchases() {
+        if self.loadingRestore { return }
+        self.presentingRestoreAlert = false
+        withAnimation { self.loadingRestore = true }
         Task {
-            do {
-                let res: SubscribeResponse = try await api.get(endpoint: "/api/subscribe")
-                NSWorkspace.shared.open(URL(string: res.url)!)
-                DispatchQueue.main.async {
-                    withAnimation { self.loadingSubscribe = false }
-                }
-            } catch {
-                DispatchQueue.main.async {
-                    withAnimation { self.loadingSubscribe = false }
+            await user.refresh()
+            DispatchQueue.main.async {
+                withAnimation { self.loadingRestore = false }
+                if user.authenticated {
+                    self.presentingRestoreAlert = true
                 }
             }
         }
+    }
+
+    private func subscribe() {
+        openWindow(id: "subscribe")
+    }
+
+    private var subscriptionName: String {
+        guard let subscriptionData = user.subscriptionData else {
+            return "Free"
+        }
+        if subscriptionData.plan == "plus" { return "ShareBox+" }
+        if subscriptionData.plan == "pro" { return "ShareBox Pro" }
+        return "Legacy"
     }
 
     var body: some View {
@@ -76,11 +88,13 @@ struct AccountSettingsView: View {
                         Text("Name")
                         Spacer()
                         Text(user.userData?.fullName ?? "?")
+                            .foregroundStyle(.secondary)
                     }
                     HStack {
                         Text("Email")
                         Spacer()
                         Text(user.userData?.email ?? "?")
+                            .foregroundStyle(.secondary)
                     }
                     HStack {
                         Spacer()
@@ -92,6 +106,12 @@ struct AccountSettingsView: View {
             }
             if user.authenticated && user.userData != nil {
                 Section(header: Text("Subscription")) {
+                    HStack {
+                        Text("Current plan")
+                        Spacer()
+                        Text(subscriptionName)
+                            .foregroundStyle(.secondary)
+                    }
                     if (user.subscriptionData?.status ?? .inactive) != .active {
                         HStack {
                             Text("Subscribe to ShareBox")
@@ -99,24 +119,22 @@ struct AccountSettingsView: View {
                             Button(action: subscribe, label: {
                                 ZStack {
                                     Text("Subscribe")
-                                        .opacity(loadingSubscribe ? 0 : 1)
-                                    ProgressView()
-                                        .controlSize(.small)
-                                        .opacity(loadingSubscribe ? 1 : 0)
                                 }
                             })
                         }
                     } else {
-                        Toggle(isOn: $overMonthlyLimitStorage) {
-                            VStack(alignment: .leading) {
-                                Text("Pay-as-you-go storage")
-                                Text("Allow to spend €0.03/GB for uploads past the 250GB monthly limit.")
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
+                        if user.subscriptionData?.plan == "pro" {
+                            Toggle(isOn: $overMonthlyLimitStorage) {
+                                VStack(alignment: .leading) {
+                                    Text("Pay-as-you-go storage")
+                                    Text("Allow to spend €0.03/GB for uploads past the 250GB monthly limit.")
+                                        .font(.subheadline)
+                                        .foregroundColor(.secondary)
+                                }
                             }
-                        }
-                        .onChange(of: overMonthlyLimitStorage) {
-                            user.updateSettings(password: boxPassword, storageDuration: storageDuration, overMonthlyLimitStorage: overMonthlyLimitStorage)
+                            .onChange(of: overMonthlyLimitStorage) {
+                                user.updateSettings(password: boxPassword, storageDuration: storageDuration, overMonthlyLimitStorage: overMonthlyLimitStorage)
+                            }
                         }
                     }
                     HStack {
@@ -131,6 +149,22 @@ struct AccountSettingsView: View {
                                     .opacity(loadingBilling ? 1 : 0)
                             }
                         })
+                    }
+                    HStack {
+                        Text("Restore Purchases")
+                        Spacer()
+                        Button(action: restorePurchases, label: {
+                            ZStack {
+                                Text("Restore")
+                                    .opacity(loadingRestore ? 0 : 1)
+                                ProgressView()
+                                    .controlSize(.small)
+                                    .opacity(loadingRestore ? 1 : 0)
+                            }
+                        })
+                    }
+                    .alert(isPresented: $presentingRestoreAlert) {
+                        Alert(title: Text("Purchases restored"), message: Text("Your purchases have been restored successfully."))
                     }
                 }
             }

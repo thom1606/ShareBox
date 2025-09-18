@@ -1,2 +1,3 @@
 Configuration/Release.xcconfig
+Configuration/Debug.xcconfig
 ShareBox.app

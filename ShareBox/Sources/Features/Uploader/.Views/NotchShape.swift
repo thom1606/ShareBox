@@ -2,45 +2,35 @@
 //  NotchShape.swift
 //  ShareBox
 //
-//  Created by Thom van den Broek on 11/08/2025.
+//  Created by Thom van den Broek on 15/09/2025.
 //
 
 import SwiftUI
 
 struct NotchShape: Shape {
-    var pulloutPercentage: CGFloat = 0
+    var cornerRadii: CGFloat
 
     var animatableData: CGFloat {
-        get { pulloutPercentage }
-        set { pulloutPercentage = newValue }
-    }
-
-    private var xWidth: CGFloat {
-        Utilities.map(minRange: 0, maxRange: 1, minDomain: 13, maxDomain: Constants.Uploader.windowWidth, value: animatableData)
-    }
-
-    private var smallOffset: CGFloat {
-        Utilities.map(minRange: 0, maxRange: 1, minDomain: 40, maxDomain: 0, value: animatableData)
+        get { cornerRadii }
+        set { cornerRadii = newValue }
     }
 
     func path(in rect: CGRect) -> Path {
-        let pointOffset: CGFloat = 100
-        let controlOffset: CGFloat = 25
-
         var path = Path()
 
-        path.move(to: CGPoint(x: rect.minX, y: rect.minY + smallOffset))
-        path.addCurve(
-            to: CGPoint(x: xWidth, y: rect.minY + pointOffset),
-            control1: CGPoint(x: rect.minX, y: rect.minY + pointOffset - controlOffset),
-            control2: CGPoint(x: xWidth, y: rect.minY + controlOffset + smallOffset)
-        )
-        path.addLine(to: CGPoint(x: xWidth, y: rect.maxY - pointOffset))
-        path.addCurve(
-            to: CGPoint(x: rect.minX, y: rect.maxY - smallOffset),
-            control1: CGPoint(x: xWidth, y: rect.maxY - controlOffset - smallOffset),
-            control2: CGPoint(x: rect.minX, y: rect.maxY - pointOffset + controlOffset)
-        )
+        let curveSize = cornerRadii
+        let maxX: CGFloat = rect.maxX
+
+        path.move(to: .init(x: 0, y: -curveSize))
+        path.addQuadCurve(to: .init(x: curveSize, y: 0), control: .init(x: 0, y: 0))
+        path.addLine(to: .init(x: maxX - curveSize, y: 0))
+        path.addQuadCurve(to: .init(x: maxX, y: curveSize), control: .init(x: maxX, y: 0))
+
+        path.addLine(to: .init(x: maxX, y: rect.maxY - curveSize))
+        path.addQuadCurve(to: .init(x: maxX - curveSize, y: rect.maxY), control: .init(x: maxX, y: rect.maxY))
+        path.addLine(to: .init(x: curveSize, y: rect.maxY))
+        path.addQuadCurve(to: .init(x: 0, y: rect.maxY + curveSize), control: .init(x: 0, y: rect.maxY))
+
         path.closeSubpath()
         return path
     }

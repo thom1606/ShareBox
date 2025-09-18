@@ -15,37 +15,43 @@ struct ShareBoxApp: App {
     
     // Properties
     private let updaterController: SPUStandardUpdaterController
-    @AppStorage(Constants.Settings.keepInDockPrefKey) private var keepInDock = false
     @State private var user = User()
+    @State private var globalContext = GlobalContext()
+
+    @State private var onboardingVisible: Bool = false { didSet { updateDock() } }
+    @State private var settingsVisible: Bool = false { didSet { updateDock() } }
+    @State private var subscribeVisible: Bool = false { didSet { updateDock() } }
 
     init() {
         // Initialize variables
         updaterController = SPUStandardUpdaterController(startingUpdater: true, updaterDelegate: nil, userDriverDelegate: nil)
-        
-        // For release we only allow up to 1 instance running at a time
-        #if RELEASE
-        if isAnotherInstanceRunning() {
-            NSApp.terminate(nil)
-        }
-        #endif
 
         // Setup local handlers
         UNUserNotificationCenter.current().delegate = NotificationDelegate.shared
-        if keepInDock {
+        NSApplication.shared.setActivationPolicy(.accessory)
+    }
+
+    private func isAnotherInstanceRunning() -> Bool {
+        let runningApps = NSRunningApplication.runningApplications(withBundleIdentifier: Bundle.main.bundleIdentifier ?? "")
+        return runningApps.count > 1
+    }
+
+    private func updateDock() {
+        if onboardingVisible || settingsVisible || subscribeVisible {
             NSApplication.shared.setActivationPolicy(.regular)
         } else {
             NSApplication.shared.setActivationPolicy(.accessory)
         }
     }
-    
-    private func isAnotherInstanceRunning() -> Bool {
-        let runningApps = NSRunningApplication.runningApplications(withBundleIdentifier: Bundle.main.bundleIdentifier ?? "")
-        return runningApps.count > 1
-    }
-    
+
     var body: some Scene {
         Window("Uploader", id: "uploader") {
-            UploaderView()
+            AppManager {
+                UploaderView()
+            }
+            .frame(width: Constants.Uploader.windowWidth)
+            .environment(user)
+            .environment(globalContext)
         }
         .windowResizability(.contentSize)
         .commands {
@@ -58,12 +64,45 @@ struct ShareBoxApp: App {
         }
 
         Window("Onboarding", id: "onboarding") {
-            OnboardingView(user: user)
+            OnboardingView()
+                .environment(user)
+                .environment(globalContext)
+                .onAppear {
+                    onboardingVisible = true
+                }
+                .onDisappear {
+                    onboardingVisible = false
+                }
         }
         .windowResizability(.contentSize)
 
+        Window("Subscribe", id: "subscribe") {
+            SubscribeView()
+                .environment(user)
+                .environment(globalContext)
+                .onAppear {
+                    subscribeVisible = true
+                }
+                .onDisappear {
+                    subscribeVisible = false
+                }
+        }
+        .windowResizability(.contentSize)
+
+        ShareBoxMenu(updater: updaterController.updater)
+            .environment(user)
+            .environment(globalContext)
+
         Settings {
             SettingsView(updater: updaterController.updater, user: user)
+                .environment(user)
+                .environment(globalContext)
+                .onAppear {
+                    settingsVisible = true
+                }
+                .onDisappear {
+                    settingsVisible = false
+                }
         }
         .defaultSize(width: 600, height: 600)
         .defaultPosition(.center)
@@ -133,7 +172,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                         }
                     }
                 }
-            } else if url.scheme == "sharebox" && url.host == "subscribed" {
+            } else if url.scheme == "sharebox" && (url.host == "subscribed" || url.host == "drive-connected") {
                 await User.shared?.refresh()
             }
         }

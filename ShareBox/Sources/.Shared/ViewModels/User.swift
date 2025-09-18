@@ -14,6 +14,7 @@ import SwiftUI
     private(set) var userData: UserData?
     private(set) var settingsData: SettingsData?
     private(set) var subscriptionData: SubscriptionData?
+    private(set) var drivesData: [CloudDrive] = []
     private(set) var authenticated: Bool = false
     private var updateTask: Task<Void, Never>?
 
@@ -38,7 +39,7 @@ import SwiftUI
 
     public func login() {
         if let domainString = (Bundle.main.object(forInfoDictionaryKey: "BASE_URL") as? String) {
-            NSWorkspace.shared.open(URL(string: "\(domainString)/auth/sign-in")!)
+            NSWorkspace.shared.open(URL(string: "\(domainString)/auth/sign-in?platform=macOS")!)
         }
     }
 
@@ -63,9 +64,10 @@ import SwiftUI
             self.userData = res.user
             self.settingsData = res.settings
             self.subscriptionData = res.subscription
+            self.drivesData = res.drives
             UserDefaults.standard.set(res.settings.groupsPassword, forKey: Constants.Settings.passwordPrefKey)
             UserDefaults.standard.set(res.settings.groupStorageDuration, forKey: Constants.Settings.storagePrefKey)
-            UserDefaults.standard.set(res.settings.overMonthlyLimitStorage, forKey: Constants.Settings.overMonthlyLimitStoragePrefKey)
+            UserDefaults.standard.set(res.subscription?.overMonthlyLimitStorage ?? false, forKey: Constants.Settings.overMonthlyLimitStoragePrefKey)
             self.isLoading = false
         } catch {
             self.isLoading = false
@@ -94,10 +96,21 @@ import SwiftUI
                         ]) as ApiService.BasicSuccessResponse
                         UserDefaults.standard.set(password, forKey: Constants.Settings.passwordPrefKey)
                         UserDefaults.standard.set(storageDuration, forKey: Constants.Settings.storagePrefKey)
-                    } catch {}
+                    } catch {
+                        // Some settings may not be valid, refreshing user
+                        await self.refresh()
+                    }
                 }
             }
         }
+    }
+
+    /// Remove a linked drive from the users settings
+    public func removeDrive(id: String) async {
+        do {
+            let _: ApiService.BasicSuccessResponse = try await self.api.delete(endpoint: "/api/drives/\(id)/disconnect")
+            self.drivesData.removeAll { $0.id == id }
+        } catch { }
     }
 
     /// Sign out and remove all user details
@@ -121,6 +134,8 @@ struct UserData: Codable, Equatable {
 
 struct SubscriptionData: Codable, Equatable {
     var status: Status
+    var overMonthlyLimitStorage: Bool
+    var plan: String
 
     enum Status: String, Codable {
         case active
@@ -128,18 +143,19 @@ struct SubscriptionData: Codable, Equatable {
     }
 }
 
+struct CloudDrive: Codable, Equatable, Identifiable {
+    var id: String
+    var provider: DriveProvider
+}
+
 struct SettingsData: Codable, Equatable {
     var groupStorageDuration: String
     var groupsPassword: String?
-    var overMonthlyLimitStorage: Bool
 }
 
 private struct UserFetchResponse: Codable {
     var user: UserData
     var settings: SettingsData
     var subscription: SubscriptionData?
-
-    struct Subscription: Codable {
-        var status: String
-    }
+    var drives: [CloudDrive]
 }

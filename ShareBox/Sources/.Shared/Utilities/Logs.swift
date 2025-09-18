@@ -16,8 +16,3 @@ let dataLogger = Logger(
     subsystem: "com.thom1606.ShareBox",
     category: "data"
 )
-
-let finderLogger = Logger(
-    subsystem: "com.thom1606.ShareBox",
-    category: "finder"
-)
