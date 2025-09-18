@@ -27,11 +27,11 @@ struct ShareBoxMenu: Scene {
             Button("About ShareBox") {
                 globalContext.openSettingsTab(.about)
             }
-            if !user.authenticated {
-                Button("Sign in...", action: user.login)
-            }
             Button("Check for Updates") {
                 updater.checkForUpdates()
+            }
+            if !user.authenticated {
+                Button("Sign in...", action: user.login)
             }
             SettingsLink {
                 Text("Settings…")

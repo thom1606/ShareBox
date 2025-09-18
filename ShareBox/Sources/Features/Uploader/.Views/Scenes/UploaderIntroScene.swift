@@ -14,15 +14,16 @@ struct UploaderIntroScene: View {
     @Environment(UploaderViewModel.self) private var uploader
 
     @AppStorage(Constants.Settings.completedCloudDriveOnboardingPrefKey) private var completedCloudDriveOnboarding = false
+    @State private var showCloudPopover = false
 
-    private var showCloudStorageOption: Bool {
-        if uploader.uiState != .small { return false }
+    private var shouldShowCloudPopover: Bool {
+        // Only show when in small UI state and no items have been dropped yet
+        guard uploader.uiState == .small else { return false }
         if !uploader.droppedItems.isEmpty {
             completedCloudDriveOnboarding = true
             return false
         }
-        if !completedCloudDriveOnboarding { return true }
-        return false
+        return !completedCloudDriveOnboarding
     }
 
     var body: some View {
@@ -47,7 +48,10 @@ struct UploaderIntroScene: View {
                     completedCloudDriveOnboarding = true
                     globalContext.openSettingsTab(.drives)
                 })
-                .popover(isPresented: .constant(showCloudStorageOption), attachmentAnchor: .point(.trailing), arrowEdge: .leading) {
+                .onHover { isOver in
+                    if !isOver { completedCloudDriveOnboarding = true }
+                }
+                .popover(isPresented: .constant(shouldShowCloudPopover), attachmentAnchor: .point(.trailing), arrowEdge: .leading) {
                     VStack(alignment: .leading, spacing: 0) {
                         Text("Got cloud storage?")
                             .font(.headline)

@@ -48,6 +48,7 @@ struct UploaderDropField: View {
             }
         }
         .frame(width: 44, height: 66)
+        .frame(maxWidth: 44, maxHeight: 66)
         .background(
             RoundedRectangle(cornerRadius: 6)
                 .fill(shouldHover ? Color.accentColor.opacity(0.3) : Color("Colors/TileBackground"))

@@ -3,12 +3,20 @@
     <channel>
         <title>ShareBox</title>
         <item>
+            <title>1.2.0</title>
+            <pubDate>Thu, 18 Sep 2025 15:40:11 +0200</pubDate>
+            <sparkle:version>19</sparkle:version>
+            <sparkle:shortVersionString>1.2.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+            <enclosure url="https://assets.shareboxed.app/ShareBox-1.2.0-app.zip" length="5973428" type="application/octet-stream" sparkle:edSignature="rXJSYJPPJ9TedKvo0f9Z9anUi2MDEmLlNCfXHueExVxQSxF+j9UxyyJuMpZ3WoKqfwC1uIDQghXNtt7Gv5ovCA=="/>
+        </item>
+        <item>
             <title>1.1.2</title>
             <pubDate>Mon, 01 Sep 2025 08:45:55 +0200</pubDate>
             <sparkle:version>15</sparkle:version>
             <sparkle:shortVersionString>1.1.2</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/thom1606/ShareBox/releases/download/v1.1.2/ShareBox.zip" length="2800397" type="application/octet-stream" sparkle:edSignature="8OnvtHIT4yFkQRTBXFlgOmSkVtH04RG3AxOL/0d1L15UYA2GaQJ3jNiaot+f/yVnTWDBgKPxsY4EPu4MLaT8DA=="/>
+            <enclosure url="https://assets.shareboxed.app/ShareBox-1.1.2.zip" length="2800397" type="application/octet-stream" sparkle:edSignature="8OnvtHIT4yFkQRTBXFlgOmSkVtH04RG3AxOL/0d1L15UYA2GaQJ3jNiaot+f/yVnTWDBgKPxsY4EPu4MLaT8DA=="/>
         </item>
     </channel>
 </rss>

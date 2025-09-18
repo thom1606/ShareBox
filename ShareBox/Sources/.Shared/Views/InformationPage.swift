@@ -103,9 +103,3 @@ private struct ContinueButtonStyle: ButtonStyle {
         }
     }
 }
-
-#Preview {
-    InformationPage(onContinue: {}, content: {
-        ZStack {}
-    })
-}

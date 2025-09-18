@@ -27,31 +27,37 @@ struct DynamicNotch<CompactContent: View, SlimContent: View, ExpandedContent: Vi
     @State private var localMonitor: Any?
 
     private func updateUI() {
-        withAnimation(.smooth) {
-            compactOpacity = 0
-            slimOpacity = 0
-            expandedOpacity = 0
-            if state.uiState == .hidden {
-                cornerRadii = 1
-                uiSize = .init(width: 0, height: compactSize.height / 1.2)
-            } else if state.uiState == .small {
-                cornerRadii = 15
-                uiSize = compactSize
-            } else if state.uiState == .peeking {
-                cornerRadii = 15
-                uiSize = slimSize
-            } else if state.uiState == .visible {
-                cornerRadii = 24
-                uiSize = expandedSize
-            }
+        var timeout = 0.0
+        if !UserDefaults.standard.bool(forKey: Constants.Settings.completedCloudDriveOnboardingPrefKey) && state.uiState == .hidden {
+            timeout += 0.45
         }
-        withAnimation(.smooth.delay(0.1)) {
-            if state.uiState == .small {
-                compactOpacity = 1
-            } else if state.uiState == .peeking {
-                slimOpacity = 1
-            } else if state.uiState == .visible {
-                expandedOpacity = 1
+        DispatchQueue.main.asyncAfter(deadline: .now() + timeout) {
+            withAnimation(.smooth) {
+                compactOpacity = 0
+                slimOpacity = 0
+                expandedOpacity = 0
+                if state.uiState == .hidden {
+                    cornerRadii = 1
+                    uiSize = .init(width: 0, height: compactSize.height / 1.2)
+                } else if state.uiState == .small {
+                    cornerRadii = 15
+                    uiSize = compactSize
+                } else if state.uiState == .peeking {
+                    cornerRadii = 15
+                    uiSize = slimSize
+                } else if state.uiState == .visible {
+                    cornerRadii = 24
+                    uiSize = expandedSize
+                }
+            }
+            withAnimation(.smooth.delay(0.1)) {
+                if state.uiState == .small {
+                    compactOpacity = 1
+                } else if state.uiState == .peeking {
+                    slimOpacity = 1
+                } else if state.uiState == .visible {
+                    expandedOpacity = 1
+                }
             }
         }
     }
@@ -61,7 +67,7 @@ struct DynamicNotch<CompactContent: View, SlimContent: View, ExpandedContent: Vi
             NotchShape(
                 cornerRadii: cornerRadii
             )
-            .fill(.blue)
+            .fill(.black)
             .frame(width: uiSize.width, height: uiSize.height)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
             ZStack(alignment: .leading) {
@@ -141,7 +147,7 @@ struct DynamicNotch<CompactContent: View, SlimContent: View, ExpandedContent: Vi
 
     private func handleRelativeOffset(x posX: CGFloat, y posY: CGFloat) {
         func isInFrame(size: CGSize) -> Bool {
-            guard let window = NSApp.keyWindow ?? NSApp.windows.first(where: { $0.isVisible }),
+            guard let window = NSApp.windows.first(where: { $0.isVisible }),
                   let contentView = window.contentView else { return false }
             let topY = contentView.bounds.height / 2 - size.height / 2
             // To allow some extra play in vertically, we add an buffer area of 20 pixels
