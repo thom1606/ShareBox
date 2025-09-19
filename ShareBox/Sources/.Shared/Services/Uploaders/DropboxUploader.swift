@@ -136,7 +136,7 @@ class DropboxUploader: FileUploader {
     }
 
     // swiftlint:disable:next function_body_length
-    private func uploadResumableFile(_ path: FilePath, token: String, chunkSize: Int = 8 * 1024 * 1014) async {
+    private func uploadResumableFile(_ path: FilePath, token: String, chunkSize: Int = 8 * 1024 * 1024) async {
         do {
             let details = path.details()
             guard let fileURL = URL(string: path.absolute) else {

@@ -124,7 +124,7 @@ class OneDriveUploader: FileUploader {
     }
 
     // swiftlint:disable:next function_body_length cyclomatic_complexity
-    private func uploadResumableFile(_ path: FilePath, token: String, chunkSize: Int = 10 * 1024 * 1014) async {
+    private func uploadResumableFile(_ path: FilePath, token: String, chunkSize: Int = 10 * 1024 * 1024) async {
         do {
             let details = path.details()
             let encodedName = details.fileName.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? details.fileName
