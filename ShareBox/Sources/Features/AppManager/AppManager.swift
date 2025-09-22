@@ -25,8 +25,5 @@ struct AppManager<C: View>: View {
                 globalContext.initialize(openSettings: openSettings)
             }
             .opacity(hasAppeared ? 1 : 0)
-            .onChange(of: globalContext.settingsRequestID) {
-                openSettings()
-            }
     }
 }

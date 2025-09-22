@@ -14,6 +14,7 @@ struct UploaderIntroScene: View {
     @Environment(UploaderViewModel.self) private var uploader
 
     @AppStorage(Constants.Settings.completedCloudDriveOnboardingPrefKey) private var completedCloudDriveOnboarding = false
+    @AppStorage(Constants.Settings.keepInMenuBarPrefKey) private var keepInMenuBar = true
     @State private var showCloudPopover = false
 
     private var shouldShowCloudPopover: Bool {
@@ -63,6 +64,14 @@ struct UploaderIntroScene: View {
                     .frame(minWidth: 200, idealWidth: 200, maxWidth: 200)
                     .padding(10)
                 }
+            }
+            if !keepInMenuBar {
+                Rectangle()
+                    .fill(Color("Colors/TileBackground"))
+                    .frame(width: 44, height: 2)
+                UploaderButtonField(image: Image(systemName: "gearshape"), onTap: {
+                    globalContext.openSettingsTab(.preferences)
+                })
             }
         }
         .padding(8)
